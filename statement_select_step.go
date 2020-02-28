@@ -59,6 +59,28 @@ func (s *SelectFromStep) Accept(stmt *StatementImpl) {
 	stmt.Statement += fmt.Sprintf("FROM %s ", TableAsStatement(s.table))
 }
 
+type SelectFromJoinStep struct {
+	parent     StatementAcceptor
+	table      Table
+	conditions []Condition
+	joinType   string
+}
+
+func (s *SelectFromJoinStep) DialectStatement(st StatementType) string {
+	s.parent.DialectStatement(st)
+}
+
+func (s *SelectFromJoinStep) Parent() StatementAcceptor {
+	return s.parent
+}
+
+func (s *SelectFromJoinStep) Accept(stmt *StatementImpl) {
+	var onStmt string
+	joinCondition(s.conditions, &onStmt, &stmt.Bindings, "AND")
+
+	stmt.Statement += fmt.Sprintf("%s %s ON %s ", s.joinType, TableAsStatement(s.table), onStmt)
+}
+
 type SelectGroupByStep struct {
 	parent  StatementAcceptor
 	columns []Column

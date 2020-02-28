@@ -88,6 +88,9 @@ func (s *SelectColumnBranchStepImpl) From(table Table) SelectFromBranchStep {
 
 type SelectFromBranchStep interface {
 	Build() Statement
+	LeftOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep
+	RightOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep
+	InnerJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep
 	Where(conditions ...Condition) SelectFromWhereBranchStep
 	GroupBy(columns ...Column) SelectFromGroupByBranchStep
 	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
@@ -110,6 +113,39 @@ func (s *SelectFromBranchStepImpl) Accept(*StatementImpl) {}
 
 func (s *SelectFromBranchStepImpl) Build() Statement {
 	return buildStatement(s.parent)
+}
+
+func (s *SelectFromBranchStepImpl) LeftOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep {
+	return &SelectFromJoinBranchStepImpl{
+		parent: &SelectFromJoinStep{
+			parent:     s,
+			table:      table,
+			conditions: conditions,
+			joinType:   "LEFT OUTER JOIN",
+		},
+	}
+}
+
+func (s *SelectFromBranchStepImpl) RightOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep {
+	return &SelectFromJoinBranchStepImpl{
+		parent: &SelectFromJoinStep{
+			parent:     s,
+			table:      table,
+			conditions: conditions,
+			joinType:   "RIGHT OUTER JOIN",
+		},
+	}
+}
+
+func (s *SelectFromBranchStepImpl) InnerJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep {
+	return &SelectFromJoinBranchStepImpl{
+		parent: &SelectFromJoinStep{
+			parent:     s,
+			table:      table,
+			conditions: conditions,
+			joinType:   "INNER JOIN",
+		},
+	}
 }
 
 func (s *SelectFromBranchStepImpl) Where(conditions ...Condition) SelectFromWhereBranchStep {
@@ -140,6 +176,69 @@ func (s *SelectFromBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrder
 }
 
 func (s *SelectFromBranchStepImpl) LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep {
+	return &SelectFromLimitAndOffsetBranchStepImpl{
+		parent: &SelectLimitOffsetStep{
+			parent: s,
+			limit:  limit,
+			offset: offset,
+		},
+	}
+}
+
+type SelectFromJoinBranchStep interface {
+	Build() Statement
+	Where(conditions ...Condition) SelectFromWhereBranchStep
+	GroupBy(columns ...Column) SelectFromGroupByBranchStep
+	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
+	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
+}
+
+type SelectFromJoinBranchStepImpl struct {
+	parent StatementAcceptor
+}
+
+func (s *SelectFromJoinBranchStepImpl) DialectStatement(st StatementType) string {
+	return s.parent.DialectStatement(st)
+}
+
+func (s *SelectFromJoinBranchStepImpl) Parent() StatementAcceptor {
+	return s.parent
+}
+
+func (s *SelectFromJoinBranchStepImpl) Accept(*StatementImpl) {}
+
+func (s *SelectFromJoinBranchStepImpl) Build() Statement {
+	return buildStatement(s.parent)
+}
+
+func (s *SelectFromJoinBranchStepImpl) Where(conditions ...Condition) SelectFromWhereBranchStep {
+	return &SelectFromWhereBranchStepImpl{
+		parent: &WhereStep{
+			parent:     s,
+			conditions: conditions,
+		},
+	}
+}
+
+func (s *SelectFromJoinBranchStepImpl) GroupBy(columns ...Column) SelectFromGroupByBranchStep {
+	return &SelectFromGroupByBranchStepImpl{
+		parent: &SelectGroupByStep{
+			parent:  s,
+			columns: columns,
+		},
+	}
+}
+
+func (s *SelectFromJoinBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep {
+	return &SelectFromOrderByBranchStepImpl{
+		parent: &SelectOrderByStep{
+			parent: s,
+			orders: orders,
+		},
+	}
+}
+
+func (s *SelectFromJoinBranchStepImpl) LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep {
 	return &SelectFromLimitAndOffsetBranchStepImpl{
 		parent: &SelectLimitOffsetStep{
 			parent: s,
