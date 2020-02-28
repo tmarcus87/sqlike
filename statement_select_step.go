@@ -90,6 +90,13 @@ const (
 	OrderDesc = "DESC"
 )
 
+func NewOrder(column Column, order string) *SortOrder {
+	return &SortOrder{
+		column: column,
+		order:  order,
+	}
+}
+
 type SortOrder struct {
 	column Column
 	order  string
