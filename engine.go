@@ -6,6 +6,9 @@ import (
 )
 
 type Engine interface {
+	Auto(ctx context.Context) Session
+	Master(ctx context.Context) Session
+	Slave(ctx context.Context) Session
 }
 
 type basicEngine struct {
