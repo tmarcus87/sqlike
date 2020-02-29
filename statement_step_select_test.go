@@ -71,7 +71,17 @@ func TestBuildSelectFrom(t *testing.T) {
 
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
-		asserts.Fail("not yet tested")
+
+		t1 := &BasicTable{name: "t1"}
+
+		c1 := &BasicColumn{table: t1, name: "c1"}
+		c2 := &BasicColumn{table: t1, name: "c2"}
+
+		s := &basicSession{db: &sql.DB{}}
+		stmt, bindings := s.Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).Build().StatementAndBindings()
+		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt`", stmt)
+		asserts.Empty(bindings)
+
 	})
 }
 
@@ -141,7 +151,31 @@ func TestBuildSelectFromJoin(t *testing.T) {
 
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
-		asserts.Fail("not yet tested")
+
+		t1 := &BasicTable{name: "t1"}
+		t2 := &BasicTable{name: "t2"}
+
+		c1 := &BasicColumn{table: t1, name: "c1"}
+		c2 := &BasicColumn{table: t1, name: "c2"}
+		c3 := &BasicColumn{table: t2, name: "c3"}
+		c4 := &BasicColumn{table: t2, name: "c4"}
+
+		s := &basicSession{db: &sql.DB{}}
+
+		stmt, bindings :=
+			s.Select(
+				c1.SQLikeAs("c1alt"),
+				c2.SQLikeAs("c2alt")).
+				From(t1.SQLikeAs("t1alt")).
+				LeftOuterJoin(t2.SQLikeAs("t2alt"), c1.EqCol(c3)).
+				Where(c4.Eq(1)).
+				Build().
+				StatementAndBindings()
+		asserts.Equal(
+			"SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt` LEFT OUTER JOIN `t2` AS `t2alt` ON `t1alt`.`c1` = `t2alt`.`c3` WHERE `t2alt`.`c4` = ?",
+			stmt)
+		asserts.Len(bindings, 1)
+		asserts.Equal(1, bindings[0])
 	})
 }
 
@@ -162,7 +196,16 @@ func TestBuildSelectFromGroupBy(t *testing.T) {
 
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
-		asserts.Fail("not yet tested")
+
+		t1 := &BasicTable{name: "t1"}
+
+		c1 := &BasicColumn{table: t1, name: "c1"}
+		c2 := &BasicColumn{table: t1, name: "c2"}
+
+		s := &basicSession{db: &sql.DB{}}
+
+		stmt, _ := s.Select(c1.SQLikeAs("c1alt"), CountAs(c2, "cnt")).From(t1.SQLikeAs("t1alt")).GroupBy(c1).Build().StatementAndBindings()
+		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, COUNT(`t1alt`.`c2`) AS `cnt` FROM `t1` AS `t1alt` GROUP BY `t1alt`.`c1`", stmt)
 	})
 }
 
@@ -183,7 +226,16 @@ func TestBuildSelectFromOrderBy(t *testing.T) {
 
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
-		asserts.Fail("not yet tested")
+
+		t1 := &BasicTable{name: "t1"}
+
+		c1 := &BasicColumn{table: t1, name: "c1"}
+		c2 := &BasicColumn{table: t1, name: "c2"}
+
+		s := &basicSession{db: &sql.DB{}}
+
+		stmt, _ := s.Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
+		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt` ORDER BY `t1alt`.`c2alt` DESC", stmt)
 	})
 
 }

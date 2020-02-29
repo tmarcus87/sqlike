@@ -94,7 +94,7 @@ type BasicEqCondition struct {
 }
 
 func (c *BasicEqCondition) Apply(stmt *string, bindings *[]interface{}) {
-	*stmt += fmt.Sprintf("`%s`.`%s` = ?", TableName(c.column.SQLikeTable()), ColumnName(c.column))
+	*stmt += fmt.Sprintf("`%s`.`%s` = ?", TableName(c.column.SQLikeTable()), c.column.SQLikeColumnName())
 	*bindings = append(*bindings, c.v)
 }
 
@@ -106,8 +106,8 @@ type BasicEqColCondition struct {
 func (c *BasicEqColCondition) Apply(stmt *string, bindings *[]interface{}) {
 	*stmt +=
 		fmt.Sprintf("`%s`.`%s` = `%s`.`%s`",
-			TableName(c.left.SQLikeTable()), ColumnName(c.left),
-			TableName(c.right.SQLikeTable()), ColumnName(c.right))
+			TableName(c.left.SQLikeTable()), c.left.SQLikeColumnName(),
+			TableName(c.right.SQLikeTable()), c.right.SQLikeColumnName())
 }
 
 // TableName テーブル名を返します
