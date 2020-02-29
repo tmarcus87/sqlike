@@ -38,12 +38,15 @@ type Column interface {
 	SQLikeColumnAlias() string
 	// SQLikeAs
 	SQLikeAs(alias string) Column
+	// SQLikeModifier
+	SQLikeSelectModFmt() string
 }
 
 type BasicColumn struct {
-	table Table
-	name  string
-	alias string
+	table        Table
+	name         string
+	alias        string
+	selectModFmt string
 }
 
 func (c *BasicColumn) SQLikeTable() Table {
@@ -63,10 +66,21 @@ func (c *BasicColumn) SQLikeAs(alias string) Column {
 	return c
 }
 
+func (c *BasicColumn) SQLikeSelectModFmt() string {
+	return c.selectModFmt
+}
+
 func (c *BasicColumn) Eq(v interface{}) Condition {
 	return &BasicEqCondition{
 		column: c,
 		v:      v,
+	}
+}
+
+func (c *BasicColumn) EqCol(column Column) Condition {
+	return &BasicEqColCondition{
+		left:  c,
+		right: column,
 	}
 }
 
@@ -79,9 +93,21 @@ type BasicEqCondition struct {
 	v      interface{}
 }
 
-func (b *BasicEqCondition) Apply(stmt *string, bindings *[]interface{}) {
-	*stmt += fmt.Sprintf("`%s`.`%s` = ?", TableName(b.column.SQLikeTable()), ColumnName(b.column))
-	*bindings = append(*bindings, b.v)
+func (c *BasicEqCondition) Apply(stmt *string, bindings *[]interface{}) {
+	*stmt += fmt.Sprintf("`%s`.`%s` = ?", TableName(c.column.SQLikeTable()), ColumnName(c.column))
+	*bindings = append(*bindings, c.v)
+}
+
+type BasicEqColCondition struct {
+	left  Column
+	right Column
+}
+
+func (c *BasicEqColCondition) Apply(stmt *string, bindings *[]interface{}) {
+	*stmt +=
+		fmt.Sprintf("`%s`.`%s` = `%s`.`%s`",
+			TableName(c.left.SQLikeTable()), ColumnName(c.left),
+			TableName(c.right.SQLikeTable()), ColumnName(c.right))
 }
 
 // TableName テーブル名を返します
@@ -120,4 +146,20 @@ func ColumnAsStatement(c Column) string {
 			TableName(c.SQLikeTable()), c.SQLikeColumnName(), alias)
 	}
 	return fmt.Sprintf("`%s`.`%s`", TableName(c.SQLikeTable()), c.SQLikeColumnName())
+}
+
+func Count(column *BasicColumn) Column {
+	newCol := copyBasicColumn(*column)
+	newCol.selectModFmt = "COUNT(%s)"
+	return newCol
+}
+
+func CountAs(column *BasicColumn, alias string) Column {
+	newCol := copyBasicColumn(*column)
+	newCol.selectModFmt = "COUNT(%s) AS `" + alias + "`"
+	return newCol
+}
+
+func copyBasicColumn(column BasicColumn) *BasicColumn {
+	return &column
 }

@@ -37,7 +37,11 @@ func (s *SelectColumnStep) Parent() StatementAcceptor {
 func (s *SelectColumnStep) Accept(stmt *StatementImpl) {
 	cols := make([]string, 0)
 	for _, column := range s.columns {
-		cols = append(cols, ColumnAsStatement(column))
+		s := ColumnAsStatement(column)
+		if column.SQLikeSelectModFmt() != "" {
+			s = fmt.Sprintf(column.SQLikeSelectModFmt(), s)
+		}
+		cols = append(cols, s)
 	}
 	stmt.Statement += fmt.Sprintf("SELECT %s ", strings.Join(cols, ", "))
 }
@@ -67,7 +71,7 @@ type SelectFromJoinStep struct {
 }
 
 func (s *SelectFromJoinStep) DialectStatement(st StatementType) string {
-	s.parent.DialectStatement(st)
+	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectFromJoinStep) Parent() StatementAcceptor {
@@ -104,7 +108,7 @@ func (s *SelectGroupByStep) Accept(stmt *StatementImpl) {
 		cols = append(cols, fmt.Sprintf("`%s`.`%s`", TableName(column.SQLikeTable()), column.SQLikeColumnName()))
 	}
 
-	stmt.Statement += fmt.Sprintf("ORDER BY %s ", strings.Join(cols, ", "))
+	stmt.Statement += fmt.Sprintf("GROUP BY %s ", strings.Join(cols, ", "))
 }
 
 const (
@@ -112,7 +116,7 @@ const (
 	OrderDesc = "DESC"
 )
 
-func NewOrder(column Column, order string) *SortOrder {
+func Order(column Column, order string) *SortOrder {
 	return &SortOrder{
 		column: column,
 		order:  order,

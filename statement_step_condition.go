@@ -17,9 +17,8 @@ func (s *WhereStep) Accept(stmt *StatementImpl) {
 	if len(s.conditions) == 0 {
 		return
 	}
+
 	stmt.Statement += "WHERE "
 
-	for _, condition := range s.conditions {
-		condition.Apply(&stmt.Statement, &stmt.Bindings)
-	}
+	joinCondition(s.conditions, &stmt.Statement, &stmt.Bindings, "AND")
 }
