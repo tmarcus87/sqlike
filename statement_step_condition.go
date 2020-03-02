@@ -5,10 +5,6 @@ type WhereStep struct {
 	conditions []Condition
 }
 
-func (s *WhereStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *WhereStep) Parent() StatementAcceptor {
 	return s.parent
 }

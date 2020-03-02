@@ -9,10 +9,6 @@ type SelectExplainStep struct {
 	parent StatementAcceptor
 }
 
-func (s *SelectExplainStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectExplainStep) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -24,10 +20,6 @@ func (s *SelectExplainStep) Accept(stmt *StatementImpl) {
 type SelectColumnStep struct {
 	parent  StatementAcceptor
 	columns []Column
-}
-
-func (s *SelectColumnStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectColumnStep) Parent() StatementAcceptor {
@@ -51,10 +43,6 @@ type SelectFromStep struct {
 	table  Table
 }
 
-func (s *SelectFromStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectFromStep) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -68,10 +56,6 @@ type SelectFromJoinStep struct {
 	table      Table
 	conditions []Condition
 	joinType   string
-}
-
-func (s *SelectFromJoinStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectFromJoinStep) Parent() StatementAcceptor {
@@ -88,10 +72,6 @@ func (s *SelectFromJoinStep) Accept(stmt *StatementImpl) {
 type SelectGroupByStep struct {
 	parent  StatementAcceptor
 	columns []Column
-}
-
-func (s *SelectGroupByStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectGroupByStep) Parent() StatementAcceptor {
@@ -160,10 +140,6 @@ type SelectLimitOffsetStep struct {
 	parent StatementAcceptor
 	limit  int32
 	offset int64
-}
-
-func (s *SelectLimitOffsetStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectLimitOffsetStep) Parent() StatementAcceptor {

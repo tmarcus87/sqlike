@@ -9,21 +9,17 @@ type ExplainSelectBranchStepImpl struct {
 	parent StatementAcceptor
 }
 
-func (s *ExplainSelectBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *ExplainSelectBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *ExplainSelectBranchStepImpl) Accept(stmt *StatementImpl) {}
+func (s *ExplainSelectBranchStepImpl) Accept(*StatementImpl) {}
 
 func (s *ExplainSelectBranchStepImpl) SelectOne() SelectOneBranchStep {
 	return &SelectOneBranchStepImpl{
 		parent: &InstantStep{
 			parent:    s,
-			statement: s.parent.DialectStatement(StatementTypeSelectOne),
+			statement: getQueryer(s.parent).DialectStatement(StatementTypeSelectOne),
 		},
 	}
 }
@@ -45,10 +41,6 @@ type SelectOneBranchStepImpl struct {
 	parent *InstantStep
 }
 
-func (s *SelectOneBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectOneBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -65,10 +57,6 @@ type SelectColumnBranchStep interface {
 
 type SelectColumnBranchStepImpl struct {
 	parent *SelectColumnStep
-}
-
-func (s *SelectColumnBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectColumnBranchStepImpl) Parent() StatementAcceptor {
@@ -99,10 +87,6 @@ type SelectFromBranchStep interface {
 
 type SelectFromBranchStepImpl struct {
 	parent *SelectFromStep
-}
-
-func (s *SelectFromBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectFromBranchStepImpl) Parent() StatementAcceptor {
@@ -197,10 +181,6 @@ type SelectFromJoinBranchStepImpl struct {
 	parent StatementAcceptor
 }
 
-func (s *SelectFromJoinBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectFromJoinBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -259,10 +239,6 @@ type SelectFromWhereBranchStepImpl struct {
 	parent StatementAcceptor
 }
 
-func (s *SelectFromWhereBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectFromWhereBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -311,10 +287,6 @@ type SelectFromGroupByBranchStepImpl struct {
 	parent StatementAcceptor
 }
 
-func (s *SelectFromGroupByBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectFromGroupByBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -353,10 +325,6 @@ type SelectFromOrderByBranchStepImpl struct {
 	parent StatementAcceptor
 }
 
-func (s *SelectFromOrderByBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
-}
-
 func (s *SelectFromOrderByBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
@@ -383,10 +351,6 @@ type SelectFromLimitAndOffsetBranchStep interface {
 
 type SelectFromLimitAndOffsetBranchStepImpl struct {
 	parent StatementAcceptor
-}
-
-func (s *SelectFromLimitAndOffsetBranchStepImpl) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *SelectFromLimitAndOffsetBranchStepImpl) Parent() StatementAcceptor {

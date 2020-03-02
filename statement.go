@@ -9,9 +9,6 @@ import (
 )
 
 type StatementAcceptor interface {
-	// DialectStatement RDBにより異なるSQL方言を取得します
-	DialectStatement(st StatementType) string
-
 	// Parent 親のStatementAcceptorを返します。親がない場合はnilです
 	Parent() StatementAcceptor
 
@@ -219,6 +216,26 @@ func (s *StatementImpl) StatementAndBindings() (string, []interface{}) {
 }
 
 func buildStatement(lastStep StatementAcceptor) *StatementImpl {
+	steps := getSteps(lastStep)
+
+	// RootStepがQueryerでなければバグのためpanic
+	rootStep := steps[0]
+	q, ok := rootStep.(Queryer)
+	if !ok {
+		panic("RootStep is not a Queryer")
+	}
+
+	stmt := StatementImpl{queryer: q}
+	for _, step := range steps {
+		step.Accept(&stmt)
+	}
+
+	stmt.Statement = strings.TrimSuffix(stmt.Statement, " ")
+
+	return &stmt
+}
+
+func getSteps(lastStep StatementAcceptor) []StatementAcceptor {
 	revSteps := make([]StatementAcceptor, 0)
 
 	current := lastStep
@@ -227,19 +244,24 @@ func buildStatement(lastStep StatementAcceptor) *StatementImpl {
 		current = current.Parent()
 	}
 
-	// RootStepがQueryerでなければバグのためpanic
-	rootStep := revSteps[len(revSteps)-1]
-	q, ok := rootStep.(Queryer)
-	if !ok {
-		panic("RootStep is not a Queryer")
-	}
-
-	stmt := StatementImpl{queryer: q}
+	steps := make([]StatementAcceptor, 0)
 	for i := len(revSteps) - 1; i >= 0; i-- {
-		revSteps[i].Accept(&stmt)
+		steps = append(steps, revSteps[i])
+	}
+	return steps
+}
+
+func getQueryer(lastStep StatementAcceptor) Queryer {
+	steps := getSteps(lastStep)
+
+	if len(steps) == 0 {
+		panic("No steps")
 	}
 
-	stmt.Statement = strings.TrimSuffix(stmt.Statement, " ")
+	q, ok := steps[0].(Queryer)
+	if !ok {
+		panic(fmt.Sprintf("RootStep(%T) is not a Queryer", q))
+	}
 
-	return &stmt
+	return q
 }

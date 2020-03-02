@@ -6,6 +6,7 @@ import (
 )
 
 type Queryer interface {
+	DialectStatement(st StatementType) string
 	Context() context.Context
 	Query(string, ...interface{}) (*sql.Rows, error)
 	Execute(string, ...interface{}) (sql.Result, error)
@@ -46,10 +47,6 @@ type InstantStep struct {
 	parent    StatementAcceptor
 	statement string
 	bindings  []interface{}
-}
-
-func (s *InstantStep) DialectStatement(st StatementType) string {
-	return s.parent.DialectStatement(st)
 }
 
 func (s *InstantStep) Parent() StatementAcceptor {
