@@ -113,10 +113,6 @@ type SelectOrderByStep struct {
 	orders []*SortOrder
 }
 
-func (s *SelectOrderByStep) DialectStatement(st StatementType) string {
-	return s.DialectStatement(st)
-}
-
 func (s *SelectOrderByStep) Parent() StatementAcceptor {
 	return s.parent
 }
