@@ -1,4 +1,4 @@
-package sqlike
+package statement
 
 import "github.com/tmarcus87/sqlike/model"
 

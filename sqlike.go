@@ -35,7 +35,9 @@ func WithSlaveSelectionHandler(handler SlaveSelectionHandler) Option {
 }
 
 func NewEngine(opts ...Option) (Engine, error) {
-	o := EngineOption{}
+	o := EngineOption{
+		SlaveSelectionHandler: RoundRobbinSelectionHandler(),
+	}
 	for _, opt := range opts {
 		opt(&o)
 	}
@@ -62,8 +64,9 @@ func NewEngineFromOption(o *EngineOption) (Engine, error) {
 		}
 	}
 	return &basicEngine{
-		dialect: strings.ToLower(o.Driver),
-		master:  db,
-		slaves:  dbs,
+		dialect:      strings.ToLower(o.Driver),
+		master:       db,
+		slaves:       dbs,
+		slaveHandler: o.SlaveSelectionHandler,
 	}, nil
 }

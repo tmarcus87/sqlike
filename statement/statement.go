@@ -1,11 +1,19 @@
-package sqlike
+package statement
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/tmarcus87/sqlike/logger"
 	"reflect"
 	"strings"
+)
+
+var (
+	ErrorMustBeASlice     = errors.New("must be a slice")
+	ErrorMustBeAPtr       = errors.New("must be a pointer")
+	ErrorMustBeANonNilPtr = errors.New("must be a non-nil pointer")
+	ErrorMustBeAStructPtr = errors.New("must be a pointer to struct")
 )
 
 type StatementAcceptor interface {

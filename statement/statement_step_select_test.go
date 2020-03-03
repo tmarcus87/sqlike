@@ -1,21 +1,24 @@
-package sqlike
+package statement
 
 import (
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmarcus87/sqlike/dialect"
 	"github.com/tmarcus87/sqlike/model"
 	"testing"
 )
 
+func root(d string) *RootStep {
+	return &RootStep{
+		dialectStatement: dialect.GetDialectStatements(d),
+	}
+}
+
 func TestBuildExplain(t *testing.T) {
 	asserts := assert.New(t)
 
-	s := &basicSession{dialect: dialect.DialectMySQL, db: &sql.DB{}}
-
 	{
-		stmt, _ := s.Explain().SelectOne().Build().StatementAndBindings()
+
+		stmt, _ := NewExplainSelectBranchStep(root(dialect.DialectMySQL)).SelectOne().Build().StatementAndBindings()
 		asserts.Equal("EXPLAIN SELECT 1 FROM dual", stmt)
 	}
 
@@ -25,7 +28,7 @@ func TestBuildExplain(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		stmt, _ := s.Explain().Select(c1, c2).From(t1).Build().StatementAndBindings()
+		stmt, _ := NewExplainSelectBranchStep(root(dialect.DialectMySQL)).Select(c1, c2).From(t1).Build().StatementAndBindings()
 		asserts.Equal("EXPLAIN SELECT `t1`.`c1`, `t1`.`c2` FROM `t1`", stmt)
 	}
 }
@@ -49,8 +52,7 @@ func TestBuildSelectOne(t *testing.T) {
 		t.Run(test.dialect, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			s := &basicSession{dialect: test.dialect, db: &sql.DB{}}
-			stmt, _ := s.SelectOne().Build().StatementAndBindings()
+			stmt, _ := NewSelectOneBranchStep(root(test.dialect)).Build().StatementAndBindings()
 			asserts.Equal(test.expect, stmt)
 		})
 	}
@@ -65,8 +67,7 @@ func TestBuildSelectFrom(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		s := &basicSession{db: &sql.DB{}}
-		stmt, bindings := s.Select(c1, c2).From(t1).Build().StatementAndBindings()
+		stmt, bindings := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, c2).From(t1).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1`", stmt)
 		asserts.Empty(bindings)
 	})
@@ -79,8 +80,7 @@ func TestBuildSelectFrom(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		s := &basicSession{db: &sql.DB{}}
-		stmt, bindings := s.Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).Build().StatementAndBindings()
+		stmt, bindings := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt`", stmt)
 		asserts.Empty(bindings)
 
@@ -95,8 +95,7 @@ func TestBuildSelectFromWithOneWhere(t *testing.T) {
 	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-	s := &basicSession{db: &sql.DB{}}
-	stmt, bindings := s.Select(c1, c2).From(t1).Where(c1.Eq(1)).Build().StatementAndBindings()
+	stmt, bindings := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, c2).From(t1).Where(c1.Eq(1)).Build().StatementAndBindings()
 	asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` WHERE `t1`.`c1` = ?", stmt)
 	asserts.Len(bindings, 1)
 	asserts.Equal(1, bindings[0])
@@ -111,8 +110,7 @@ func TestBuildSelectFromWithTwoWhere(t *testing.T) {
 	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 	t.Run("And", func(t *testing.T) {
-		s := &basicSession{db: &sql.DB{}}
-		stmt, bindings := s.Select(c1, c2).From(t1).Where(And(c1.Eq(1), c2.Eq(2))).Build().StatementAndBindings()
+		stmt, bindings := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, c2).From(t1).Where(And(c1.Eq(1), c2.Eq(2))).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` WHERE (`t1`.`c1` = ? AND `t1`.`c2` = ?)", stmt)
 		asserts.Len(bindings, 2)
 		asserts.Equal(1, bindings[0])
@@ -120,8 +118,7 @@ func TestBuildSelectFromWithTwoWhere(t *testing.T) {
 	})
 
 	t.Run("Or", func(t *testing.T) {
-		s := &basicSession{db: &sql.DB{}}
-		stmt, bindings := s.Select(c1, c2).From(t1).Where(Or(c1.Eq(1), c2.Eq(2))).Build().StatementAndBindings()
+		stmt, bindings := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, c2).From(t1).Where(Or(c1.Eq(1), c2.Eq(2))).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` WHERE (`t1`.`c1` = ? OR `t1`.`c2` = ?)", stmt)
 		asserts.Len(bindings, 2)
 		asserts.Equal(1, bindings[0])
@@ -141,9 +138,7 @@ func TestBuildSelectFromJoin(t *testing.T) {
 		c3 := &model.BasicColumn{Table: t2, Name: "c3"}
 		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, bindings := s.Select(c1, c2).From(t1).LeftOuterJoin(t2, c1.EqCol(c3)).Where(c4.Eq(1)).Build().StatementAndBindings()
+		stmt, bindings := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, c2).From(t1).LeftOuterJoin(t2, c1.EqCol(c3)).Where(c4.Eq(1)).Build().StatementAndBindings()
 		asserts.Equal(
 			"SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` LEFT OUTER JOIN `t2` ON `t1`.`c1` = `t2`.`c3` WHERE `t2`.`c4` = ?",
 			stmt)
@@ -162,10 +157,8 @@ func TestBuildSelectFromJoin(t *testing.T) {
 		c3 := &model.BasicColumn{Table: t2, Name: "c3"}
 		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
 
-		s := &basicSession{db: &sql.DB{}}
-
 		stmt, bindings :=
-			s.Select(
+			NewSelectColumnBranchStep(root(dialect.DialectMySQL),
 				c1.SQLikeAs("c1alt"),
 				c2.SQLikeAs("c2alt")).
 				From(t1.SQLikeAs("t1alt")).
@@ -190,9 +183,7 @@ func TestBuildSelectFromGroupBy(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, _ := s.Select(c1, model.Count(c2)).From(t1).GroupBy(c1).Build().StatementAndBindings()
+		stmt, _ := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, model.Count(c2)).From(t1).GroupBy(c1).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1`, COUNT(`t1`.`c2`) FROM `t1` GROUP BY `t1`.`c1`", stmt)
 	})
 
@@ -204,9 +195,7 @@ func TestBuildSelectFromGroupBy(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, _ := s.Select(c1.SQLikeAs("c1alt"), model.CountAs(c2, "cnt")).From(t1.SQLikeAs("t1alt")).GroupBy(c1).Build().StatementAndBindings()
+		stmt, _ := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1.SQLikeAs("c1alt"), model.CountAs(c2, "cnt")).From(t1.SQLikeAs("t1alt")).GroupBy(c1).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, COUNT(`t1alt`.`c2`) AS `cnt` FROM `t1` AS `t1alt` GROUP BY `t1alt`.`c1`", stmt)
 	})
 }
@@ -220,9 +209,7 @@ func TestBuildSelectFromOrderBy(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, _ := s.Select(c1, c2).From(t1).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
+		stmt, _ := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1, c2).From(t1).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` ORDER BY `t1`.`c2` DESC", stmt)
 	})
 
@@ -234,9 +221,7 @@ func TestBuildSelectFromOrderBy(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, _ := s.Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
+		stmt, _ := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt` ORDER BY `t1alt`.`c2alt` DESC", stmt)
 	})
 
@@ -251,9 +236,7 @@ func TestBuildSelectFromLimitAndOffset(t *testing.T) {
 
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, _ := s.Select(c1).From(t1).LimitAndOffset(10, 0).Build().StatementAndBindings()
+		stmt, _ := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1).From(t1).LimitAndOffset(10, 0).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1` FROM `t1` LIMIT 10", stmt)
 	})
 
@@ -264,9 +247,7 @@ func TestBuildSelectFromLimitAndOffset(t *testing.T) {
 
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 
-		s := &basicSession{db: &sql.DB{}}
-
-		stmt, _ := s.Select(c1).From(t1).LimitAndOffset(10, 1).Build().StatementAndBindings()
+		stmt, _ := NewSelectColumnBranchStep(root(dialect.DialectMySQL), c1).From(t1).LimitAndOffset(10, 1).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1` FROM `t1` LIMIT 10 OFFSET 1", stmt)
 	})
 }

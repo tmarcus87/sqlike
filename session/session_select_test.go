@@ -1,9 +1,10 @@
-package sqlike
+package session
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmarcus87/sqlike/dialect"
 	"github.com/tmarcus87/sqlike/model"
@@ -27,7 +28,7 @@ func TestFetchMap(t *testing.T) {
 	}
 	defer db.Close()
 
-	s := &basicSession{db: db, ctx: context.Background()}
+	s := NewSession(context.Background(), db, dialect.DialectMySQL, false)
 
 	asserts := assert.New(t)
 
@@ -53,7 +54,7 @@ func TestFetchInto(t *testing.T) {
 	}
 	defer db.Close()
 
-	s := &basicSession{db: db, ctx: context.Background()}
+	s := NewSession(context.Background(), db, dialect.DialectMySQL, false)
 
 	asserts := assert.New(t)
 
@@ -102,7 +103,7 @@ func TestFetchOneInto(t *testing.T) {
 	}
 	defer db.Close()
 
-	s := &basicSession{db: db, ctx: context.Background()}
+	s := NewSession(context.Background(), db, dialect.DialectMySQL, false)
 
 	asserts := assert.New(t)
 

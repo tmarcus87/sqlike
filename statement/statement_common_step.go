@@ -1,4 +1,4 @@
-package sqlike
+package statement
 
 import (
 	"context"
@@ -42,6 +42,19 @@ func (s *RootStep) Query(stmt string, args ...interface{}) (*sql.Rows, error) {
 
 func (s *RootStep) Execute(stmt string, args ...interface{}) (sql.Result, error) {
 	return s.e(s.ctx, stmt, args...)
+}
+
+func NewRootStep(
+	ctx context.Context,
+	dialectStatement map[dialect.StatementType]string,
+	q func(context.Context, string, ...interface{}) (*sql.Rows, error),
+	e func(context.Context, string, ...interface{}) (sql.Result, error)) *RootStep {
+	return &RootStep{
+		ctx:              ctx,
+		q:                q,
+		e:                e,
+		dialectStatement: dialectStatement,
+	}
 }
 
 type InstantStep struct {
