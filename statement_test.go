@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/tmarcus87/sqlike/dialect"
 	"testing"
 )
 
@@ -19,7 +20,7 @@ func TestFetchMap(t *testing.T) {
 	authorIdColumn := &BasicColumn{table: authorTable, name: "id"}
 	authorNameColumn := &BasicColumn{table: authorTable, name: "name"}
 
-	db, err := sql.Open(DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
+	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
 		panic(err)
 	}
@@ -45,7 +46,7 @@ func TestFetchInto(t *testing.T) {
 	authorIdColumn := &BasicColumn{table: authorTable, name: "id"}
 	authorNameColumn := &BasicColumn{table: authorTable, name: "name"}
 
-	db, err := sql.Open(DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
+	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +95,7 @@ func TestFetchOneInto(t *testing.T) {
 	authorIdColumn := &BasicColumn{table: authorTable, name: "id"}
 	authorNameColumn := &BasicColumn{table: authorTable, name: "name"}
 
-	db, err := sql.Open(DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
+	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
 		panic(err)
 	}

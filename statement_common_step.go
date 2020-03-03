@@ -3,10 +3,11 @@ package sqlike
 import (
 	"context"
 	"database/sql"
+	"github.com/tmarcus87/sqlike/dialect"
 )
 
 type Queryer interface {
-	DialectStatement(st StatementType) string
+	DialectStatement(st dialect.StatementType) string
 	Context() context.Context
 	Query(string, ...interface{}) (*sql.Rows, error)
 	Execute(string, ...interface{}) (sql.Result, error)
@@ -16,10 +17,10 @@ type RootStep struct {
 	ctx              context.Context
 	q                func(context.Context, string, ...interface{}) (*sql.Rows, error)
 	e                func(context.Context, string, ...interface{}) (sql.Result, error)
-	dialectStatement map[StatementType]string
+	dialectStatement map[dialect.StatementType]string
 }
 
-func (s *RootStep) DialectStatement(st StatementType) string {
+func (s *RootStep) DialectStatement(st dialect.StatementType) string {
 	return s.dialectStatement[st]
 }
 

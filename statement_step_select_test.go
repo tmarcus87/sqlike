@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
+	"github.com/tmarcus87/sqlike/dialect"
 	"testing"
 )
 
 func TestBuildExplain(t *testing.T) {
 	asserts := assert.New(t)
 
-	s := &basicSession{dialect: DialectMySQL, db: &sql.DB{}}
+	s := &basicSession{dialect: dialect.DialectMySQL, db: &sql.DB{}}
 
 	{
 		stmt, _ := s.Explain().SelectOne().Build().StatementAndBindings()
@@ -34,11 +35,11 @@ func TestBuildSelectOne(t *testing.T) {
 		expect  string
 	}{
 		{
-			dialect: DialectMySQL,
+			dialect: dialect.DialectMySQL,
 			expect:  "SELECT 1 FROM dual",
 		},
 		{
-			dialect: DialectSqlite3,
+			dialect: dialect.DialectSqlite3,
 			expect:  "SELECT 1",
 		},
 	}

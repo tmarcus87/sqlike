@@ -1,4 +1,4 @@
-package sqlike
+package dialect
 
 const DialectSqlite3 = "seqlite3"
 

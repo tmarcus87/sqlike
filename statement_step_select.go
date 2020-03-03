@@ -2,6 +2,7 @@ package sqlike
 
 import (
 	"fmt"
+	"github.com/tmarcus87/sqlike/dialect"
 	"strings"
 )
 
@@ -15,6 +16,18 @@ func (s *SelectExplainStep) Parent() StatementAcceptor {
 
 func (s *SelectExplainStep) Accept(stmt *StatementImpl) {
 	stmt.Statement += "EXPLAIN "
+}
+
+type SelectOneStep struct {
+	parent StatementAcceptor
+}
+
+func (s *SelectOneStep) Parent() StatementAcceptor {
+	return s.parent
+}
+
+func (s *SelectOneStep) Accept(stmt *StatementImpl) {
+	stmt.Statement += getQueryer(s.parent).DialectStatement(dialect.StatementTypeSelectOne)
 }
 
 type SelectColumnStep struct {

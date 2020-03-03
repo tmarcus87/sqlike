@@ -3,6 +3,7 @@ package sqlike
 import (
 	"context"
 	"database/sql"
+	"github.com/tmarcus87/sqlike/dialect"
 )
 
 type Session interface {
@@ -50,6 +51,6 @@ func (session *basicSession) NewRootStep() *RootStep {
 		ctx:              session.ctx,
 		q:                q,
 		e:                e,
-		dialectStatement: sqlDialect[session.dialect],
+		dialectStatement: dialect.GetDialectStatements(session.dialect),
 	}
 }

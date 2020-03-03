@@ -1,4 +1,4 @@
-package sqlike
+package dialect
 
 type StatementType int
 
@@ -8,3 +8,7 @@ const (
 )
 
 var sqlDialect = make(map[string]map[StatementType]string)
+
+func GetDialectStatements(dialect string) map[StatementType]string {
+	return sqlDialect[dialect]
+}

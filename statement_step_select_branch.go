@@ -17,9 +17,8 @@ func (s *ExplainSelectBranchStepImpl) Accept(*StatementImpl) {}
 
 func (s *ExplainSelectBranchStepImpl) SelectOne() SelectOneBranchStep {
 	return &SelectOneBranchStepImpl{
-		parent: &InstantStep{
-			parent:    s,
-			statement: getQueryer(s.parent).DialectStatement(StatementTypeSelectOne),
+		parent: &SelectOneStep{
+			parent: s,
 		},
 	}
 }
@@ -38,7 +37,7 @@ type SelectOneBranchStep interface {
 }
 
 type SelectOneBranchStepImpl struct {
-	parent *InstantStep
+	parent StatementAcceptor
 }
 
 func (s *SelectOneBranchStepImpl) Parent() StatementAcceptor {
