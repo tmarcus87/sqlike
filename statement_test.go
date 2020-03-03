@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmarcus87/sqlike/dialect"
+	"github.com/tmarcus87/sqlike/model"
 	"testing"
 )
 
@@ -15,10 +16,10 @@ type Author struct {
 }
 
 func TestFetchMap(t *testing.T) {
-	authorTable := &BasicTable{name: "author"}
+	authorTable := &model.BasicTable{Name: "author"}
 
-	authorIdColumn := &BasicColumn{table: authorTable, name: "id"}
-	authorNameColumn := &BasicColumn{table: authorTable, name: "name"}
+	authorIdColumn := &model.BasicColumn{Table: authorTable, Name: "id"}
+	authorNameColumn := &model.BasicColumn{Table: authorTable, Name: "name"}
 
 	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
@@ -41,10 +42,10 @@ func TestFetchMap(t *testing.T) {
 }
 
 func TestFetchInto(t *testing.T) {
-	authorTable := &BasicTable{name: "author"}
+	authorTable := &model.BasicTable{Name: "author"}
 
-	authorIdColumn := &BasicColumn{table: authorTable, name: "id"}
-	authorNameColumn := &BasicColumn{table: authorTable, name: "name"}
+	authorIdColumn := &model.BasicColumn{Table: authorTable, Name: "id"}
+	authorNameColumn := &model.BasicColumn{Table: authorTable, Name: "name"}
 
 	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
@@ -90,10 +91,10 @@ func TestFetchInto(t *testing.T) {
 }
 
 func TestFetchOneInto(t *testing.T) {
-	authorTable := &BasicTable{name: "author"}
+	authorTable := &model.BasicTable{Name: "author"}
 
-	authorIdColumn := &BasicColumn{table: authorTable, name: "id"}
-	authorNameColumn := &BasicColumn{table: authorTable, name: "name"}
+	authorIdColumn := &model.BasicColumn{Table: authorTable, Name: "id"}
+	authorNameColumn := &model.BasicColumn{Table: authorTable, Name: "name"}
 
 	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {

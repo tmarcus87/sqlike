@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 	"github.com/tmarcus87/sqlike/dialect"
+	"github.com/tmarcus87/sqlike/model"
 	"testing"
 )
 
@@ -19,10 +20,10 @@ func TestBuildExplain(t *testing.T) {
 	}
 
 	{
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		stmt, _ := s.Explain().Select(c1, c2).From(t1).Build().StatementAndBindings()
 		asserts.Equal("EXPLAIN SELECT `t1`.`c1`, `t1`.`c2` FROM `t1`", stmt)
@@ -59,10 +60,10 @@ func TestBuildSelectFrom(t *testing.T) {
 	asserts := assert.New(t)
 
 	t.Run("WithoutAs", func(t *testing.T) {
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		s := &basicSession{db: &sql.DB{}}
 		stmt, bindings := s.Select(c1, c2).From(t1).Build().StatementAndBindings()
@@ -73,10 +74,10 @@ func TestBuildSelectFrom(t *testing.T) {
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		s := &basicSession{db: &sql.DB{}}
 		stmt, bindings := s.Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).Build().StatementAndBindings()
@@ -89,10 +90,10 @@ func TestBuildSelectFrom(t *testing.T) {
 func TestBuildSelectFromWithOneWhere(t *testing.T) {
 	asserts := assert.New(t)
 
-	t1 := &BasicTable{name: "t1"}
+	t1 := &model.BasicTable{Name: "t1"}
 
-	c1 := &BasicColumn{table: t1, name: "c1"}
-	c2 := &BasicColumn{table: t1, name: "c2"}
+	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 	s := &basicSession{db: &sql.DB{}}
 	stmt, bindings := s.Select(c1, c2).From(t1).Where(c1.Eq(1)).Build().StatementAndBindings()
@@ -104,10 +105,10 @@ func TestBuildSelectFromWithOneWhere(t *testing.T) {
 func TestBuildSelectFromWithTwoWhere(t *testing.T) {
 	asserts := assert.New(t)
 
-	t1 := &BasicTable{name: "t1"}
+	t1 := &model.BasicTable{Name: "t1"}
 
-	c1 := &BasicColumn{table: t1, name: "c1"}
-	c2 := &BasicColumn{table: t1, name: "c2"}
+	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 	t.Run("And", func(t *testing.T) {
 		s := &basicSession{db: &sql.DB{}}
@@ -132,13 +133,13 @@ func TestBuildSelectFromJoin(t *testing.T) {
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
-		t2 := &BasicTable{name: "t2"}
+		t1 := &model.BasicTable{Name: "t1"}
+		t2 := &model.BasicTable{Name: "t2"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
-		c3 := &BasicColumn{table: t2, name: "c3"}
-		c4 := &BasicColumn{table: t2, name: "c4"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+		c3 := &model.BasicColumn{Table: t2, Name: "c3"}
+		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
 
 		s := &basicSession{db: &sql.DB{}}
 
@@ -153,13 +154,13 @@ func TestBuildSelectFromJoin(t *testing.T) {
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
-		t2 := &BasicTable{name: "t2"}
+		t1 := &model.BasicTable{Name: "t1"}
+		t2 := &model.BasicTable{Name: "t2"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
-		c3 := &BasicColumn{table: t2, name: "c3"}
-		c4 := &BasicColumn{table: t2, name: "c4"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+		c3 := &model.BasicColumn{Table: t2, Name: "c3"}
+		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
 
 		s := &basicSession{db: &sql.DB{}}
 
@@ -184,28 +185,28 @@ func TestBuildSelectFromGroupBy(t *testing.T) {
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		s := &basicSession{db: &sql.DB{}}
 
-		stmt, _ := s.Select(c1, Count(c2)).From(t1).GroupBy(c1).Build().StatementAndBindings()
+		stmt, _ := s.Select(c1, model.Count(c2)).From(t1).GroupBy(c1).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1`.`c1`, COUNT(`t1`.`c2`) FROM `t1` GROUP BY `t1`.`c1`", stmt)
 	})
 
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		s := &basicSession{db: &sql.DB{}}
 
-		stmt, _ := s.Select(c1.SQLikeAs("c1alt"), CountAs(c2, "cnt")).From(t1.SQLikeAs("t1alt")).GroupBy(c1).Build().StatementAndBindings()
+		stmt, _ := s.Select(c1.SQLikeAs("c1alt"), model.CountAs(c2, "cnt")).From(t1.SQLikeAs("t1alt")).GroupBy(c1).Build().StatementAndBindings()
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, COUNT(`t1alt`.`c2`) AS `cnt` FROM `t1` AS `t1alt` GROUP BY `t1alt`.`c1`", stmt)
 	})
 }
@@ -214,10 +215,10 @@ func TestBuildSelectFromOrderBy(t *testing.T) {
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		s := &basicSession{db: &sql.DB{}}
 
@@ -228,10 +229,10 @@ func TestBuildSelectFromOrderBy(t *testing.T) {
 	t.Run("WithAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
-		c2 := &BasicColumn{table: t1, name: "c2"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		s := &basicSession{db: &sql.DB{}}
 
@@ -246,9 +247,9 @@ func TestBuildSelectFromLimitAndOffset(t *testing.T) {
 	t.Run("Limit", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 
 		s := &basicSession{db: &sql.DB{}}
 
@@ -259,9 +260,9 @@ func TestBuildSelectFromLimitAndOffset(t *testing.T) {
 	t.Run("LimitAndOffset", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &BasicTable{name: "t1"}
+		t1 := &model.BasicTable{Name: "t1"}
 
-		c1 := &BasicColumn{table: t1, name: "c1"}
+		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 
 		s := &basicSession{db: &sql.DB{}}
 

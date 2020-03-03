@@ -3,6 +3,7 @@ package sqlike
 import (
 	"fmt"
 	"github.com/tmarcus87/sqlike/dialect"
+	"github.com/tmarcus87/sqlike/model"
 	"strings"
 )
 
@@ -32,7 +33,7 @@ func (s *SelectOneStep) Accept(stmt *StatementImpl) {
 
 type SelectColumnStep struct {
 	parent  StatementAcceptor
-	columns []Column
+	columns []model.Column
 }
 
 func (s *SelectColumnStep) Parent() StatementAcceptor {
@@ -42,7 +43,7 @@ func (s *SelectColumnStep) Parent() StatementAcceptor {
 func (s *SelectColumnStep) Accept(stmt *StatementImpl) {
 	cols := make([]string, 0)
 	for _, column := range s.columns {
-		s := ColumnAsStatement(column)
+		s := model.ColumnAsStatement(column)
 		if column.SQLikeSelectModFmt() != "" {
 			s = fmt.Sprintf(column.SQLikeSelectModFmt(), s)
 		}
@@ -53,7 +54,7 @@ func (s *SelectColumnStep) Accept(stmt *StatementImpl) {
 
 type SelectFromStep struct {
 	parent StatementAcceptor
-	table  Table
+	table  model.Table
 }
 
 func (s *SelectFromStep) Parent() StatementAcceptor {
@@ -61,13 +62,13 @@ func (s *SelectFromStep) Parent() StatementAcceptor {
 }
 
 func (s *SelectFromStep) Accept(stmt *StatementImpl) {
-	stmt.Statement += fmt.Sprintf("FROM %s ", TableAsStatement(s.table))
+	stmt.Statement += fmt.Sprintf("FROM %s ", model.TableAsStatement(s.table))
 }
 
 type SelectFromJoinStep struct {
 	parent     StatementAcceptor
-	table      Table
-	conditions []Condition
+	table      model.Table
+	conditions []model.Condition
 	joinType   string
 }
 
@@ -79,12 +80,12 @@ func (s *SelectFromJoinStep) Accept(stmt *StatementImpl) {
 	var onStmt string
 	joinCondition(s.conditions, &onStmt, &stmt.Bindings, "AND")
 
-	stmt.Statement += fmt.Sprintf("%s %s ON %s ", s.joinType, TableAsStatement(s.table), onStmt)
+	stmt.Statement += fmt.Sprintf("%s %s ON %s ", s.joinType, model.TableAsStatement(s.table), onStmt)
 }
 
 type SelectGroupByStep struct {
 	parent  StatementAcceptor
-	columns []Column
+	columns []model.Column
 }
 
 func (s *SelectGroupByStep) Parent() StatementAcceptor {
@@ -98,7 +99,7 @@ func (s *SelectGroupByStep) Accept(stmt *StatementImpl) {
 
 	cols := make([]string, 0)
 	for _, column := range s.columns {
-		cols = append(cols, fmt.Sprintf("`%s`.`%s`", TableName(column.SQLikeTable()), column.SQLikeColumnName()))
+		cols = append(cols, fmt.Sprintf("`%s`.`%s`", model.TableName(column.SQLikeTable()), column.SQLikeColumnName()))
 	}
 
 	stmt.Statement += fmt.Sprintf("GROUP BY %s ", strings.Join(cols, ", "))
@@ -109,7 +110,7 @@ const (
 	OrderDesc = "DESC"
 )
 
-func Order(column Column, order string) *SortOrder {
+func Order(column model.Column, order string) *SortOrder {
 	return &SortOrder{
 		column: column,
 		order:  order,
@@ -117,7 +118,7 @@ func Order(column Column, order string) *SortOrder {
 }
 
 type SortOrder struct {
-	column Column
+	column model.Column
 	order  string
 }
 
@@ -139,7 +140,7 @@ func (s *SelectOrderByStep) Accept(stmt *StatementImpl) {
 	for _, order := range s.orders {
 		orders =
 			append(orders, fmt.Sprintf("`%s`.`%s` %s",
-				TableName(order.column.SQLikeTable()), ColumnName(order.column), order.order))
+				model.TableName(order.column.SQLikeTable()), model.ColumnName(order.column), order.order))
 	}
 
 	stmt.Statement += fmt.Sprintf("ORDER BY %s ", strings.Join(orders, ", "))

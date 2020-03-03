@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"github.com/tmarcus87/sqlike/dialect"
+	"github.com/tmarcus87/sqlike/model"
 )
 
 type Session interface {
 	Explain() ExplainSelectBranchStep
 	SelectOne() SelectOneBranchStep
-	Select(columns ...Column) SelectColumnBranchStep
+	Select(columns ...model.Column) SelectColumnBranchStep
 }
 
 type basicSession struct {

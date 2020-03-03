@@ -1,36 +1,39 @@
 package sqlike
 
-import "strings"
+import (
+	"github.com/tmarcus87/sqlike/model"
+	"strings"
+)
 
 type AndCondition struct {
-	conditions []Condition
+	conditions []model.Condition
 }
 
 func (c *AndCondition) Apply(stmt *string, bindings *[]interface{}) {
 	joinCondition(c.conditions, stmt, bindings, "AND")
 }
 
-func And(conditions ...Condition) Condition {
+func And(conditions ...model.Condition) model.Condition {
 	return &AndCondition{
 		conditions: conditions,
 	}
 }
 
 type OrCondition struct {
-	conditions []Condition
+	conditions []model.Condition
 }
 
 func (c *OrCondition) Apply(stmt *string, bindings *[]interface{}) {
 	joinCondition(c.conditions, stmt, bindings, "OR")
 }
 
-func Or(conditions ...Condition) Condition {
+func Or(conditions ...model.Condition) model.Condition {
 	return &OrCondition{
 		conditions: conditions,
 	}
 }
 
-func joinCondition(conditions []Condition, stmt *string, bindings *[]interface{}, operator string) {
+func joinCondition(conditions []model.Condition, stmt *string, bindings *[]interface{}, operator string) {
 	statements := make([]string, 0)
 	b := make([]interface{}, 0)
 

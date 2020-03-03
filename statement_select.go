@@ -1,5 +1,7 @@
 package sqlike
 
+import "github.com/tmarcus87/sqlike/model"
+
 func (session *basicSession) Explain() ExplainSelectBranchStep {
 	return &ExplainSelectBranchStepImpl{
 		parent: &SelectExplainStep{
@@ -16,7 +18,7 @@ func (session *basicSession) SelectOne() SelectOneBranchStep {
 	}
 }
 
-func (session *basicSession) Select(columns ...Column) SelectColumnBranchStep {
+func (session *basicSession) Select(columns ...model.Column) SelectColumnBranchStep {
 	return &SelectColumnBranchStepImpl{
 		parent: &SelectColumnStep{
 			parent:  session.NewRootStep(),

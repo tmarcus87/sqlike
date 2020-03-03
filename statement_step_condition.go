@@ -1,8 +1,10 @@
 package sqlike
 
+import "github.com/tmarcus87/sqlike/model"
+
 type WhereStep struct {
 	parent     StatementAcceptor
-	conditions []Condition
+	conditions []model.Condition
 }
 
 func (s *WhereStep) Parent() StatementAcceptor {

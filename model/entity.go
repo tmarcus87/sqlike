@@ -1,23 +1,14 @@
-package sqlike
+package model
 
 import "fmt"
 
-type Table interface {
-	// SQLikeTableName テーブル名を返します
-	SQLikeTableName() string
-	// SQLikeTableAliasName エイリアス名を返します
-	SQLikeTableAlias() string
-	// SQLikeAs テーブルにエイリアスを設定します
-	SQLikeAs(alias string) Table
-}
-
 type BasicTable struct {
-	name  string
+	Name  string
 	alias string
 }
 
 func (t *BasicTable) SQLikeTableName() string {
-	return t.name
+	return t.Name
 }
 
 func (t *BasicTable) SQLikeTableAlias() string {
@@ -29,32 +20,19 @@ func (t *BasicTable) SQLikeAs(alias string) Table {
 	return t
 }
 
-type Column interface {
-	// SQLikeTable
-	SQLikeTable() Table
-	// SQLikeColumnOriginalName
-	SQLikeColumnName() string
-	// SQLikeColumnAliasName
-	SQLikeColumnAlias() string
-	// SQLikeAs
-	SQLikeAs(alias string) Column
-	// SQLikeModifier
-	SQLikeSelectModFmt() string
-}
-
 type BasicColumn struct {
-	table        Table
-	name         string
+	Table        Table
+	Name         string
 	alias        string
 	selectModFmt string
 }
 
 func (c *BasicColumn) SQLikeTable() Table {
-	return c.table
+	return c.Table
 }
 
 func (c *BasicColumn) SQLikeColumnName() string {
-	return c.name
+	return c.Name
 }
 
 func (c *BasicColumn) SQLikeColumnAlias() string {
@@ -82,10 +60,6 @@ func (c *BasicColumn) EqCol(column Column) Condition {
 		left:  c,
 		right: column,
 	}
-}
-
-type Condition interface {
-	Apply(stmt *string, bindings *[]interface{})
 }
 
 type BasicEqCondition struct {

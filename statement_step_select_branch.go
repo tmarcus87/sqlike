@@ -1,8 +1,10 @@
 package sqlike
 
+import "github.com/tmarcus87/sqlike/model"
+
 type ExplainSelectBranchStep interface {
 	SelectOne() SelectOneBranchStep
-	Select(columns ...Column) SelectColumnBranchStep
+	Select(columns ...model.Column) SelectColumnBranchStep
 }
 
 type ExplainSelectBranchStepImpl struct {
@@ -23,7 +25,7 @@ func (s *ExplainSelectBranchStepImpl) SelectOne() SelectOneBranchStep {
 	}
 }
 
-func (s *ExplainSelectBranchStepImpl) Select(columns ...Column) SelectColumnBranchStep {
+func (s *ExplainSelectBranchStepImpl) Select(columns ...model.Column) SelectColumnBranchStep {
 	return &SelectColumnBranchStepImpl{
 		parent: &SelectColumnStep{
 			parent:  s,
@@ -51,7 +53,7 @@ func (s *SelectOneBranchStepImpl) Build() Statement {
 }
 
 type SelectColumnBranchStep interface {
-	From(table Table) SelectFromBranchStep
+	From(table model.Table) SelectFromBranchStep
 }
 
 type SelectColumnBranchStepImpl struct {
@@ -64,7 +66,7 @@ func (s *SelectColumnBranchStepImpl) Parent() StatementAcceptor {
 
 func (s *SelectColumnBranchStepImpl) Accept(*StatementImpl) {}
 
-func (s *SelectColumnBranchStepImpl) From(table Table) SelectFromBranchStep {
+func (s *SelectColumnBranchStepImpl) From(table model.Table) SelectFromBranchStep {
 	return &SelectFromBranchStepImpl{
 		parent: &SelectFromStep{
 			parent: s,
@@ -75,11 +77,11 @@ func (s *SelectColumnBranchStepImpl) From(table Table) SelectFromBranchStep {
 
 type SelectFromBranchStep interface {
 	Build() Statement
-	LeftOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep
-	RightOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep
-	InnerJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep
-	Where(conditions ...Condition) SelectFromWhereBranchStep
-	GroupBy(columns ...Column) SelectFromGroupByBranchStep
+	LeftOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
+	RightOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
+	InnerJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
+	Where(conditions ...model.Condition) SelectFromWhereBranchStep
+	GroupBy(columns ...model.Column) SelectFromGroupByBranchStep
 	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
@@ -98,7 +100,7 @@ func (s *SelectFromBranchStepImpl) Build() Statement {
 	return buildStatement(s.parent)
 }
 
-func (s *SelectFromBranchStepImpl) LeftOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep {
+func (s *SelectFromBranchStepImpl) LeftOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
 	return &SelectFromJoinBranchStepImpl{
 		parent: &SelectFromJoinStep{
 			parent:     s,
@@ -109,7 +111,7 @@ func (s *SelectFromBranchStepImpl) LeftOuterJoin(table Table, conditions ...Cond
 	}
 }
 
-func (s *SelectFromBranchStepImpl) RightOuterJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep {
+func (s *SelectFromBranchStepImpl) RightOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
 	return &SelectFromJoinBranchStepImpl{
 		parent: &SelectFromJoinStep{
 			parent:     s,
@@ -120,7 +122,7 @@ func (s *SelectFromBranchStepImpl) RightOuterJoin(table Table, conditions ...Con
 	}
 }
 
-func (s *SelectFromBranchStepImpl) InnerJoin(table Table, conditions ...Condition) SelectFromJoinBranchStep {
+func (s *SelectFromBranchStepImpl) InnerJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
 	return &SelectFromJoinBranchStepImpl{
 		parent: &SelectFromJoinStep{
 			parent:     s,
@@ -131,7 +133,7 @@ func (s *SelectFromBranchStepImpl) InnerJoin(table Table, conditions ...Conditio
 	}
 }
 
-func (s *SelectFromBranchStepImpl) Where(conditions ...Condition) SelectFromWhereBranchStep {
+func (s *SelectFromBranchStepImpl) Where(conditions ...model.Condition) SelectFromWhereBranchStep {
 	return &SelectFromWhereBranchStepImpl{
 		parent: &WhereStep{
 			parent:     s,
@@ -140,7 +142,7 @@ func (s *SelectFromBranchStepImpl) Where(conditions ...Condition) SelectFromWher
 	}
 }
 
-func (s *SelectFromBranchStepImpl) GroupBy(columns ...Column) SelectFromGroupByBranchStep {
+func (s *SelectFromBranchStepImpl) GroupBy(columns ...model.Column) SelectFromGroupByBranchStep {
 	return &SelectFromGroupByBranchStepImpl{
 		parent: &SelectGroupByStep{
 			parent:  s,
@@ -170,8 +172,8 @@ func (s *SelectFromBranchStepImpl) LimitAndOffset(limit int32, offset int64) Sel
 
 type SelectFromJoinBranchStep interface {
 	Build() Statement
-	Where(conditions ...Condition) SelectFromWhereBranchStep
-	GroupBy(columns ...Column) SelectFromGroupByBranchStep
+	Where(conditions ...model.Condition) SelectFromWhereBranchStep
+	GroupBy(columns ...model.Column) SelectFromGroupByBranchStep
 	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
@@ -190,7 +192,7 @@ func (s *SelectFromJoinBranchStepImpl) Build() Statement {
 	return buildStatement(s.parent)
 }
 
-func (s *SelectFromJoinBranchStepImpl) Where(conditions ...Condition) SelectFromWhereBranchStep {
+func (s *SelectFromJoinBranchStepImpl) Where(conditions ...model.Condition) SelectFromWhereBranchStep {
 	return &SelectFromWhereBranchStepImpl{
 		parent: &WhereStep{
 			parent:     s,
@@ -199,7 +201,7 @@ func (s *SelectFromJoinBranchStepImpl) Where(conditions ...Condition) SelectFrom
 	}
 }
 
-func (s *SelectFromJoinBranchStepImpl) GroupBy(columns ...Column) SelectFromGroupByBranchStep {
+func (s *SelectFromJoinBranchStepImpl) GroupBy(columns ...model.Column) SelectFromGroupByBranchStep {
 	return &SelectFromGroupByBranchStepImpl{
 		parent: &SelectGroupByStep{
 			parent:  s,
@@ -229,7 +231,7 @@ func (s *SelectFromJoinBranchStepImpl) LimitAndOffset(limit int32, offset int64)
 
 type SelectFromWhereBranchStep interface {
 	Build() Statement
-	GroupBy(columns ...Column) SelectFromGroupByBranchStep
+	GroupBy(columns ...model.Column) SelectFromGroupByBranchStep
 	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
@@ -248,7 +250,7 @@ func (s *SelectFromWhereBranchStepImpl) Build() Statement {
 	return buildStatement(s.parent)
 }
 
-func (s *SelectFromWhereBranchStepImpl) GroupBy(columns ...Column) SelectFromGroupByBranchStep {
+func (s *SelectFromWhereBranchStepImpl) GroupBy(columns ...model.Column) SelectFromGroupByBranchStep {
 	return &SelectFromGroupByBranchStepImpl{
 		parent: &SelectGroupByStep{
 			parent:  s,
