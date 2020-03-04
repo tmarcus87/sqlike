@@ -20,8 +20,9 @@ func (s *InsertIntoStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *InsertIntoStep) Accept(stmt *StatementImpl) {
+func (s *InsertIntoStep) Accept(stmt *StatementImpl) error {
 	stmt.Statement += fmt.Sprintf("INSERT INTO `%s` ", s.table.SQLikeTableName())
+	return nil
 }
 
 type InsertIntoColumnStep struct {
@@ -33,13 +34,14 @@ func (s *InsertIntoColumnStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *InsertIntoColumnStep) Accept(stmt *StatementImpl) {
+func (s *InsertIntoColumnStep) Accept(stmt *StatementImpl) error {
 	cols := make([]string, 0)
 	for _, column := range s.columns {
 		cols = append(cols, fmt.Sprintf("`%s`", column.SQLikeColumnName()))
 	}
 	stmt.Statement += fmt.Sprintf("(%s) ", strings.Join(cols, ", "))
 	stmt.State[StateInsertStmtColumns] = cols
+	return nil
 }
 
 type InsertIntoValuesStep struct {
@@ -51,7 +53,7 @@ func (s *InsertIntoValuesStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *InsertIntoValuesStep) Accept(stmt *StatementImpl) {
+func (s *InsertIntoValuesStep) Accept(stmt *StatementImpl) error {
 	if !strings.Contains(stmt.Statement, "VALUES") {
 		stmt.Statement += "VALUES "
 	}
@@ -68,6 +70,7 @@ func (s *InsertIntoValuesStep) Accept(stmt *StatementImpl) {
 	stmt.Statement += fmt.Sprintf("(%s)", strings.Join(vs, ", "))
 	stmt.Bindings = append(stmt.Bindings, s.values...)
 	stmt.State[StateInsertStmtHasValue] = struct{}{}
+	return nil
 }
 
 type InsertIntoValueStructStep struct {
@@ -79,6 +82,6 @@ func (s *InsertIntoValueStructStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) {
+func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) error {
 	panic("implement me")
 }

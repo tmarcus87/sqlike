@@ -15,8 +15,9 @@ func (s *SelectExplainStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectExplainStep) Accept(stmt *StatementImpl) {
+func (s *SelectExplainStep) Accept(stmt *StatementImpl) error {
 	stmt.Statement += "EXPLAIN "
+	return nil
 }
 
 type SelectOneStep struct {
@@ -27,8 +28,18 @@ func (s *SelectOneStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectOneStep) Accept(stmt *StatementImpl) {
-	stmt.Statement += getQueryer(s.parent).DialectStatement(dialect.StatementTypeSelectOne)
+func (s *SelectOneStep) Accept(stmt *StatementImpl) error {
+	q, err := getQueryer(s.parent)
+	if err != nil {
+		return err
+	}
+
+	st, err := q.DialectStatement(dialect.StatementTypeSelectOne)
+	if err != nil {
+		return err
+	}
+	stmt.Statement += st
+	return nil
 }
 
 type SelectColumnStep struct {
@@ -40,7 +51,7 @@ func (s *SelectColumnStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectColumnStep) Accept(stmt *StatementImpl) {
+func (s *SelectColumnStep) Accept(stmt *StatementImpl) error {
 	cols := make([]string, 0)
 	for _, column := range s.columns {
 		s := model.ColumnAsStatement(column)
@@ -50,6 +61,7 @@ func (s *SelectColumnStep) Accept(stmt *StatementImpl) {
 		cols = append(cols, s)
 	}
 	stmt.Statement += fmt.Sprintf("SELECT %s ", strings.Join(cols, ", "))
+	return nil
 }
 
 type SelectFromStep struct {
@@ -61,8 +73,9 @@ func (s *SelectFromStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectFromStep) Accept(stmt *StatementImpl) {
+func (s *SelectFromStep) Accept(stmt *StatementImpl) error {
 	stmt.Statement += fmt.Sprintf("FROM %s ", model.TableAsStatement(s.table))
+	return nil
 }
 
 type SelectFromJoinStep struct {
@@ -76,11 +89,12 @@ func (s *SelectFromJoinStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectFromJoinStep) Accept(stmt *StatementImpl) {
+func (s *SelectFromJoinStep) Accept(stmt *StatementImpl) error {
 	var onStmt string
 	joinCondition(s.conditions, &onStmt, &stmt.Bindings, "AND")
 
 	stmt.Statement += fmt.Sprintf("%s %s ON %s ", s.joinType, model.TableAsStatement(s.table), onStmt)
+	return nil
 }
 
 type SelectGroupByStep struct {
@@ -92,9 +106,9 @@ func (s *SelectGroupByStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectGroupByStep) Accept(stmt *StatementImpl) {
+func (s *SelectGroupByStep) Accept(stmt *StatementImpl) error {
 	if len(s.columns) == 0 {
-		return
+		return nil
 	}
 
 	cols := make([]string, 0)
@@ -103,6 +117,7 @@ func (s *SelectGroupByStep) Accept(stmt *StatementImpl) {
 	}
 
 	stmt.Statement += fmt.Sprintf("GROUP BY %s ", strings.Join(cols, ", "))
+	return nil
 }
 
 const (
@@ -131,9 +146,9 @@ func (s *SelectOrderByStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectOrderByStep) Accept(stmt *StatementImpl) {
+func (s *SelectOrderByStep) Accept(stmt *StatementImpl) error {
 	if len(s.orders) == 0 {
-		return
+		return nil
 	}
 
 	orders := make([]string, 0)
@@ -144,6 +159,7 @@ func (s *SelectOrderByStep) Accept(stmt *StatementImpl) {
 	}
 
 	stmt.Statement += fmt.Sprintf("ORDER BY %s ", strings.Join(orders, ", "))
+	return nil
 }
 
 type SelectLimitOffsetStep struct {
@@ -156,9 +172,10 @@ func (s *SelectLimitOffsetStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *SelectLimitOffsetStep) Accept(stmt *StatementImpl) {
+func (s *SelectLimitOffsetStep) Accept(stmt *StatementImpl) error {
 	stmt.Statement += fmt.Sprintf("LIMIT %d ", s.limit)
 	if s.offset > 0 {
 		stmt.Statement += fmt.Sprintf("OFFSET %d ", s.offset)
 	}
+	return nil
 }

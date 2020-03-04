@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	ErrorNoSteps          = errors.New("no steps")
 	ErrorMustBeASlice     = errors.New("must be a slice")
 	ErrorMustBeAPtr       = errors.New("must be a pointer")
 	ErrorMustBeANonNilPtr = errors.New("must be a non-nil pointer")
@@ -21,11 +22,15 @@ type StatementAcceptor interface {
 	Parent() StatementAcceptor
 
 	// Accept Statementを受け取ってクエリを組み立てます
-	Accept(stmt *StatementImpl)
+	Accept(stmt *StatementImpl) error
+}
+
+func NewStatementBuilder(s StatementAcceptor) Statement {
+	return &StatementImpl{sa: s}
 }
 
 type Statement interface {
-	StatementAndBindings() (string, []interface{})
+	StatementAndBindings() (string, []interface{}, error)
 	FetchMap() ([]map[string]string, error)
 	FetchInto(p interface{}) error
 	FetchOneInto(p interface{}) (bool, error)
@@ -33,6 +38,9 @@ type Statement interface {
 }
 
 type StatementImpl struct {
+	sa    StatementAcceptor
+	built bool
+
 	Statement string
 	Bindings  []interface{}
 	State     map[string]interface{}
@@ -41,6 +49,9 @@ type StatementImpl struct {
 }
 
 func (s *StatementImpl) FetchMap() ([]map[string]string, error) {
+	if err := s.buildStatement(); err != nil {
+		return nil, fmt.Errorf("failed to build sql : %w", err)
+	}
 
 	rows, err := s.queryer.Query(s.Statement, s.Bindings...)
 	if err != nil {
@@ -83,6 +94,10 @@ func (s *StatementImpl) FetchMap() ([]map[string]string, error) {
 }
 
 func (s *StatementImpl) FetchInto(p interface{}) error {
+	if err := s.buildStatement(); err != nil {
+		return fmt.Errorf("failed to build sql : %w", err)
+	}
+
 	var isPtrElement bool
 
 	sliceValue := reflect.ValueOf(p)
@@ -142,6 +157,10 @@ func (s *StatementImpl) FetchInto(p interface{}) error {
 }
 
 func (s *StatementImpl) FetchOneInto(p interface{}) (bool, error) {
+	if err := s.buildStatement(); err != nil {
+		return false, fmt.Errorf("failed to build sql : %w", err)
+	}
+
 	// 入力型をチェック
 	v := reflect.ValueOf(p)
 	if v.Kind() != reflect.Ptr {
@@ -217,35 +236,46 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 }
 
 func (s *StatementImpl) Execute() (sql.Result, error) {
+	if err := s.buildStatement(); err != nil {
+		return nil, fmt.Errorf("failed to build sql : %w", err)
+	}
+
 	return s.queryer.Execute(s.Statement, s.Bindings...)
 }
 
-func (s *StatementImpl) StatementAndBindings() (string, []interface{}) {
-	return s.Statement, s.Bindings
+func (s *StatementImpl) StatementAndBindings() (string, []interface{}, error) {
+	if err := s.buildStatement(); err != nil {
+		return "", nil, fmt.Errorf("failed to build sql : %w", err)
+	}
+
+	return s.Statement, s.Bindings, nil
 }
 
-func buildStatement(lastStep StatementAcceptor) *StatementImpl {
-	steps := getSteps(lastStep)
+func (s *StatementImpl) buildStatement() error {
+	if s.built {
+		return nil
+	}
+
+	steps := getSteps(s.sa)
 
 	// RootStepがQueryerでなければバグのためpanic
 	rootStep := steps[0]
 	q, ok := rootStep.(Queryer)
 	if !ok {
-		panic("RootStep is not a Queryer")
+		return fmt.Errorf("RootStep(%T) is not a Queryer", rootStep)
 	}
 
-	stmt :=
-		StatementImpl{
-			State:   make(map[string]interface{}),
-			queryer: q,
-		}
+	s.State = make(map[string]interface{})
+	s.queryer = q
 	for _, step := range steps {
-		step.Accept(&stmt)
+		if err := step.Accept(s); err != nil {
+			return err
+		}
 	}
 
-	stmt.Statement = strings.TrimSuffix(stmt.Statement, " ")
-
-	return &stmt
+	s.Statement = strings.TrimSuffix(s.Statement, " ")
+	s.built = true
+	return nil
 }
 
 func getSteps(lastStep StatementAcceptor) []StatementAcceptor {
@@ -264,17 +294,17 @@ func getSteps(lastStep StatementAcceptor) []StatementAcceptor {
 	return steps
 }
 
-func getQueryer(lastStep StatementAcceptor) Queryer {
+func getQueryer(lastStep StatementAcceptor) (Queryer, error) {
 	steps := getSteps(lastStep)
 
 	if len(steps) == 0 {
-		panic("No steps")
+		return nil, ErrorNoSteps
 	}
 
 	q, ok := steps[0].(Queryer)
 	if !ok {
-		panic(fmt.Sprintf("RootStep(%T) is not a Queryer", q))
+		return nil, fmt.Errorf("RootStep(%T) is not a Queryer", q)
 	}
 
-	return q
+	return q, nil
 }

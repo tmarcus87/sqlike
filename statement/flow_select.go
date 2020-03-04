@@ -25,7 +25,7 @@ func (s *explainSelectBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *explainSelectBranchStepImpl) Accept(*StatementImpl) {}
+func (s *explainSelectBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *explainSelectBranchStepImpl) SelectOne() SelectOneBranchStep {
 	return &selectOneBranchStepImpl{
@@ -64,10 +64,10 @@ func (s *selectOneBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectOneBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectOneBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectOneBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s)
 }
 
 type SelectColumnBranchStep interface {
@@ -91,7 +91,7 @@ func (s *selectColumnBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectColumnBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectColumnBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectColumnBranchStepImpl) From(table model.Table) SelectFromBranchStep {
 	return &selectFromBranchStepImpl{
@@ -121,10 +121,10 @@ func (s *selectFromBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectFromBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectFromBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectFromBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s)
 }
 
 func (s *selectFromBranchStepImpl) LeftOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
@@ -213,10 +213,10 @@ func (s *selectFromJoinBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectFromJoinBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectFromJoinBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectFromJoinBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s)
 }
 
 func (s *selectFromJoinBranchStepImpl) Where(conditions ...model.Condition) SelectFromWhereBranchStep {
@@ -271,10 +271,10 @@ func (s *selectFromWhereBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectFromWhereBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectFromWhereBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectFromWhereBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s)
 }
 
 func (s *selectFromWhereBranchStepImpl) GroupBy(columns ...model.Column) SelectFromGroupByBranchStep {
@@ -319,10 +319,10 @@ func (s *selectFromGroupByBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectFromGroupByBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectFromGroupByBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectFromGroupByBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s)
 }
 
 func (s *selectFromGroupByBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep {
@@ -357,10 +357,10 @@ func (s *selectFromOrderByBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectFromOrderByBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectFromOrderByBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectFromOrderByBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s.parent)
 }
 
 func (s *selectFromOrderByBranchStepImpl) LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep {
@@ -385,8 +385,8 @@ func (s *selectFromLimitAndOffsetBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *selectFromLimitAndOffsetBranchStepImpl) Accept(*StatementImpl) {}
+func (s *selectFromLimitAndOffsetBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *selectFromLimitAndOffsetBranchStepImpl) Build() Statement {
-	return buildStatement(s.parent)
+	return NewStatementBuilder(s.parent)
 }

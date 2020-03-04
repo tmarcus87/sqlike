@@ -26,7 +26,7 @@ func (s *insertIntoBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *insertIntoBranchStepImpl) Accept(*StatementImpl) {}
+func (s *insertIntoBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *insertIntoBranchStepImpl) Columns(columns ...model.Column) InsertIntoColumnBranchStep {
 	return &insertIntoColumnBranchStepImpl{
@@ -73,7 +73,7 @@ func (s *insertIntoColumnBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *insertIntoColumnBranchStepImpl) Accept(*StatementImpl) {}
+func (s *insertIntoColumnBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *insertIntoColumnBranchStepImpl) Values(values ...interface{}) InsertIntoValuesBranchStep {
 	return &insertIntoValuesBranchStepImpl{
@@ -110,10 +110,10 @@ func (s *insertIntoValuesBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *insertIntoValuesBranchStepImpl) Accept(*StatementImpl) {}
+func (s *insertIntoValuesBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *insertIntoValuesBranchStepImpl) Build() Statement {
-	return buildStatement(s)
+	return NewStatementBuilder(s)
 }
 
 func (s *insertIntoValuesBranchStepImpl) Values(values ...interface{}) InsertIntoValuesBranchStep {
@@ -137,8 +137,8 @@ func (s *insertIntoValueStructsBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *insertIntoValueStructsBranchStepImpl) Accept(*StatementImpl) {}
+func (s *insertIntoValueStructsBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *insertIntoValueStructsBranchStepImpl) Build() Statement {
-	return buildStatement(s)
+	return NewStatementBuilder(s)
 }

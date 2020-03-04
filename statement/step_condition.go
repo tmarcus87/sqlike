@@ -11,12 +11,14 @@ func (s *WhereStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *WhereStep) Accept(stmt *StatementImpl) {
+func (s *WhereStep) Accept(stmt *StatementImpl) error {
 	if len(s.conditions) == 0 {
-		return
+		return nil
 	}
 
 	stmt.Statement += "WHERE "
 
 	joinCondition(s.conditions, &stmt.Statement, &stmt.Bindings, "AND")
+
+	return nil
 }

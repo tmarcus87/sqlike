@@ -3,11 +3,12 @@ package statement
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/tmarcus87/sqlike/dialect"
 )
 
 type Queryer interface {
-	DialectStatement(st dialect.StatementType) string
+	DialectStatement(st dialect.StatementType) (string, error)
 	Context() context.Context
 	Query(string, ...interface{}) (*sql.Rows, error)
 	Execute(string, ...interface{}) (sql.Result, error)
@@ -20,17 +21,19 @@ type RootStep struct {
 	dialectStatement map[dialect.StatementType]string
 }
 
-func (s *RootStep) DialectStatement(st dialect.StatementType) string {
-	return s.dialectStatement[st]
+func (s *RootStep) DialectStatement(st dialect.StatementType) (string, error) {
+	stmt, ok := s.dialectStatement[st]
+	if !ok {
+		return "", fmt.Errorf("no dialect statement for %v", st)
+	}
+	return stmt, nil
 }
 
 func (s *RootStep) Parent() StatementAcceptor {
 	return nil
 }
 
-func (s *RootStep) Accept(*StatementImpl) {
-	/* Do nothing */
-}
+func (s *RootStep) Accept(*StatementImpl) error { return nil }
 
 func (s *RootStep) Context() context.Context {
 	return s.ctx
@@ -67,7 +70,8 @@ func (s *InstantStep) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *InstantStep) Accept(stmt *StatementImpl) {
+func (s *InstantStep) Accept(stmt *StatementImpl) error {
 	stmt.Statement += s.statement
 	stmt.Bindings = append(stmt.Bindings, s.bindings)
+	return nil
 }
