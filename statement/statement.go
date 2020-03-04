@@ -35,6 +35,7 @@ type Statement interface {
 type StatementImpl struct {
 	Statement string
 	Bindings  []interface{}
+	State     map[string]interface{}
 
 	queryer Queryer
 }
@@ -233,7 +234,11 @@ func buildStatement(lastStep StatementAcceptor) *StatementImpl {
 		panic("RootStep is not a Queryer")
 	}
 
-	stmt := StatementImpl{queryer: q}
+	stmt :=
+		StatementImpl{
+			State:   make(map[string]interface{}),
+			queryer: q,
+		}
 	for _, step := range steps {
 		step.Accept(&stmt)
 	}
