@@ -1,7 +1,7 @@
 SQLike
 =======
 
-SQL Like ORM for Golang inspired by [jOOQ](https://www.jooq.org/)
+SQL-like syntax O/R mapper for Golang inspired by [jOOQ](https://www.jooq.org/)
 
 ```
 go get github.com/tmarcus87/sqlike
