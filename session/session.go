@@ -12,6 +12,7 @@ type Session interface {
 	Explain() statement.ExplainSelectBranchStep
 	SelectOne() statement.SelectOneBranchStep
 	Select(columns ...model.Column) statement.SelectColumnBranchStep
+	InsertInto(table model.Table) statement.InsertIntoBranchStep
 }
 
 type basicSession struct {

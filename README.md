@@ -33,7 +33,7 @@ type Book struct {
 func main() {
     engine, err :=
         sqlike.NewEngine(
-            sqlike.FromHostAndPort("mysql", "master.example.com", 3306, "user", "password"),
+            sqlike.FromHostAndPort("mysql", "master.example.com", 3306, "user", "password", "database"),
             sqlike.WithSlaveByHostAndPort("slave.example.com", 13306, "user", "password"))
     if err != nil {
         panic(err)

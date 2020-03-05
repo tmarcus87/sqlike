@@ -10,6 +10,7 @@ type Engine interface {
 	Auto(ctx context.Context) session.Session
 	Master(ctx context.Context) session.Session
 	Slave(ctx context.Context) session.Session
+	Close() error
 }
 
 type basicEngine struct {
@@ -38,4 +39,16 @@ func (e *basicEngine) Slave(ctx context.Context) session.Session {
 		slave = e.master
 	}
 	return session.NewSession(ctx, slave, e.dialect, true)
+}
+
+func (e *basicEngine) Close() error {
+	if err := e.master.Close(); err != nil {
+		return nil
+	}
+	for _, slave := range e.slaves {
+		if err := slave.Close(); err != nil {
+			return nil
+		}
+	}
+	return nil
 }

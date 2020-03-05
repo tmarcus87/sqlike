@@ -6,25 +6,44 @@ import (
 	"strings"
 )
 
+type ConnectionInfo struct {
+	Username string
+	Password string
+	Host     string
+	Port     uint16
+}
+
+func (c *ConnectionInfo) dataSourceName(database string) string {
+	return fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s",
+		c.Username,
+		c.Password,
+		c.Host,
+		c.Port,
+		database)
+}
+
 type EngineOption struct {
 	Driver                string                `json:"driver"          yaml:"driver"`
-	Address               string                `json:"address"         yaml:"address"`
-	SlaveAddresses        []string              `json:"slave_addresses" yaml:"slave_addresses"`
+	Database              string                `json:"database"        yaml:"database"`
+	Master                ConnectionInfo        `json:"master"          yaml:"address"`
+	Slaves                []ConnectionInfo      `json:"slaves"          yaml:"slaves"`
 	SlaveSelectionHandler SlaveSelectionHandler `json:"slave_selection" yaml:"slave_selection"`
 }
 
 type Option func(o *EngineOption)
 
-func FromHostAndPort(driver, host string, port uint16, username, password string) Option {
+func FromHostAndPort(driver, host string, port uint16, username, password, database string) Option {
 	return func(o *EngineOption) {
 		o.Driver = driver
-		o.Address = fmt.Sprintf("%s:%s@tcp(%s:%d)", username, password, host, port)
+		o.Database = database
+		o.Master = ConnectionInfo{Username: username, Password: password, Host: host, Port: port}
 	}
 }
 
 func WithSlaveByHostAndPort(host string, port uint16, username, password string) Option {
 	return func(o *EngineOption) {
-		o.SlaveAddresses = append(o.SlaveAddresses, fmt.Sprintf("%s:%s@tcp(%s:%d)", username, password, host, port))
+		o.Slaves = append(o.Slaves, ConnectionInfo{Username: username, Password: password, Host: host, Port: port})
 	}
 }
 
@@ -36,6 +55,7 @@ func WithSlaveSelectionHandler(handler SlaveSelectionHandler) Option {
 
 func NewEngine(opts ...Option) (Engine, error) {
 	o := EngineOption{
+		Slaves:                make([]ConnectionInfo, 0),
 		SlaveSelectionHandler: RoundRobbinSelectionHandler(),
 	}
 	for _, opt := range opts {
@@ -46,17 +66,18 @@ func NewEngine(opts ...Option) (Engine, error) {
 }
 
 func NewEngineFromOption(o *EngineOption) (Engine, error) {
-	db, err := sql.Open(o.Driver, o.Address)
+	db, err :=
+		sql.Open(o.Driver, o.Master.dataSourceName(o.Database))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open connection : %w", err)
 	}
 
 	dbs := make([]*sql.DB, 0)
-	if len(o.SlaveAddresses) == 0 {
+	if len(o.Slaves) == 0 {
 		dbs = []*sql.DB{db}
 	} else {
-		for _, address := range o.SlaveAddresses {
-			db, err := sql.Open(o.Driver, address)
+		for _, slave := range o.Slaves {
+			db, err := sql.Open(o.Driver, slave.dataSourceName(o.Database))
 			if err != nil {
 				return nil, fmt.Errorf("failed to open slave connection : %w", err)
 			}

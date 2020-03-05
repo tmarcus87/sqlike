@@ -34,7 +34,7 @@ type Statement interface {
 	FetchMap() ([]map[string]string, error)
 	FetchInto(p interface{}) error
 	FetchOneInto(p interface{}) (bool, error)
-	Execute() (sql.Result, error)
+	Execute() Result
 }
 
 type StatementImpl struct {
@@ -236,12 +236,14 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 	return vptrs, nil
 }
 
-func (s *StatementImpl) Execute() (sql.Result, error) {
+func (s *StatementImpl) Execute() Result {
 	if err := s.buildStatement(); err != nil {
-		return nil, fmt.Errorf("failed to build sql : %w", err)
+		return &BasicResult{err: fmt.Errorf("failed to build sql : %w", err)}
 	}
 
-	return s.queryer.Execute(s.Statement, s.Bindings...)
+	result, err := s.queryer.Execute(s.Statement, s.Bindings...)
+
+	return &BasicResult{native: result, err: err}
 }
 
 func (s *StatementImpl) StatementAndBindings() (string, []interface{}, error) {
@@ -308,4 +310,33 @@ func getQueryer(lastStep StatementAcceptor) (Queryer, error) {
 	}
 
 	return q, nil
+}
+
+type Result interface {
+	Error() error
+	AffectedRows() (int64, error)
+	LastInsertId() (int64, error)
+}
+
+type BasicResult struct {
+	native sql.Result
+	err    error
+}
+
+func (b BasicResult) Error() error {
+	return b.err
+}
+
+func (b BasicResult) AffectedRows() (int64, error) {
+	if b.err != nil {
+		return 0, b.err
+	}
+	return b.native.RowsAffected()
+}
+
+func (b BasicResult) LastInsertId() (int64, error) {
+	if b.err != nil {
+		return 0, b.err
+	}
+	return b.native.LastInsertId()
 }
