@@ -7,20 +7,28 @@ import (
 )
 
 type ConnectionInfo struct {
-	Username string
-	Password string
-	Host     string
-	Port     uint16
+	Username string            `json:"username" yaml:"username"`
+	Password string            `json:"password" yaml:"password"`
+	Host     string            `json:"host"     yaml:"host"`
+	Port     uint16            `json:"port"     yaml:"port"`
+	Options  map[string]string `json:"options"  yaml:"options"`
 }
 
 func (c *ConnectionInfo) dataSourceName(database string) string {
+	opts := make([]string, 0)
+	for k, v := range c.Options {
+		opts = append(opts, fmt.Sprintf("%s=%s", k, v))
+	}
+	opt := strings.Join(opts, "&")
+
 	return fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s",
+		"%s:%s@tcp(%s:%d)/%s?%s",
 		c.Username,
 		c.Password,
 		c.Host,
 		c.Port,
-		database)
+		database,
+		opt)
 }
 
 type EngineOption struct {
