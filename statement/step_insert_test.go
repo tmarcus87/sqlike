@@ -116,8 +116,165 @@ func TestBuildInsertIntoValues(t *testing.T) {
 }
 
 func TestBuildInsertIntoStructValues(t *testing.T) {
-	asserts := assert.New(t)
-	asserts.Fail("not yet implemented")
+
+	t1 := &model.BasicTable{Name: "t1"}
+	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+
+	t.Run("WithoutTag", func(t *testing.T) {
+		type ValueStruct struct {
+			C1 int
+			C2 string
+		}
+
+		t.Run("OneWithoutPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(ValueStruct{C1: 1, C2: "hoge"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?)", stmt)
+			asserts.Len(bindings, 2)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+
+		})
+		t.Run("OneWithPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(&ValueStruct{C1: 1, C2: "hoge"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?)", stmt)
+			asserts.Len(bindings, 2)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+		})
+		t.Run("TwoWithoutPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(
+						ValueStruct{C1: 1, C2: "hoge"},
+						ValueStruct{C1: 2, C2: "fuga"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?), (?, ?)", stmt)
+			asserts.Len(bindings, 4)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+			asserts.Equal(2, bindings[2])
+			asserts.Equal("fuga", bindings[3])
+		})
+		t.Run("TwoWithPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(
+						&ValueStruct{C1: 1, C2: "hoge"},
+						&ValueStruct{C1: 2, C2: "fuga"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?), (?, ?)", stmt)
+			asserts.Len(bindings, 4)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+			asserts.Equal(2, bindings[2])
+			asserts.Equal("fuga", bindings[3])
+		})
+
+	})
+
+	t.Run("WithTag", func(t *testing.T) {
+		type TaggedValueStruct struct {
+			Column1 int    `sqlike:"c1"`
+			Column2 string `sqlike:"c2"`
+		}
+
+		t.Run("OneWithoutPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(TaggedValueStruct{Column1: 1, Column2: "hoge"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?)", stmt)
+			asserts.Len(bindings, 2)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+
+		})
+		t.Run("OneWithPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(&TaggedValueStruct{Column1: 1, Column2: "hoge"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?)", stmt)
+			asserts.Len(bindings, 2)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+		})
+		t.Run("TwoWithoutPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(
+						TaggedValueStruct{Column1: 1, Column2: "hoge"},
+						TaggedValueStruct{Column1: 2, Column2: "fuga"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?), (?, ?)", stmt)
+			asserts.Len(bindings, 4)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+			asserts.Equal(2, bindings[2])
+			asserts.Equal("fuga", bindings[3])
+		})
+		t.Run("TwoWithPtr", func(t *testing.T) {
+			asserts := assert.New(t)
+
+			stmt, bindings, err :=
+				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+					Columns(c1, c2).
+					ValueStructs(
+						&TaggedValueStruct{Column1: 1, Column2: "hoge"},
+						&TaggedValueStruct{Column1: 2, Column2: "fuga"}).
+					Build().
+					StatementAndBindings()
+			asserts.Nil(err)
+			asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?), (?, ?)", stmt)
+			asserts.Len(bindings, 4)
+			asserts.Equal(1, bindings[0])
+			asserts.Equal("hoge", bindings[1])
+			asserts.Equal(2, bindings[2])
+			asserts.Equal("fuga", bindings[3])
+		})
+	})
 }
 
 func TestBuildInsertIntoSelect(t *testing.T) {

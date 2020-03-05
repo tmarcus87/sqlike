@@ -104,12 +104,13 @@ func (s *StatementImpl) FetchInto(p interface{}) error {
 	if sliceValue.Kind() != reflect.Ptr {
 		return ErrorMustBeAPtr
 	}
-	// Ptrの場合は値に戻す
+
 	sliceValue = sliceValue.Elem()
 	if sliceValue.Kind() != reflect.Slice {
 		return ErrorMustBeASlice
 	}
 
+	// Ptrの場合は値に戻す
 	elementType := sliceValue.Type().Elem()
 	if elementType.Kind() == reflect.Ptr {
 		elementType = elementType.Elem()
