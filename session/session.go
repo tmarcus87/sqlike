@@ -14,6 +14,7 @@ type Session interface {
 	Select(columns ...model.Column) statement.SelectColumnBranchStep
 	InsertInto(table model.Table) statement.InsertIntoBranchStep
 	Update(table model.Table) statement.UpdateBranchStep
+	DeleteFrom(table model.Table) statement.DeleteFromBranchStep
 }
 
 type basicSession struct {
