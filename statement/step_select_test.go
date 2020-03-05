@@ -221,7 +221,7 @@ func TestSelectFromOrderBy_Accept(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
+		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).OrderBy(&model.SortOrder{Column: c2, Order: model.OrderDesc}).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` ORDER BY `t1`.`c2` DESC", stmt)
 	})
@@ -234,7 +234,7 @@ func TestSelectFromOrderBy_Accept(t *testing.T) {
 		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
-		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).OrderBy(Order(c2, OrderDesc)).Build().StatementAndBindings()
+		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).OrderBy(&model.SortOrder{Column: c2, Order: model.OrderDesc}).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt` ORDER BY `t1alt`.`c2alt` DESC", stmt)
 	})

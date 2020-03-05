@@ -120,26 +120,9 @@ func (s *SelectGroupByStep) Accept(stmt *StatementImpl) error {
 	return nil
 }
 
-const (
-	OrderAsc  = "ASC"
-	OrderDesc = "DESC"
-)
-
-func Order(column model.Column, order string) *SortOrder {
-	return &SortOrder{
-		column: column,
-		order:  order,
-	}
-}
-
-type SortOrder struct {
-	column model.Column
-	order  string
-}
-
 type SelectOrderByStep struct {
 	parent StatementAcceptor
-	orders []*SortOrder
+	orders []*model.SortOrder
 }
 
 func (s *SelectOrderByStep) Parent() StatementAcceptor {
@@ -155,7 +138,7 @@ func (s *SelectOrderByStep) Accept(stmt *StatementImpl) error {
 	for _, order := range s.orders {
 		orders =
 			append(orders, fmt.Sprintf("`%s`.`%s` %s",
-				model.TableName(order.column.SQLikeTable()), model.ColumnName(order.column), order.order))
+				model.TableName(order.Column.SQLikeTable()), model.ColumnName(order.Column), order.Order))
 	}
 
 	stmt.Statement += fmt.Sprintf("ORDER BY %s ", strings.Join(orders, ", "))

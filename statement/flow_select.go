@@ -109,7 +109,7 @@ type SelectFromBranchStep interface {
 	InnerJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
 	Where(conditions ...model.Condition) SelectFromWhereBranchStep
 	GroupBy(columns ...model.Column) SelectFromGroupByBranchStep
-	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
+	OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
 
@@ -178,7 +178,7 @@ func (s *selectFromBranchStepImpl) GroupBy(columns ...model.Column) SelectFromGr
 	}
 }
 
-func (s *selectFromBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep {
+func (s *selectFromBranchStepImpl) OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep {
 	return &selectFromOrderByBranchStepImpl{
 		parent: &SelectOrderByStep{
 			parent: s,
@@ -201,7 +201,7 @@ type SelectFromJoinBranchStep interface {
 	Build() Statement
 	Where(conditions ...model.Condition) SelectFromWhereBranchStep
 	GroupBy(columns ...model.Column) SelectFromGroupByBranchStep
-	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
+	OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
 
@@ -237,7 +237,7 @@ func (s *selectFromJoinBranchStepImpl) GroupBy(columns ...model.Column) SelectFr
 	}
 }
 
-func (s *selectFromJoinBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep {
+func (s *selectFromJoinBranchStepImpl) OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep {
 	return &selectFromOrderByBranchStepImpl{
 		parent: &SelectOrderByStep{
 			parent: s,
@@ -259,7 +259,7 @@ func (s *selectFromJoinBranchStepImpl) LimitAndOffset(limit int32, offset int64)
 type SelectFromWhereBranchStep interface {
 	Build() Statement
 	GroupBy(columns ...model.Column) SelectFromGroupByBranchStep
-	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
+	OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
 
@@ -286,7 +286,7 @@ func (s *selectFromWhereBranchStepImpl) GroupBy(columns ...model.Column) SelectF
 	}
 }
 
-func (s *selectFromWhereBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep {
+func (s *selectFromWhereBranchStepImpl) OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep {
 	return &selectFromOrderByBranchStepImpl{
 		parent: &SelectOrderByStep{
 			parent: s,
@@ -307,7 +307,7 @@ func (s *selectFromWhereBranchStepImpl) LimitAndOffset(limit int32, offset int64
 
 type SelectFromGroupByBranchStep interface {
 	Build() Statement
-	OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep
+	OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
 
@@ -325,7 +325,7 @@ func (s *selectFromGroupByBranchStepImpl) Build() Statement {
 	return NewStatementBuilder(s)
 }
 
-func (s *selectFromGroupByBranchStepImpl) OrderBy(orders ...*SortOrder) SelectFromOrderByBranchStep {
+func (s *selectFromGroupByBranchStepImpl) OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep {
 	return &selectFromOrderByBranchStepImpl{
 		parent: &SelectOrderByStep{
 			parent: s,
