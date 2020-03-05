@@ -61,6 +61,7 @@ func main() {
         fmt.Printf("%4d %s", book.Id, book.Name)
     }
 }
-
 ```
+
+More examples can be found in 'examples'.
 
