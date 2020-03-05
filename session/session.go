@@ -13,6 +13,7 @@ type Session interface {
 	SelectOne() statement.SelectOneBranchStep
 	Select(columns ...model.Column) statement.SelectColumnBranchStep
 	InsertInto(table model.Table) statement.InsertIntoBranchStep
+	Update(table model.Table) statement.UpdateBranchStep
 }
 
 type basicSession struct {

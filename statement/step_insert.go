@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tmarcus87/sqlike/model"
-	"reflect"
 	"strings"
 )
 
@@ -93,18 +92,9 @@ func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) error {
 	}
 
 	for _, value := range s.values {
-		v := reflect.ValueOf(value)
-		if v.Kind() == reflect.Ptr {
-			v = v.Elem()
-		}
-
-		name2index := make(map[string]int)
-		for i := 0; i < v.Type().NumField(); i++ {
-			f := v.Type().Field(i)
-			name2index[strings.ToLower(f.Name)] = i
-			if tag, ok := f.Tag.Lookup("sqlike"); ok {
-				name2index[strings.ToLower(tag)] = i
-			}
+		fvm, err := getColumnName2FieldValueMap(value)
+		if err != nil {
+			return err
 		}
 
 		columnsV, ok := stmt.State[StateInsertStmtColumns]
@@ -124,12 +114,11 @@ func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) error {
 		stmt.State[StateInsertStmtHasValue] = true
 
 		for _, column := range columns {
-			fieldIndex, ok := name2index[column.SQLikeColumnName()]
+			fv, ok := fvm[column.SQLikeColumnName()]
 			if !ok {
 				return fmt.Errorf("struct field for '%s' is not found", column)
 			}
-			columnValue := v.Field(fieldIndex).Interface()
-			stmt.Bindings = append(stmt.Bindings, columnValue)
+			stmt.Bindings = append(stmt.Bindings, fv.Interface())
 		}
 	}
 

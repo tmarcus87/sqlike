@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestBuildInsertIntoColumns(t *testing.T) {
+func TestInsertIntoColumns_Accept(t *testing.T) {
 	t1 := &model.BasicTable{Name: "t1"}
 
 	tests := []struct {
@@ -46,7 +46,7 @@ func TestBuildInsertIntoColumns(t *testing.T) {
 
 }
 
-func TestBuildInsertIntoValues(t *testing.T) {
+func TestInsertIntoValues_Accept(t *testing.T) {
 
 	t.Run("OneValues", func(t *testing.T) {
 		asserts := assert.New(t)
@@ -115,7 +115,7 @@ func TestBuildInsertIntoValues(t *testing.T) {
 	})
 }
 
-func TestBuildInsertIntoStructValues(t *testing.T) {
+func TestInsertIntoStructValues_Accept(t *testing.T) {
 
 	t1 := &model.BasicTable{Name: "t1"}
 	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
@@ -277,7 +277,7 @@ func TestBuildInsertIntoStructValues(t *testing.T) {
 	})
 }
 
-func TestBuildInsertIntoSelect(t *testing.T) {
+func TestInsertIntoSelect_Accept(t *testing.T) {
 	t.Run("WithColumns", func(t *testing.T) {
 		asserts := assert.New(t)
 

@@ -53,5 +53,5 @@ func joinCondition(conditions []model.Condition, stmt *string, bindings *[]inter
 		*stmt += ")"
 	}
 
-	*bindings = b
+	*bindings = append(*bindings, b...)
 }

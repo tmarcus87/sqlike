@@ -13,7 +13,7 @@ func root(d string) *RootStep {
 	}
 }
 
-func TestBuildExplain(t *testing.T) {
+func TestExplain_Accept(t *testing.T) {
 	asserts := assert.New(t)
 
 	{
@@ -35,7 +35,7 @@ func TestBuildExplain(t *testing.T) {
 	}
 }
 
-func TestBuildSelectOne(t *testing.T) {
+func TestSelectOne_Accept(t *testing.T) {
 	tests := []struct {
 		dialect string
 		expect  string
@@ -61,7 +61,7 @@ func TestBuildSelectOne(t *testing.T) {
 	}
 }
 
-func TestBuildSelectFrom(t *testing.T) {
+func TestSelectFrom_Accept(t *testing.T) {
 	asserts := assert.New(t)
 
 	t.Run("WithoutAs", func(t *testing.T) {
@@ -92,7 +92,7 @@ func TestBuildSelectFrom(t *testing.T) {
 	})
 }
 
-func TestBuildSelectFromWithOneWhere(t *testing.T) {
+func TestSelectFromWithOneWhere_Accept(t *testing.T) {
 	asserts := assert.New(t)
 
 	t1 := &model.BasicTable{Name: "t1"}
@@ -107,7 +107,7 @@ func TestBuildSelectFromWithOneWhere(t *testing.T) {
 	asserts.Equal(1, bindings[0])
 }
 
-func TestBuildSelectFromWithTwoWhere(t *testing.T) {
+func TestSelectFromWithTwoWhere_Accept(t *testing.T) {
 	asserts := assert.New(t)
 
 	t1 := &model.BasicTable{Name: "t1"}
@@ -134,7 +134,7 @@ func TestBuildSelectFromWithTwoWhere(t *testing.T) {
 	})
 }
 
-func TestBuildSelectFromJoin(t *testing.T) {
+func TestSelectFromJoin_Accept(t *testing.T) {
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
@@ -184,7 +184,7 @@ func TestBuildSelectFromJoin(t *testing.T) {
 	})
 }
 
-func TestBuildSelectFromGroupBy(t *testing.T) {
+func TestSelectFromGroupBy_Accept(t *testing.T) {
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
@@ -212,7 +212,7 @@ func TestBuildSelectFromGroupBy(t *testing.T) {
 	})
 }
 
-func TestBuildSelectFromOrderBy(t *testing.T) {
+func TestSelectFromOrderBy_Accept(t *testing.T) {
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
@@ -241,7 +241,7 @@ func TestBuildSelectFromOrderBy(t *testing.T) {
 
 }
 
-func TestBuildSelectFromLimitAndOffset(t *testing.T) {
+func TestSelectFromLimitAndOffset_Accept(t *testing.T) {
 
 	t.Run("Limit", func(t *testing.T) {
 		asserts := assert.New(t)
