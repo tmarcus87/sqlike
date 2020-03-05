@@ -22,13 +22,13 @@ func TestFetchMap(t *testing.T) {
 	authorIdColumn := &model.BasicColumn{Table: authorTable, Name: "id"}
 	authorNameColumn := &model.BasicColumn{Table: authorTable, Name: "name"}
 
-	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
+	db, err := sql.Open(dialect.MySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
-	s := NewSession(context.Background(), db, dialect.DialectMySQL, false)
+	s := NewSession(context.Background(), db, dialect.MySQL, false)
 
 	asserts := assert.New(t)
 
@@ -48,13 +48,13 @@ func TestFetchInto(t *testing.T) {
 	authorIdColumn := &model.BasicColumn{Table: authorTable, Name: "id"}
 	authorNameColumn := &model.BasicColumn{Table: authorTable, Name: "name"}
 
-	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
+	db, err := sql.Open(dialect.MySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
-	s := NewSession(context.Background(), db, dialect.DialectMySQL, false)
+	s := NewSession(context.Background(), db, dialect.MySQL, false)
 
 	asserts := assert.New(t)
 
@@ -97,13 +97,13 @@ func TestFetchOneInto(t *testing.T) {
 	authorIdColumn := &model.BasicColumn{Table: authorTable, Name: "id"}
 	authorNameColumn := &model.BasicColumn{Table: authorTable, Name: "name"}
 
-	db, err := sql.Open(dialect.DialectMySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
+	db, err := sql.Open(dialect.MySQL, "user:password@tcp(127.0.0.1:3306)/sqlike")
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
-	s := NewSession(context.Background(), db, dialect.DialectMySQL, false)
+	s := NewSession(context.Background(), db, dialect.MySQL, false)
 
 	asserts := assert.New(t)
 

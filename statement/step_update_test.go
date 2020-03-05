@@ -19,7 +19,7 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 
 	t.Run("OneSet", func(t *testing.T) {
 		stmt, bindings, err :=
-			NewUpdateBranchStep(root(dialect.DialectMySQL), t1).
+			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				Set(c1, 1).
 				Build().
 				StatementAndBindings()
@@ -33,7 +33,7 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 
 	t.Run("TwoSet", func(t *testing.T) {
 		stmt, bindings, err :=
-			NewUpdateBranchStep(root(dialect.DialectMySQL), t1).
+			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				Set(c1, 1).
 				Set(c2, 2).
 				Build().
@@ -49,7 +49,7 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 
 	t.Run("WithWhere", func(t *testing.T) {
 		stmt, bindings, err :=
-			NewUpdateBranchStep(root(dialect.DialectMySQL), t1).
+			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				Set(c1, 1).
 				Set(c2, 2).
 				Where(c1.Eq(10)).
@@ -81,7 +81,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 
 	t.Run("All", func(t *testing.T) {
 		stmt, bindings, err :=
-			NewUpdateBranchStep(root(dialect.DialectMySQL), t1).
+			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				SetRecord(&model.Record{Value: &Value{C1: 1, Column2: 2, Column3: 3}}).
 				Where(c1.Eq(10)).
 				Build().
@@ -98,7 +98,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 
 	t.Run("WithOnly", func(t *testing.T) {
 		stmt, bindings, err :=
-			NewUpdateBranchStep(root(dialect.DialectMySQL), t1).
+			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				SetRecord(&model.Record{
 					Only:  []model.Column{c1, c2},
 					Value: &Value{C1: 1, Column2: 2},
@@ -117,7 +117,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 
 	t.Run("WithSkip", func(t *testing.T) {
 		stmt, bindings, err :=
-			NewUpdateBranchStep(root(dialect.DialectMySQL), t1).
+			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				SetRecord(&model.Record{
 					Skip:  []model.Column{c3},
 					Value: &Value{C1: 1, Column2: 2},

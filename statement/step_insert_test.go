@@ -32,7 +32,7 @@ func TestInsertIntoColumns_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, _, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(test.c1, test.c2).
 					Values(1, 2).
 					Build().
@@ -56,7 +56,7 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		stmt, bindings, err :=
-			NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Columns(c1, c2).
 				Values(1, 2).
 				Build().
@@ -77,7 +77,7 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
 
 		stmt, bindings, err :=
-			NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Columns(c1, c2).
 				Values(1, 2).
 				Values(3, 4).
@@ -99,7 +99,7 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 		t1 := &model.BasicTable{Name: "t1"}
 
 		stmt, bindings, err :=
-			NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Values(1, 2).
 				Values(3, 4).
 				Build().
@@ -131,7 +131,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(ValueStruct{C1: 1, C2: "hoge"}).
 					Build().
@@ -147,7 +147,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(&ValueStruct{C1: 1, C2: "hoge"}).
 					Build().
@@ -162,7 +162,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(
 						ValueStruct{C1: 1, C2: "hoge"},
@@ -181,7 +181,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(
 						&ValueStruct{C1: 1, C2: "hoge"},
@@ -209,7 +209,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(TaggedValueStruct{Column1: 1, Column2: "hoge"}).
 					Build().
@@ -225,7 +225,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(&TaggedValueStruct{Column1: 1, Column2: "hoge"}).
 					Build().
@@ -240,7 +240,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(
 						TaggedValueStruct{Column1: 1, Column2: "hoge"},
@@ -259,7 +259,7 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts := assert.New(t)
 
 			stmt, bindings, err :=
-				NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+				NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 					Columns(c1, c2).
 					ValueStructs(
 						&TaggedValueStruct{Column1: 1, Column2: "hoge"},
@@ -289,7 +289,7 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
 
 		stmt, _, err :=
-			NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Columns(c1, c2).
 				Select(c3, c4).
 				From(t2).
@@ -308,7 +308,7 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
 
 		stmt, _, err :=
-			NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Select(c3, c4).
 				From(t2).
 				Build().
@@ -326,7 +326,7 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 		c2 := &model.BasicColumn{Table: t2, Name: "c2"}
 
 		stmt, _, err :=
-			NewInsertIntoBranchStep(root(dialect.DialectMySQL), t1).
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).
 				From(t2.SQLikeAs("t2alt")).
 				Build().

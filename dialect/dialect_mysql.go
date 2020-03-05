@@ -1,9 +1,9 @@
 package dialect
 
-const DialectMySQL = "mysql"
+const MySQL = "mysql"
 
 func init() {
-	sqlDialect[DialectMySQL] =
+	sqlDialect[MySQL] =
 		map[StatementType]string{
 			StatementTypeSelectOne: "SELECT 1 FROM dual",
 		}

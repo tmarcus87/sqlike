@@ -1,9 +1,9 @@
 package dialect
 
-const DialectSqlite3 = "seqlite3"
+const Sqlite3 = "seqlite3"
 
 func init() {
-	sqlDialect[DialectSqlite3] =
+	sqlDialect[Sqlite3] =
 		map[StatementType]string{
 			StatementTypeSelectOne: "SELECT 1",
 		}
