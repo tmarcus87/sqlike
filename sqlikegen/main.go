@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"os"
 )
 
 var (
@@ -15,10 +16,16 @@ var (
 	hostAndPort = flag.String("h", "", "Host&Port for connecting to database format : 'host:port'")
 	outdir      = flag.String("o", "", "Output dir")
 	pkg         = flag.String("pkg", "", "Output package")
+	help        = flag.Bool("help", false, "Show usage")
 )
 
 func main() {
 	flag.Parse()
+
+	if *help {
+		flag.Usage()
+		os.Exit(1)
+	}
 
 	schema, err := Fetch(*dbtype, *username, *password, fmt.Sprintf("tcp(%s)", *hostAndPort), *database)
 	if err != nil {

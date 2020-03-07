@@ -3,8 +3,10 @@ SQLike
 
 SQL-like syntax O/R mapper for Golang inspired by [jOOQ](https://www.jooq.org/)
 
+## Install
+
 ```
-go get github.com/tmarcus87/sqlike
+$ go get -u github.com/tmarcus87/sqlike
 ```
 
 ## Requirements
@@ -12,8 +14,37 @@ go get github.com/tmarcus87/sqlike
 * Golang 1.13+
 
 ## SchemaGenerator
+ 
+You can generate model & schema definition from database by using `sqlikegen`.
 
-Will be supported in the future.
+### Install
+
+```
+$ go install github.com/tmarcus87/sqlike/sqlikegen
+
+$ sqlikegen -help
+Usage of sqlikegen
+  -d string
+        Database for generating code
+  -h string
+        Host&Port for connecting to database format : 'host:port'
+  -help
+        Show usage
+  -o string
+        Output dir
+  -p string
+        Password for connecting to database
+  -pkg string
+        Output package
+  -t string
+        Database type for generating code
+  -u string
+        Username for connecting to database
+
+# Generate example
+$ sqlikegen -t mysql -d library -u user -p password -h localhost:3306 -o library
+```
+
 
 ## Example
 
