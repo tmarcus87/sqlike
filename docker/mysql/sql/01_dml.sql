@@ -1,4 +1,4 @@
-USE `sqlike`;
+USE `library`;
 
 INSERT INTO `author` (`id`, `name`)
 VALUES

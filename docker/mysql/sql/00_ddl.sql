@@ -1,6 +1,6 @@
-USE `sqlike`;
+USE `library`;
 
-CREATE TABLE `sqlike`.`book`
+CREATE TABLE `library`.`book`
 (
     `id`        BIGINT(20) NOT NULL AUTO_INCREMENT,
     `title`     VARCHAR(300),
@@ -8,7 +8,7 @@ CREATE TABLE `sqlike`.`book`
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
 
-CREATE TABLE `sqlike`.`author`
+CREATE TABLE `library`.`author`
 (
     `id`   BIGINT(20) NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(300),
