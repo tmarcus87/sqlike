@@ -3,9 +3,9 @@ package statement
 import "github.com/tmarcus87/sqlike/model"
 
 type InsertIntoBranchStep interface {
-	Columns(cols ...model.Column) InsertIntoColumnBranchStep
+	Columns(cols ...model.ColumnField) InsertIntoColumnBranchStep
 	Values(values ...interface{}) InsertIntoValuesBranchStep
-	Select(columns ...model.Column) SelectColumnBranchStep
+	Select(columns ...model.ColumnField) SelectColumnBranchStep
 }
 
 func NewInsertIntoBranchStep(parent StatementAcceptor, table model.Table) InsertIntoBranchStep {
@@ -27,7 +27,7 @@ func (s *insertIntoBranchStepImpl) Parent() StatementAcceptor {
 
 func (s *insertIntoBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
-func (s *insertIntoBranchStepImpl) Columns(columns ...model.Column) InsertIntoColumnBranchStep {
+func (s *insertIntoBranchStepImpl) Columns(columns ...model.ColumnField) InsertIntoColumnBranchStep {
 	return &insertIntoColumnBranchStepImpl{
 		parent: &InsertIntoColumnStep{
 			parent:  s,
@@ -54,14 +54,14 @@ func (s *insertIntoBranchStepImpl) ValueStructs(values ...interface{}) InsertInt
 	}
 }
 
-func (s *insertIntoBranchStepImpl) Select(cols ...model.Column) SelectColumnBranchStep {
+func (s *insertIntoBranchStepImpl) Select(cols ...model.ColumnField) SelectColumnBranchStep {
 	return NewSelectColumnBranchStep(s.parent, cols...)
 }
 
 type InsertIntoColumnBranchStep interface {
 	Values(values ...interface{}) InsertIntoValuesBranchStep
 	ValueStructs(values ...interface{}) InsertIntoValueStructsBranchStep
-	Select(columns ...model.Column) SelectColumnBranchStep
+	Select(columns ...model.ColumnField) SelectColumnBranchStep
 }
 
 type insertIntoColumnBranchStepImpl struct {
@@ -92,7 +92,7 @@ func (s *insertIntoColumnBranchStepImpl) ValueStructs(values ...interface{}) Ins
 	}
 }
 
-func (s *insertIntoColumnBranchStepImpl) Select(columns ...model.Column) SelectColumnBranchStep {
+func (s *insertIntoColumnBranchStepImpl) Select(columns ...model.ColumnField) SelectColumnBranchStep {
 	return NewSelectColumnBranchStep(s.parent, columns...)
 }
 

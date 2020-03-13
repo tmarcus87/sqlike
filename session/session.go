@@ -11,7 +11,7 @@ import (
 type Session interface {
 	Explain() statement.ExplainSelectBranchStep
 	SelectOne() statement.SelectOneBranchStep
-	Select(columns ...model.Column) statement.SelectColumnBranchStep
+	Select(columns ...model.ColumnField) statement.SelectColumnBranchStep
 	InsertInto(table model.Table) statement.InsertIntoBranchStep
 	Update(table model.Table) statement.UpdateBranchStep
 	DeleteFrom(table model.Table) statement.DeleteFromBranchStep

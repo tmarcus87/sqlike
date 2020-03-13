@@ -15,6 +15,6 @@ func (s *DeleteFromStep) Parent() StatementAcceptor {
 }
 
 func (s *DeleteFromStep) Accept(stmt *StatementImpl) error {
-	stmt.Statement += fmt.Sprintf("DELETE FROM %s ", model.TableAsStatement(s.table))
+	stmt.Statement += fmt.Sprintf("DELETE FROM %s ", s.table.SQLikeTableExpr())
 	return nil
 }

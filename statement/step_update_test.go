@@ -13,9 +13,10 @@ func TestUpdateStep_Accept(t *testing.T) {
 
 func TestUpdateSetStep_Accept(t *testing.T) {
 
-	t1 := &model.BasicTable{Name: "t1"}
-	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
-	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+	t1 := model.NewTable("t1")
+
+	c1 := model.NewBoolColumn(t1, "c1")
+	c2 := model.NewBoolColumn(t1, "c2")
 
 	t.Run("OneSet", func(t *testing.T) {
 		stmt, bindings, err :=
@@ -52,7 +53,7 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				Set(c1, 1).
 				Set(c2, 2).
-				Where(c1.Eq(10)).
+				Where(c1.CondEq(true)).
 				Build().
 				StatementAndBindings()
 
@@ -62,16 +63,17 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 		asserts.Len(bindings, 3)
 		asserts.Equal(1, bindings[0])
 		asserts.Equal(2, bindings[1])
-		asserts.Equal(10, bindings[2])
+		asserts.Equal(true, bindings[2])
 	})
 }
 
 func TestUpdateSetRecordStep_Accept(t *testing.T) {
 
-	t1 := &model.BasicTable{Name: "t1"}
-	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
-	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
-	c3 := &model.BasicColumn{Table: t1, Name: "c3"}
+	t1 := model.NewTable("t1")
+
+	c1 := model.NewBoolColumn(t1, "c1")
+	c2 := model.NewBoolColumn(t1, "c2")
+	c3 := model.NewBoolColumn(t1, "c3")
 
 	type Value struct {
 		C1      int
@@ -83,7 +85,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 		stmt, bindings, err :=
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				SetRecord(&model.Record{Value: &Value{C1: 1, Column2: 2, Column3: 3}}).
-				Where(c1.Eq(10)).
+				Where(c1.CondEq(true)).
 				Build().
 				StatementAndBindings()
 		asserts := assert.New(t)
@@ -93,7 +95,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 		asserts.Equal(1, bindings[0])
 		asserts.Equal(2, bindings[1])
 		asserts.Equal(3, bindings[2])
-		asserts.Equal(10, bindings[3])
+		asserts.Equal(true, bindings[3])
 	})
 
 	t.Run("WithOnly", func(t *testing.T) {
@@ -103,7 +105,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 					Only:  []model.Column{c1, c2},
 					Value: &Value{C1: 1, Column2: 2},
 				}).
-				Where(c1.Eq(10)).
+				Where(c1.CondEq(true)).
 				Build().
 				StatementAndBindings()
 		asserts := assert.New(t)
@@ -112,7 +114,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 		asserts.Len(bindings, 3)
 		asserts.Equal(1, bindings[0])
 		asserts.Equal(2, bindings[1])
-		asserts.Equal(10, bindings[2])
+		asserts.Equal(true, bindings[2])
 	})
 
 	t.Run("WithSkip", func(t *testing.T) {
@@ -122,7 +124,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 					Skip:  []model.Column{c3},
 					Value: &Value{C1: 1, Column2: 2},
 				}).
-				Where(c1.Eq(10)).
+				Where(c1.CondEq(true)).
 				Build().
 				StatementAndBindings()
 		asserts := assert.New(t)
@@ -131,7 +133,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 		asserts.Len(bindings, 3)
 		asserts.Equal(1, bindings[0])
 		asserts.Equal(2, bindings[1])
-		asserts.Equal(10, bindings[2])
+		asserts.Equal(true, bindings[2])
 
 	})
 }

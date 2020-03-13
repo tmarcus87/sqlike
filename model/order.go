@@ -6,6 +6,6 @@ const (
 )
 
 type SortOrder struct {
-	Column Column
+	Column ColumnField
 	Order  string
 }

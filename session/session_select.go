@@ -13,6 +13,6 @@ func (s *basicSession) SelectOne() statement.SelectOneBranchStep {
 	return statement.NewSelectOneBranchStep(s.NewRootStep())
 }
 
-func (s *basicSession) Select(columns ...model.Column) statement.SelectColumnBranchStep {
+func (s *basicSession) Select(columns ...model.ColumnField) statement.SelectColumnBranchStep {
 	return statement.NewSelectColumnBranchStep(s.NewRootStep(), columns...)
 }

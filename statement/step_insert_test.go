@@ -12,18 +12,18 @@ func TestInsertIntoColumns_Accept(t *testing.T) {
 
 	tests := []struct {
 		name string
-		c1   model.Column
-		c2   model.Column
+		c1   model.ColumnField
+		c2   model.ColumnField
 	}{
 		{
 			name: "WithoutAs",
-			c1:   &model.BasicColumn{Table: t1, Name: "c1"},
-			c2:   &model.BasicColumn{Table: t1, Name: "c2"},
+			c1:   model.NewBoolColumn(t1, "c1"),
+			c2:   model.NewBoolColumn(t1, "c2"),
 		},
 		{
 			name: "WithAs",
-			c1:   (&model.BasicColumn{Table: t1, Name: "c1"}).SQLikeAs("c1alt"),
-			c2:   (&model.BasicColumn{Table: t1, Name: "c2"}).SQLikeAs("c2alt"),
+			c1:   model.NewBoolColumn(t1, "c1").SQLikeAs("c1alt"),
+			c2:   model.NewBoolColumn(t1, "c2").SQLikeAs("c2alt"),
 		},
 	}
 
@@ -51,9 +51,9 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 	t.Run("OneValues", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &model.BasicTable{Name: "t1"}
-		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
-		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+		t1 := model.NewTable("t1")
+		c1 := model.NewBoolColumn(t1, "c1")
+		c2 := model.NewBoolColumn(t1, "c2")
 
 		stmt, bindings, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
@@ -72,9 +72,9 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 	t.Run("TwoValues", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &model.BasicTable{Name: "t1"}
-		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
-		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+		t1 := model.NewTable("t1")
+		c1 := model.NewBoolColumn(t1, "c1")
+		c2 := model.NewBoolColumn(t1, "c2")
 
 		stmt, bindings, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
@@ -117,9 +117,9 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 
 func TestInsertIntoStructValues_Accept(t *testing.T) {
 
-	t1 := &model.BasicTable{Name: "t1"}
-	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
-	c2 := &model.BasicColumn{Table: t1, Name: "c2"}
+	t1 := model.NewTable("t1")
+	c1 := model.NewBoolColumn(t1, "c1")
+	c2 := model.NewBoolColumn(t1, "c2")
 
 	t.Run("WithoutTag", func(t *testing.T) {
 		type ValueStruct struct {
@@ -281,12 +281,12 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 	t.Run("WithColumns", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &model.BasicTable{Name: "t1"}
-		t2 := &model.BasicTable{Name: "t2"}
-		c1 := &model.BasicColumn{Table: t1, Name: "c1"}
-		c2 := &model.BasicColumn{Table: t1, Name: "c2"}
-		c3 := &model.BasicColumn{Table: t2, Name: "c3"}
-		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
+		t1 := model.NewTable("t1")
+		t2 := model.NewTable("t2")
+		c1 := model.NewBoolColumn(t1, "c1")
+		c2 := model.NewBoolColumn(t1, "c2")
+		c3 := model.NewBoolColumn(t2, "c3")
+		c4 := model.NewBoolColumn(t2, "c4")
 
 		stmt, _, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
@@ -302,10 +302,10 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 	t.Run("WithoutColumns", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &model.BasicTable{Name: "t1"}
-		t2 := &model.BasicTable{Name: "t2"}
-		c3 := &model.BasicColumn{Table: t2, Name: "c3"}
-		c4 := &model.BasicColumn{Table: t2, Name: "c4"}
+		t1 := model.NewTable("t1")
+		t2 := model.NewTable("t2")
+		c3 := model.NewBoolColumn(t2, "c3")
+		c4 := model.NewBoolColumn(t2, "c4")
 
 		stmt, _, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
@@ -320,10 +320,10 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 	t.Run("WithSelectAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &model.BasicTable{Name: "t1"}
-		t2 := &model.BasicTable{Name: "t2"}
-		c1 := &model.BasicColumn{Table: t2, Name: "c1"}
-		c2 := &model.BasicColumn{Table: t2, Name: "c2"}
+		t1 := model.NewTable("t1")
+		t2 := model.NewTable("t2")
+		c1 := model.NewBoolColumn(t2, "c1")
+		c2 := model.NewBoolColumn(t2, "c2")
 
 		stmt, _, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).

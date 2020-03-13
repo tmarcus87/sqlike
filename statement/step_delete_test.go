@@ -8,8 +8,8 @@ import (
 )
 
 func TestDeleteFromStep_Accept(t *testing.T) {
-	t1 := &model.BasicTable{Name: "t1"}
-	c1 := &model.BasicColumn{Table: t1, Name: "c1"}
+	t1 := model.NewTable("t1")
+	c1 := model.NewBoolColumn(t1, "c1")
 
 	t.Run("WithoutWhere", func(t *testing.T) {
 		stmt, _, err :=
@@ -25,7 +25,7 @@ func TestDeleteFromStep_Accept(t *testing.T) {
 	t.Run("WithWhere", func(t *testing.T) {
 		stmt, bindings, err :=
 			NewDeleteFromBranchStep(root(dialect.MySQL), t1).
-				Where(c1.Eq(1)).
+				Where(c1.CondEq(true)).
 				Build().
 				StatementAndBindings()
 
@@ -33,6 +33,6 @@ func TestDeleteFromStep_Accept(t *testing.T) {
 		asserts.Nil(err)
 		asserts.Equal("DELETE FROM `t1` WHERE `t1`.`c1` = ?", stmt)
 		asserts.Len(bindings, 1)
-		asserts.Equal(1, bindings[0])
+		asserts.Equal(true, bindings[0])
 	})
 }

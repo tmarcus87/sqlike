@@ -101,6 +101,12 @@ func init() {
 					NullableImport: pkgDatabaseSql,
 					NullableGoType: typeSqlNullTime,
 				},
+				"year": {
+					GoType:         typeTime,
+					Import:         pkgTime,
+					NullableImport: pkgDatabaseSql,
+					NullableGoType: typeSqlNullTime,
+				},
 
 				// Textual
 				"char": {

@@ -26,13 +26,13 @@ func (s *InsertIntoStep) Parent() StatementAcceptor {
 }
 
 func (s *InsertIntoStep) Accept(stmt *StatementImpl) error {
-	stmt.Statement += fmt.Sprintf("INSERT INTO `%s` ", s.table.SQLikeTableName())
+	stmt.Statement += fmt.Sprintf("INSERT INTO %s ", s.table.SQLikeTableExpr())
 	return nil
 }
 
 type InsertIntoColumnStep struct {
 	parent  StatementAcceptor
-	columns []model.Column
+	columns []model.ColumnField
 }
 
 func (s *InsertIntoColumnStep) Parent() StatementAcceptor {
@@ -101,7 +101,7 @@ func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) error {
 		if !ok {
 			return ErrorNoColumnInfo
 		}
-		columns, ok := columnsV.([]model.Column)
+		columns, ok := columnsV.([]model.ColumnField)
 		if !ok {
 			panic("invalid type of column")
 		}

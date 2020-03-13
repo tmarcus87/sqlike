@@ -30,9 +30,8 @@ func main() {
 	}
 
 	bookTable := &model.BasicTable{Name: "book"}
-	//idColumn := &model.BasicColumn{Table: bookTable, Name: "id"}
-	nameColumn := &model.BasicColumn{Table: bookTable, Name: "title"}
-	authorIdColumn := &model.BasicColumn{Table: bookTable, Name: "author_id"}
+	nameColumn := model.NewTextColumn(bookTable, "title")
+	authorIdColumn := model.NewInt64Column(bookTable, "author_id")
 
 	result :=
 		engine.Master(context.Background()).
