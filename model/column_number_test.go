@@ -259,3 +259,639 @@ func TestFloat64Column_SetAndColumnValue(t *testing.T) {
 	}
 
 }
+
+func TestInt8Column_Cond(t *testing.T) {
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewInt8Column(t1, "c1").CondEq(123),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{int8(123)},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewInt8Column(t1, "c1").CondNotEq(123),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{int8(123)},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewInt8Column(t1, "c1").CondGt(123),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{int8(123)},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewInt8Column(t1, "c1").CondGtOrEq(123),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{int8(123)},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewInt8Column(t1, "c1").CondLt(123),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{int8(123)},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewInt8Column(t1, "c1").CondLtOrEq(123),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{int8(123)},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewInt8Column(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewInt8Column(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewInt8Column(t1, "c1").CondEqCol(NewInt8Column(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewInt8Column(t1, "c1").CondIn(1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{int8(1)},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewInt8Column(t1, "c1").CondIn(1, 2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{int8(1), int8(2)},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewInt8Column(t1, "c1").CondNotIn(1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{int8(1)},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewInt8Column(t1, "c1").CondNotIn(1, 2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{int8(1), int8(2)},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
+
+func TestInt16Column_Cond(t *testing.T) {
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewInt16Column(t1, "c1").CondEq(123),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{int16(123)},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewInt16Column(t1, "c1").CondNotEq(123),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{int16(123)},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewInt16Column(t1, "c1").CondGt(123),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{int16(123)},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewInt16Column(t1, "c1").CondGtOrEq(123),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{int16(123)},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewInt16Column(t1, "c1").CondLt(123),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{int16(123)},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewInt16Column(t1, "c1").CondLtOrEq(123),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{int16(123)},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewInt16Column(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewInt16Column(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewInt16Column(t1, "c1").CondEqCol(NewInt8Column(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewInt16Column(t1, "c1").CondIn(1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{int16(1)},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewInt16Column(t1, "c1").CondIn(1, 2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{int16(1), int16(2)},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewInt16Column(t1, "c1").CondNotIn(1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{int16(1)},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewInt16Column(t1, "c1").CondNotIn(1, 2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{int16(1), int16(2)},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
+
+func TestInt32Column_Cond(t *testing.T) {
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewInt32Column(t1, "c1").CondEq(123),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{int32(123)},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewInt32Column(t1, "c1").CondNotEq(123),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{int32(123)},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewInt32Column(t1, "c1").CondGt(123),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{int32(123)},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewInt32Column(t1, "c1").CondGtOrEq(123),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{int32(123)},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewInt32Column(t1, "c1").CondLt(123),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{int32(123)},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewInt32Column(t1, "c1").CondLtOrEq(123),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{int32(123)},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewInt32Column(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewInt32Column(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewInt32Column(t1, "c1").CondEqCol(NewInt8Column(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewInt32Column(t1, "c1").CondIn(1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{int32(1)},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewInt32Column(t1, "c1").CondIn(1, 2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{int32(1), int32(2)},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewInt32Column(t1, "c1").CondNotIn(1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{int32(1)},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewInt32Column(t1, "c1").CondNotIn(1, 2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{int32(1), int32(2)},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
+
+func TestInt64Column_Cond(t *testing.T) {
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewInt64Column(t1, "c1").CondEq(123),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{int64(123)},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewInt64Column(t1, "c1").CondNotEq(123),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{int64(123)},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewInt64Column(t1, "c1").CondGt(123),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{int64(123)},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewInt64Column(t1, "c1").CondGtOrEq(123),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{int64(123)},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewInt64Column(t1, "c1").CondLt(123),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{int64(123)},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewInt64Column(t1, "c1").CondLtOrEq(123),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{int64(123)},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewInt64Column(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewInt64Column(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewInt64Column(t1, "c1").CondEqCol(NewInt8Column(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewInt64Column(t1, "c1").CondIn(1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{int64(1)},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewInt64Column(t1, "c1").CondIn(1, 2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{int64(1), int64(2)},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewInt64Column(t1, "c1").CondNotIn(1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{int64(1)},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewInt64Column(t1, "c1").CondNotIn(1, 2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{int64(1), int64(2)},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
+
+func TestFloat32Column_Cond(t *testing.T) {
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewFloat32Column(t1, "c1").CondEq(123),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{float32(123)},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewFloat32Column(t1, "c1").CondNotEq(123),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{float32(123)},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewFloat32Column(t1, "c1").CondGt(123),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{float32(123)},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewFloat32Column(t1, "c1").CondGtOrEq(123),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{float32(123)},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewFloat32Column(t1, "c1").CondLt(123),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{float32(123)},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewFloat32Column(t1, "c1").CondLtOrEq(123),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{float32(123)},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewFloat32Column(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewFloat32Column(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewFloat32Column(t1, "c1").CondEqCol(NewInt8Column(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewFloat32Column(t1, "c1").CondIn(1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{float32(1)},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewFloat32Column(t1, "c1").CondIn(1, 2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{float32(1), float32(2)},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewFloat32Column(t1, "c1").CondNotIn(1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{float32(1)},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewFloat32Column(t1, "c1").CondNotIn(1, 2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{float32(1), float32(2)},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
+
+func TestFloat64Column_Cond(t *testing.T) {
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewFloat64Column(t1, "c1").CondEq(123),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{float64(123)},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewFloat64Column(t1, "c1").CondNotEq(123),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{float64(123)},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewFloat64Column(t1, "c1").CondGt(123),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{float64(123)},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewFloat64Column(t1, "c1").CondGtOrEq(123),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{float64(123)},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewFloat64Column(t1, "c1").CondLt(123),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{float64(123)},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewFloat64Column(t1, "c1").CondLtOrEq(123),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{float64(123)},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewFloat64Column(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewFloat64Column(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewFloat64Column(t1, "c1").CondEqCol(NewInt8Column(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewFloat64Column(t1, "c1").CondIn(1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{float64(1)},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewFloat64Column(t1, "c1").CondIn(1, 2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{float64(1), float64(2)},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewFloat64Column(t1, "c1").CondNotIn(1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{float64(1)},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewFloat64Column(t1, "c1").CondNotIn(1, 2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{float64(1), float64(2)},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
