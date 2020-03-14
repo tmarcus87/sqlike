@@ -73,6 +73,10 @@ func (c *TextColumn) CondLtOrEq(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
+func (c *TextColumn) CondLike(v string) Condition {
+	return &SingleValueCondition{Column: c, Operator: "LIKE", Value: v}
+}
+
 func (c *TextColumn) CondIsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
