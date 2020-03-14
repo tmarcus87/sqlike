@@ -72,3 +72,113 @@ func TestTimeColumn_SetAndColumnValue(t *testing.T) {
 	}
 
 }
+
+func TestTimeColumn_Cond(t *testing.T) {
+
+	t1 := NewTable("t1")
+	t2 := NewTable("t2")
+
+	tm1 := time.Now()
+	tm2 := time.Now().Add(time.Second)
+
+	tests := []struct {
+		Name string
+		Cond Condition
+		Stmt string
+		Bind []interface{}
+	}{
+		{
+			Name: "CondEq",
+			Cond: NewTimeColumn(t1, "c1").CondEq(tm1),
+			Stmt: "`t1`.`c1` = ?",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondNotEq",
+			Cond: NewTimeColumn(t1, "c1").CondNotEq(tm1),
+			Stmt: "`t1`.`c1` != ?",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondGt",
+			Cond: NewTimeColumn(t1, "c1").CondGt(tm1),
+			Stmt: "`t1`.`c1` > ?",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondGtOrEq",
+			Cond: NewTimeColumn(t1, "c1").CondGtOrEq(tm1),
+			Stmt: "`t1`.`c1` >= ?",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondLt",
+			Cond: NewTimeColumn(t1, "c1").CondLt(tm1),
+			Stmt: "`t1`.`c1` < ?",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondLtOrEq",
+			Cond: NewTimeColumn(t1, "c1").CondLtOrEq(tm1),
+			Stmt: "`t1`.`c1` <= ?",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondIsNull",
+			Cond: NewTimeColumn(t1, "c1").CondIsNull(),
+			Stmt: "`t1`.`c1` IS NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIsNotNull",
+			Cond: NewTimeColumn(t1, "c1").CondIsNotNull(),
+			Stmt: "`t1`.`c1` IS NOT NULL",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondEqCol",
+			Cond: NewTimeColumn(t1, "c1").CondEqCol(NewTextColumn(t2, "c2")),
+			Stmt: "`t1`.`c1` = `t2`.`c2`",
+			Bind: []interface{}{},
+		},
+		{
+			Name: "CondIn/One",
+			Cond: NewTimeColumn(t1, "c1").CondIn(tm1),
+			Stmt: "`t1`.`c1` IN (?)",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondIn/Two",
+			Cond: NewTimeColumn(t1, "c1").CondIn(tm1, tm2),
+			Stmt: "`t1`.`c1` IN (?, ?)",
+			Bind: []interface{}{tm1, tm2},
+		},
+		{
+			Name: "CondNotIn/One",
+			Cond: NewTimeColumn(t1, "c1").CondNotIn(tm1),
+			Stmt: "`t1`.`c1` NOT IN (?)",
+			Bind: []interface{}{tm1},
+		},
+		{
+			Name: "CondNotIn/Two",
+			Cond: NewTimeColumn(t1, "c1").CondNotIn(tm1, tm2),
+			Stmt: "`t1`.`c1` NOT IN (?, ?)",
+			Bind: []interface{}{tm1, tm2},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			stmt := ""
+			bindings := make([]interface{}, 0)
+			test.Cond.Apply(&stmt, &bindings)
+
+			asserts := assert.New(t)
+
+			asserts.Equal(test.Stmt, stmt)
+			asserts.Len(bindings, len(test.Bind))
+			asserts.EqualValues(test.Bind, bindings)
+		})
+	}
+
+}
