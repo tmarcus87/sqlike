@@ -9,12 +9,19 @@ import (
 )
 
 type Session interface {
+	Begin() error
+	Commit() error
+	Rollback() error
+	Close() error
+
 	Explain() statement.ExplainSelectBranchStep
 	SelectOne() statement.SelectOneBranchStep
 	Select(columns ...model.ColumnField) statement.SelectColumnBranchStep
+	SelectFrom(table model.Table) statement.SelectFromBranchStep
 	InsertInto(table model.Table) statement.InsertIntoBranchStep
 	Update(table model.Table) statement.UpdateBranchStep
 	DeleteFrom(table model.Table) statement.DeleteFromBranchStep
+	Truncate(table model.Table) statement.TruncateBranchStep
 }
 
 type basicSession struct {
@@ -62,4 +69,36 @@ func (s *basicSession) NewRootStep() *statement.RootStep {
 	}
 
 	return statement.NewRootStep(s.ctx, dialect.GetDialectStatements(s.dialect), q, e)
+}
+
+func (s *basicSession) Explain() statement.ExplainSelectBranchStep {
+	return statement.NewExplainSelectBranchStep(s.NewRootStep())
+}
+
+func (s *basicSession) SelectOne() statement.SelectOneBranchStep {
+	return statement.NewSelectOneBranchStep(s.NewRootStep())
+}
+
+func (s *basicSession) Select(columns ...model.ColumnField) statement.SelectColumnBranchStep {
+	return statement.NewSelectColumnBranchStep(s.NewRootStep(), columns...)
+}
+
+func (s *basicSession) SelectFrom(table model.Table) statement.SelectFromBranchStep {
+	return statement.NewSelectFromBranchStep(s.NewRootStep(), table)
+}
+
+func (s *basicSession) InsertInto(table model.Table) statement.InsertIntoBranchStep {
+	return statement.NewInsertIntoBranchStep(s.NewRootStep(), table)
+}
+
+func (s *basicSession) Update(table model.Table) statement.UpdateBranchStep {
+	return statement.NewUpdateBranchStep(s.NewRootStep(), table)
+}
+
+func (s *basicSession) DeleteFrom(table model.Table) statement.DeleteFromBranchStep {
+	return statement.NewDeleteFromBranchStep(s.NewRootStep(), table)
+}
+
+func (s *basicSession) Truncate(table model.Table) statement.TruncateBranchStep {
+	return statement.NewTruncateBranchStep(s.NewRootStep(), table)
 }

@@ -5,12 +5,12 @@ import "fmt"
 type Table interface {
 	// SQLikeTableName テーブル名を返します
 	SQLikeTableName() string
-	// SQLikeAs テーブルにエイリアスを設定します
-	SQLikeAs(alias string) Table
 	// SQLikeAliasOrName テーブルのエイリアス名もしくはテーブル名を返します
 	SQLikeAliasOrName() string
 	// SQLikeTableExpr
 	SQLikeTableExpr() string
+	// SQLikeAs テーブルにエイリアスを設定します
+	As(alias string) Table
 }
 
 type BasicTable struct {
@@ -22,7 +22,7 @@ func (t *BasicTable) SQLikeTableName() string {
 	return t.Name
 }
 
-func (t *BasicTable) SQLikeAs(alias string) Table {
+func (t *BasicTable) As(alias string) Table {
 	t.alias = alias
 	return t
 }

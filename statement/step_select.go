@@ -141,7 +141,7 @@ func (s *SelectOrderByStep) Accept(stmt *StatementImpl) error {
 			append(orders,
 				fmt.Sprintf("`%s`.`%s` %s",
 					order.Column.SQLikeTable().SQLikeAliasOrName(),
-					order.Column.SQLikeAliasOrName(),
+					order.Column.SQLikeColumnName(),
 					order.Order))
 	}
 

@@ -17,15 +17,15 @@ func TestTextColumn_SQLikeFieldExpr(t *testing.T) {
 		},
 		{
 			Expect: "`tbl`.`col` AS `col_alias`",
-			Column: NewTextColumn(NewTable("tbl"), "col").SQLikeAs("col_alias"),
+			Column: NewTextColumn(NewTable("tbl"), "col").As("col_alias"),
 		},
 		{
 			Expect: "`tbl_alias`.`col`",
-			Column: NewTextColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column: NewTextColumn(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 		{
 			Expect: "`tbl_alias`.`col` AS `col_alias`",
-			Column: NewTextColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col").SQLikeAs("col_alias"),
+			Column: NewTextColumn(NewTable("tbl").As("tbl_alias"), "col").As("col_alias"),
 		},
 	}
 
@@ -51,7 +51,7 @@ func TestTextColumn_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewTextColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewTextColumn(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 

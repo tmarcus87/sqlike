@@ -7,7 +7,7 @@ import (
 
 func TestNumericColumn_SQLikeFieldExpr(t *testing.T) {
 	tbl := NewTable("tbl")
-	tblAlias := NewTable("tbl").SQLikeAs("tbl_alias")
+	tblAlias := NewTable("tbl").As("tbl_alias")
 
 	tests := []struct {
 		Expect string
@@ -19,7 +19,7 @@ func TestNumericColumn_SQLikeFieldExpr(t *testing.T) {
 		},
 		{
 			Expect: "`tbl`.`col` AS `col_alias`",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).SQLikeAs("col_alias"),
+			Column: (&NumberColumn{Table: tbl, Name: "col"}).As("col_alias"),
 		},
 		{
 			Expect: "`tbl_alias`.`col`",
@@ -27,7 +27,7 @@ func TestNumericColumn_SQLikeFieldExpr(t *testing.T) {
 		},
 		{
 			Expect: "`tbl_alias`.`col` AS `col_alias`",
-			Column: (&NumberColumn{Table: tblAlias, Name: "col"}).SQLikeAs("col_alias"),
+			Column: (&NumberColumn{Table: tblAlias, Name: "col"}).As("col_alias"),
 		},
 		{
 			Expect: "`tbl`.`col` + 123",
@@ -67,7 +67,7 @@ func TestNumericColumn_SQLikeFieldExpr(t *testing.T) {
 		},
 		{
 			Expect: "`tbl`.`col` + 123 AS `col_plus`",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).PlusInt(123).SQLikeAs("col_plus"),
+			Column: (&NumberColumn{Table: tbl, Name: "col"}).PlusInt(123).As("col_plus"),
 		},
 	}
 
@@ -92,7 +92,7 @@ func TestInt8Column_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewInt8Column(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewInt8Column(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
@@ -122,7 +122,7 @@ func TestInt16Column_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewInt16Column(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewInt16Column(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
@@ -152,7 +152,7 @@ func TestInt32Column_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewInt32Column(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewInt32Column(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
@@ -182,7 +182,7 @@ func TestInt64Column_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewInt64Column(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewInt64Column(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
@@ -212,7 +212,7 @@ func TestFloat32Column_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewFloat32Column(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewFloat32Column(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
@@ -242,7 +242,7 @@ func TestFloat64Column_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewFloat64Column(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewFloat64Column(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 

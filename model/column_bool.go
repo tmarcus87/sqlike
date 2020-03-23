@@ -27,7 +27,7 @@ func (c *BoolColumn) SQLikeAliasOrName() string {
 
 }
 
-func (c *BoolColumn) SQLikeAs(alias string) ColumnField {
+func (c *BoolColumn) As(alias string) ColumnField {
 	c.alias = alias
 	return c
 }
@@ -40,12 +40,12 @@ func (c *BoolColumn) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *BoolColumn) SQLikeSet(v bool) ColumnValue {
+func (c *BoolColumn) SetValue(v bool) ColumnValue {
 	c.value = v
 	return c
 }
 
-func (c *BoolColumn) CondEq(v bool) Condition {
+func (c *BoolColumn) Eq(v bool) Condition {
 	return &SingleValueCondition{
 		Column:   c,
 		Operator: "=",
@@ -53,7 +53,7 @@ func (c *BoolColumn) CondEq(v bool) Condition {
 	}
 }
 
-func (c *BoolColumn) CondNotEq(v bool) Condition {
+func (c *BoolColumn) NotEq(v bool) Condition {
 	return &SingleValueCondition{
 		Column:   c,
 		Operator: "!=",
@@ -61,24 +61,38 @@ func (c *BoolColumn) CondNotEq(v bool) Condition {
 	}
 }
 
-func (c *BoolColumn) CondIsNull() Condition {
+func (c *BoolColumn) IsNull() Condition {
 	return &NoValueCondition{
 		Column:   c,
 		Operator: "IS NULL",
 	}
 }
 
-func (c *BoolColumn) CondIsNotNull() Condition {
+func (c *BoolColumn) IsNotNull() Condition {
 	return &NoValueCondition{
 		Column:   c,
 		Operator: "IS NOT NULL",
 	}
 }
 
-func (c *BoolColumn) CondEqCol(field ColumnField) Condition {
+func (c *BoolColumn) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{
 		Column:   c,
 		Operator: "=",
 		Value:    field,
+	}
+}
+
+func (c *BoolColumn) Asc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderAsc,
+	}
+}
+
+func (c *BoolColumn) Desc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderDesc,
 	}
 }

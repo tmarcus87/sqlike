@@ -277,6 +277,10 @@ func (s *StatementImpl) buildStatement() error {
 
 	s.Statement = strings.TrimSuffix(s.Statement, " ")
 	s.built = true
+
+	logger.Debug("Built statement")
+	logger.Debug("Statement : %s", s.Statement)
+	logger.Debug("Bindings  : %+v", s.Bindings)
 	return nil
 }
 

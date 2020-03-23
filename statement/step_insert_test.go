@@ -22,8 +22,8 @@ func TestInsertIntoColumns_Accept(t *testing.T) {
 		},
 		{
 			name: "WithAs",
-			c1:   model.NewBoolColumn(t1, "c1").SQLikeAs("c1alt"),
-			c2:   model.NewBoolColumn(t1, "c2").SQLikeAs("c2alt"),
+			c1:   model.NewBoolColumn(t1, "c1").As("c1alt"),
+			c2:   model.NewBoolColumn(t1, "c2").As("c2alt"),
 		},
 	}
 
@@ -327,8 +327,8 @@ func TestInsertIntoSelect_Accept(t *testing.T) {
 
 		stmt, _, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
-				Select(c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).
-				From(t2.SQLikeAs("t2alt")).
+				Select(c1.As("c1alt"), c2.As("c2alt")).
+				From(t2.As("t2alt")).
 				Build().
 				StatementAndBindings()
 		asserts.Nil(err)

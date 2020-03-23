@@ -25,7 +25,7 @@ func TestDeleteFromStep_Accept(t *testing.T) {
 	t.Run("WithWhere", func(t *testing.T) {
 		stmt, bindings, err :=
 			NewDeleteFromBranchStep(root(dialect.MySQL), t1).
-				Where(c1.CondEq(true)).
+				Where(c1.Eq(true)).
 				Build().
 				StatementAndBindings()
 

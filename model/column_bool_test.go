@@ -17,15 +17,15 @@ func TestBoolColumn_SQLikeFieldExpr(t *testing.T) {
 		},
 		{
 			Expect: "`tbl`.`col` AS `col_alias`",
-			Column: NewBoolColumn(NewTable("tbl"), "col").SQLikeAs("col_alias"),
+			Column: NewBoolColumn(NewTable("tbl"), "col").As("col_alias"),
 		},
 		{
 			Expect: "`tbl_alias`.`col`",
-			Column: NewBoolColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column: NewBoolColumn(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 		{
 			Expect: "`tbl_alias`.`col` AS `col_alias`",
-			Column: NewBoolColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col").SQLikeAs("col_alias"),
+			Column: NewBoolColumn(NewTable("tbl").As("tbl_alias"), "col").As("col_alias"),
 		},
 	}
 
@@ -51,7 +51,7 @@ func TestBoolColumn_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewBoolColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewBoolColumn(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
@@ -59,10 +59,10 @@ func TestBoolColumn_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(false)
+			colV := test.Column.SetValue(false)
 			asserts.Equal(false, colV.SQLikeColumnValue())
 
-			test.Column.SQLikeSet(true)
+			test.Column.SetValue(true)
 			asserts.Equal(true, colV.SQLikeColumnValue())
 		})
 	}

@@ -37,7 +37,7 @@ func (c *NumberColumn) SQLikeAliasOrName() string {
 
 }
 
-func (c *NumberColumn) SQLikeAs(alias string) ColumnField {
+func (c *NumberColumn) As(alias string) ColumnField {
 	c.alias = alias
 	return c
 }
@@ -84,6 +84,20 @@ func (c *NumberColumn) DivideInt(v int) NumericField {
 func (c *NumberColumn) DivideFloat(v float64) NumericField {
 	c.expr = calcExpr(c, c.expr, fmt.Sprintf("$$ / %g", v))
 	return c
+}
+
+func (c *NumberColumn) Asc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderAsc,
+	}
+}
+
+func (c *NumberColumn) Desc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderDesc,
+	}
 }
 
 func NewInt8Column(table Table, name string) *Int8Column {

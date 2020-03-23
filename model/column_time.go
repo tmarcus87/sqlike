@@ -33,7 +33,7 @@ func (c *TimeColumn) SQLikeAliasOrName() string {
 	return c.Name
 }
 
-func (c *TimeColumn) SQLikeAs(alias string) ColumnField {
+func (c *TimeColumn) As(alias string) ColumnField {
 	c.alias = alias
 	return c
 }
@@ -100,6 +100,20 @@ func (c *TimeColumn) CondNotIn(vs ...time.Time) Condition {
 		Column:   c,
 		Operator: "NOT IN",
 		Values:   TimeSliceToInterfaceSlice(vs),
+	}
+}
+
+func (c *TimeColumn) Asc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderAsc,
+	}
+}
+
+func (c *TimeColumn) Desc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderDesc,
 	}
 }
 

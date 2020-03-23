@@ -27,9 +27,34 @@ func (s *basicSession) Begin() (err error) {
 	return nil
 }
 
-func (s *basicSession) Rollback() (err error) {
+func (s *basicSession) Commit() error {
+	if !s.isBegan {
+		logger.Warn("Tx is not began")
+		return nil
+	}
+
+	if err := s.tx.Commit(); err != nil {
+		return err
+	}
+
+	s.isBegan = false
+	return nil
+}
+
+func (s *basicSession) Rollback() error {
 	if s.isBegan {
 		return s.tx.Rollback()
+	}
+	return nil
+}
+
+func (s *basicSession) Close() error {
+	if s.isBegan {
+		logger.Debug("Rollback session")
+		if err := s.tx.Rollback(); err != nil {
+			return err
+		}
+		s.isBegan = false
 	}
 	return nil
 }

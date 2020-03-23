@@ -31,7 +31,7 @@ func (c *TextColumn) SQLikeAliasOrName() string {
 	return c.Name
 }
 
-func (c *TextColumn) SQLikeAs(alias string) ColumnField {
+func (c *TextColumn) As(alias string) ColumnField {
 	c.alias = alias
 	return c
 }
@@ -102,6 +102,20 @@ func (c *TextColumn) CondNotIn(vs ...string) Condition {
 		Column:   c,
 		Operator: "NOT IN",
 		Values:   StringSliceToInterfaceSlice(vs),
+	}
+}
+
+func (c *TextColumn) Asc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderAsc,
+	}
+}
+
+func (c *TextColumn) Desc() *SortOrder {
+	return &SortOrder{
+		Column: c,
+		Order:  OrderDesc,
 	}
 }
 

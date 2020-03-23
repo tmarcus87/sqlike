@@ -28,9 +28,16 @@ func TestFetchMap(t *testing.T) {
 	}
 	defer db.Close()
 
-	s := NewSession(context.Background(), db, dialect.MySQL, false)
-
 	asserts := assert.New(t)
+
+	if _, err := db.Exec("TRUNCATE `author`"); err != nil {
+		panic(err)
+	}
+	if _, err := db.Exec("INSERT INTO `author` (`name`) VALUES ('William Shakespeare'), ('J. K. Rowling')"); err != nil {
+		panic(err)
+	}
+
+	s := NewSession(context.Background(), db, dialect.MySQL, false)
 
 	mapslice, err := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Build().FetchMap()
 	asserts.Nil(err)
@@ -54,9 +61,16 @@ func TestFetchInto(t *testing.T) {
 	}
 	defer db.Close()
 
-	s := NewSession(context.Background(), db, dialect.MySQL, false)
-
 	asserts := assert.New(t)
+
+	if _, err := db.Exec("TRUNCATE `author`"); err != nil {
+		panic(err)
+	}
+	if _, err := db.Exec("INSERT INTO `author` (`name`) VALUES ('William Shakespeare'), ('J. K. Rowling')"); err != nil {
+		panic(err)
+	}
+
+	s := NewSession(context.Background(), db, dialect.MySQL, false)
 
 	t.Run("PtrValue", func(t *testing.T) {
 		authors := make([]Author, 0)
@@ -103,9 +117,16 @@ func TestFetchOneInto(t *testing.T) {
 	}
 	defer db.Close()
 
-	s := NewSession(context.Background(), db, dialect.MySQL, false)
-
 	asserts := assert.New(t)
+
+	if _, err := db.Exec("TRUNCATE `author`"); err != nil {
+		panic(err)
+	}
+	if _, err := db.Exec("INSERT INTO `author` (`name`) VALUES ('William Shakespeare'), ('J. K. Rowling')"); err != nil {
+		panic(err)
+	}
+
+	s := NewSession(context.Background(), db, dialect.MySQL, false)
 
 	t.Run("Found", func(t *testing.T) {
 		author := Author{}

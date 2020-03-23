@@ -62,9 +62,19 @@ func TestSelectOne_Accept(t *testing.T) {
 }
 
 func TestSelectFrom_Accept(t *testing.T) {
-	asserts := assert.New(t)
+	t.Run("All", func(t *testing.T) {
+		asserts := assert.New(t)
+
+		t1 := model.NewTable("t1")
+
+		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), model.NewAllColumnField()).From(t1).Build().StatementAndBindings()
+		asserts.Nil(err)
+		asserts.Equal("SELECT * FROM `t1`", stmt)
+	})
 
 	t.Run("WithoutAs", func(t *testing.T) {
+		asserts := assert.New(t)
+
 		t1 := model.NewTable("t1")
 
 		c1 := model.NewBoolColumn(t1, "c1")
@@ -84,7 +94,7 @@ func TestSelectFrom_Accept(t *testing.T) {
 		c1 := model.NewBoolColumn(t1, "c1")
 		c2 := model.NewBoolColumn(t1, "c2")
 
-		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).Build().StatementAndBindings()
+		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.As("c1alt"), c2.As("c2alt")).From(t1.As("t1alt")).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt`", stmt)
 		asserts.Empty(bindings)
@@ -100,7 +110,7 @@ func TestSelectFromWithOneWhere_Accept(t *testing.T) {
 	c1 := model.NewBoolColumn(t1, "c1")
 	c2 := model.NewBoolColumn(t1, "c2")
 
-	stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).Where(c1.CondEq(true)).Build().StatementAndBindings()
+	stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).Where(c1.Eq(true)).Build().StatementAndBindings()
 	asserts.Nil(err)
 	asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` WHERE `t1`.`c1` = ?", stmt)
 	asserts.Len(bindings, 1)
@@ -116,7 +126,7 @@ func TestSelectFromWithTwoWhere_Accept(t *testing.T) {
 	c2 := model.NewBoolColumn(t1, "c2")
 
 	t.Run("And", func(t *testing.T) {
-		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).Where(And(c1.CondEq(true), c2.CondEq(false))).Build().StatementAndBindings()
+		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).Where(And(c1.Eq(true), c2.Eq(false))).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` WHERE (`t1`.`c1` = ? AND `t1`.`c2` = ?)", stmt)
 		asserts.Len(bindings, 2)
@@ -125,7 +135,7 @@ func TestSelectFromWithTwoWhere_Accept(t *testing.T) {
 	})
 
 	t.Run("Or", func(t *testing.T) {
-		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).Where(Or(c1.CondEq(true), c2.CondEq(false))).Build().StatementAndBindings()
+		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).Where(Or(c1.Eq(true), c2.Eq(false))).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal("SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` WHERE (`t1`.`c1` = ? OR `t1`.`c2` = ?)", stmt)
 		asserts.Len(bindings, 2)
@@ -135,6 +145,29 @@ func TestSelectFromWithTwoWhere_Accept(t *testing.T) {
 }
 
 func TestSelectFromJoin_Accept(t *testing.T) {
+	t.Run("All", func(t *testing.T) {
+		asserts := assert.New(t)
+
+		t1 := model.NewTable("t1")
+		t2 := model.NewTable("t2")
+
+		c1 := model.NewBoolColumn(t1, "c1")
+		c3 := model.NewBoolColumn(t2, "c3")
+		c4 := model.NewBoolColumn(t2, "c4")
+
+		stmt, bindings, err :=
+			NewSelectColumnBranchStep(root(dialect.MySQL),
+				model.NewAllTableColumnField(t1),
+				model.NewAllTableColumnField(t2)).
+				From(t1).LeftOuterJoin(t2, c1.EqCol(c3)).Where(c4.Eq(true)).Build().StatementAndBindings()
+		asserts.Nil(err)
+		asserts.Equal(
+			"SELECT `t1`.*, `t2`.* FROM `t1` LEFT OUTER JOIN `t2` ON `t1`.`c1` = `t2`.`c3` WHERE `t2`.`c4` = ?",
+			stmt)
+		asserts.Len(bindings, 1)
+		asserts.Equal(true, bindings[0])
+	})
+
 	t.Run("WithoutAs", func(t *testing.T) {
 		asserts := assert.New(t)
 
@@ -146,7 +179,7 @@ func TestSelectFromJoin_Accept(t *testing.T) {
 		c3 := model.NewBoolColumn(t2, "c3")
 		c4 := model.NewBoolColumn(t2, "c4")
 
-		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).LeftOuterJoin(t2, c1.CondEqCol(c3)).Where(c4.CondEq(true)).Build().StatementAndBindings()
+		stmt, bindings, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1, c2).From(t1).LeftOuterJoin(t2, c1.EqCol(c3)).Where(c4.Eq(true)).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal(
 			"SELECT `t1`.`c1`, `t1`.`c2` FROM `t1` LEFT OUTER JOIN `t2` ON `t1`.`c1` = `t2`.`c3` WHERE `t2`.`c4` = ?",
@@ -168,11 +201,11 @@ func TestSelectFromJoin_Accept(t *testing.T) {
 
 		stmt, bindings, err :=
 			NewSelectColumnBranchStep(root(dialect.MySQL),
-				c1.SQLikeAs("c1alt"),
-				c2.SQLikeAs("c2alt")).
-				From(t1.SQLikeAs("t1alt")).
-				LeftOuterJoin(t2.SQLikeAs("t2alt"), c1.CondEqCol(c3)).
-				Where(c4.CondEq(true)).
+				c1.As("c1alt"),
+				c2.As("c2alt")).
+				From(t1.As("t1alt")).
+				LeftOuterJoin(t2.As("t2alt"), c1.EqCol(c3)).
+				Where(c4.Eq(true)).
 				Build().
 				StatementAndBindings()
 		asserts.Nil(err)
@@ -206,7 +239,7 @@ func TestSelectFromGroupBy_Accept(t *testing.T) {
 		c1 := model.NewBoolColumn(t1, "c1")
 		c2 := model.NewBoolColumn(t1, "c2")
 
-		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.SQLikeAs("c1alt"), model.Count(c2).SQLikeAs("cnt")).From(t1.SQLikeAs("t1alt")).GroupBy(c1).Build().StatementAndBindings()
+		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.As("c1alt"), model.Count(c2).As("cnt")).From(t1.As("t1alt")).GroupBy(c1).Build().StatementAndBindings()
 		asserts.Nil(err)
 		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, COUNT(`t1alt`.`c2`) AS `cnt` FROM `t1` AS `t1alt` GROUP BY `t1alt`.`c1`", stmt)
 	})
@@ -234,9 +267,9 @@ func TestSelectFromOrderBy_Accept(t *testing.T) {
 		c1 := model.NewBoolColumn(t1, "c1")
 		c2 := model.NewBoolColumn(t1, "c2")
 
-		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.SQLikeAs("c1alt"), c2.SQLikeAs("c2alt")).From(t1.SQLikeAs("t1alt")).OrderBy(&model.SortOrder{Column: c2, Order: model.OrderDesc}).Build().StatementAndBindings()
+		stmt, _, err := NewSelectColumnBranchStep(root(dialect.MySQL), c1.As("c1alt"), c2.As("c2alt")).From(t1.As("t1alt")).OrderBy(&model.SortOrder{Column: c2, Order: model.OrderDesc}).Build().StatementAndBindings()
 		asserts.Nil(err)
-		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt` ORDER BY `t1alt`.`c2alt` DESC", stmt)
+		asserts.Equal("SELECT `t1alt`.`c1` AS `c1alt`, `t1alt`.`c2` AS `c2alt` FROM `t1` AS `t1alt` ORDER BY `t1alt`.`c2` DESC", stmt)
 	})
 
 }

@@ -113,6 +113,20 @@ type SelectFromBranchStep interface {
 	LimitAndOffset(limit int32, offset int64) SelectFromLimitAndOffsetBranchStep
 }
 
+func NewSelectFromBranchStep(parent StatementAcceptor, table model.Table) SelectFromBranchStep {
+	return &selectFromBranchStepImpl{
+		parent: &SelectFromStep{
+			parent: &SelectColumnStep{
+				parent: parent,
+				columns: []model.ColumnField{
+					model.NewAllColumnField(),
+				},
+			},
+			table: table,
+		},
+	}
+}
+
 type selectFromBranchStepImpl struct {
 	parent *SelectFromStep
 }

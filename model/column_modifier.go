@@ -25,7 +25,7 @@ func (c *CountColumnModifier) SQLikeAliasOrName() string {
 	return c.column.SQLikeAliasOrName()
 }
 
-func (c *CountColumnModifier) SQLikeAs(alias string) ColumnField {
+func (c *CountColumnModifier) As(alias string) ColumnField {
 	c.alias = alias
 	return c
 }

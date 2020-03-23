@@ -53,7 +53,7 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				Set(c1, 1).
 				Set(c2, 2).
-				Where(c1.CondEq(true)).
+				Where(c1.Eq(true)).
 				Build().
 				StatementAndBindings()
 
@@ -85,7 +85,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 		stmt, bindings, err :=
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
 				SetRecord(&model.Record{Value: &Value{C1: 1, Column2: 2, Column3: 3}}).
-				Where(c1.CondEq(true)).
+				Where(c1.Eq(true)).
 				Build().
 				StatementAndBindings()
 		asserts := assert.New(t)
@@ -105,7 +105,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 					Only:  []model.Column{c1, c2},
 					Value: &Value{C1: 1, Column2: 2},
 				}).
-				Where(c1.CondEq(true)).
+				Where(c1.Eq(true)).
 				Build().
 				StatementAndBindings()
 		asserts := assert.New(t)
@@ -124,7 +124,7 @@ func TestUpdateSetRecordStep_Accept(t *testing.T) {
 					Skip:  []model.Column{c3},
 					Value: &Value{C1: 1, Column2: 2},
 				}).
-				Where(c1.CondEq(true)).
+				Where(c1.Eq(true)).
 				Build().
 				StatementAndBindings()
 		asserts := assert.New(t)

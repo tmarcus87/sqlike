@@ -20,5 +20,7 @@ func (s *WhereStep) Accept(stmt *StatementImpl) error {
 
 	joinCondition(s.conditions, &stmt.Statement, &stmt.Bindings, "AND")
 
+	stmt.Statement += " "
+
 	return nil
 }

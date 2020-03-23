@@ -19,12 +19,13 @@ type ColumnField interface {
 	Column
 
 	// SQLikeAs フィールド句にエイリアス名を指定します
-	SQLikeAs(alias string) ColumnField
+	As(alias string) ColumnField
 
 	// SQLikeFieldExpr フィールド句を返します
 	SQLikeFieldExpr() string
 }
 
+// ColumnValue column & its value
 type ColumnValue interface {
 	Column
 
@@ -51,4 +52,41 @@ func fieldExpr(c Column, alias, expr string) string {
 		return fmt.Sprintf("%s AS `%s`", expr, alias)
 	}
 	return expr
+}
+
+func NewAllColumnField() ColumnField {
+	return &AllColumn{}
+}
+
+func NewAllTableColumnField(table Table) ColumnField {
+	return &AllColumn{
+		table: table,
+	}
+}
+
+type AllColumn struct {
+	table Table
+}
+
+func (a *AllColumn) SQLikeTable() Table {
+	return a.table
+}
+
+func (a *AllColumn) SQLikeColumnName() string {
+	return ""
+}
+
+func (a *AllColumn) SQLikeAliasOrName() string {
+	return ""
+}
+
+func (a *AllColumn) As(string) ColumnField {
+	return a
+}
+
+func (a *AllColumn) SQLikeFieldExpr() string {
+	if a.table == nil {
+		return "*"
+	}
+	return fmt.Sprintf("`%s`.*", a.table.SQLikeAliasOrName())
 }

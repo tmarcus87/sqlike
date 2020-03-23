@@ -5,6 +5,7 @@ import "github.com/tmarcus87/sqlike/model"
 type InsertIntoBranchStep interface {
 	Columns(cols ...model.ColumnField) InsertIntoColumnBranchStep
 	Values(values ...interface{}) InsertIntoValuesBranchStep
+	ValueStructs(values ...interface{}) InsertIntoValueStructsBranchStep
 	Select(columns ...model.ColumnField) SelectColumnBranchStep
 }
 

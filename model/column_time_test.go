@@ -18,15 +18,15 @@ func TestTimeColumn_SQLikeFieldExpr(t *testing.T) {
 		},
 		{
 			Expect: "`tbl`.`col` AS `col_alias`",
-			Column: NewTimeColumn(NewTable("tbl"), "col").SQLikeAs("col_alias"),
+			Column: NewTimeColumn(NewTable("tbl"), "col").As("col_alias"),
 		},
 		{
 			Expect: "`tbl_alias`.`col`",
-			Column: NewTimeColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column: NewTimeColumn(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 		{
 			Expect: "`tbl_alias`.`col` AS `col_alias`",
-			Column: NewTimeColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col").SQLikeAs("col_alias"),
+			Column: NewTimeColumn(NewTable("tbl").As("tbl_alias"), "col").As("col_alias"),
 		},
 	}
 
@@ -55,7 +55,7 @@ func TestTimeColumn_SetAndColumnValue(t *testing.T) {
 		},
 		{
 			ExpectExpr: "`tbl_alias`.`col`",
-			Column:     NewTimeColumn(NewTable("tbl").SQLikeAs("tbl_alias"), "col"),
+			Column:     NewTimeColumn(NewTable("tbl").As("tbl_alias"), "col"),
 		},
 	}
 
