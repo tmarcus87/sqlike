@@ -8,12 +8,7 @@ import (
 	"github.com/tmarcus87/sqlike/statement"
 )
 
-type Session interface {
-	Begin() error
-	Commit() error
-	Rollback() error
-	Close() error
-
+type SQLSession interface {
 	Explain() statement.ExplainSelectBranchStep
 	SelectOne() statement.SelectOneBranchStep
 	Select(columns ...model.ColumnField) statement.SelectColumnBranchStep
@@ -24,17 +19,17 @@ type Session interface {
 	Truncate(table model.Table) statement.TruncateBranchStep
 }
 
+type Session interface {
+	Begin() (TxSession, error)
+
+	SQLSession
+}
+
 type basicSession struct {
-	db      *sql.DB
-	ctx     context.Context
-	dialect string
-
-	// Query condition
+	db       *sql.DB
+	ctx      context.Context
+	dialect  string
 	readonly bool
-
-	// Tx
-	tx      *sql.Tx
-	isBegan bool
 }
 
 func NewSession(ctx context.Context, db *sql.DB, dialect string, readonly bool) Session {
@@ -46,59 +41,59 @@ func NewSession(ctx context.Context, db *sql.DB, dialect string, readonly bool) 
 	}
 }
 
-func (s *basicSession) NewRootStep() *statement.RootStep {
-	var (
-		q func(context.Context, string, ...interface{}) (*sql.Rows, error)
-		e func(context.Context, string, ...interface{}) (sql.Result, error)
-	)
-
-	if s.tx != nil {
-		q = s.tx.QueryContext
-	} else if s.db != nil {
-		q = s.db.QueryContext
-	} else {
-		panic("No available queryer")
+func (s *basicSession) Begin() (TxSession, error) {
+	if s.readonly {
+		return nil, ErrorReadonlySession
 	}
 
-	if s.tx != nil {
-		e = s.tx.ExecContext
-	} else if s.db != nil {
-		e = s.db.ExecContext
-	} else {
-		panic("No available queryer")
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
 	}
 
-	return statement.NewRootStep(s.ctx, dialect.GetDialectStatements(s.dialect), q, e)
+	return &basicTxSession{
+		tx:      tx,
+		ctx:     s.ctx,
+		dialect: s.dialect,
+	}, nil
+}
+
+func (s *basicSession) rootStep() *statement.RootStep {
+	return statement.NewRootStep(
+		s.ctx,
+		dialect.GetDialectStatements(s.dialect),
+		s.db.QueryContext,
+		s.db.ExecContext)
 }
 
 func (s *basicSession) Explain() statement.ExplainSelectBranchStep {
-	return statement.NewExplainSelectBranchStep(s.NewRootStep())
+	return statement.NewExplainSelectBranchStep(s.rootStep())
 }
 
 func (s *basicSession) SelectOne() statement.SelectOneBranchStep {
-	return statement.NewSelectOneBranchStep(s.NewRootStep())
+	return statement.NewSelectOneBranchStep(s.rootStep())
 }
 
 func (s *basicSession) Select(columns ...model.ColumnField) statement.SelectColumnBranchStep {
-	return statement.NewSelectColumnBranchStep(s.NewRootStep(), columns...)
+	return statement.NewSelectColumnBranchStep(s.rootStep(), columns...)
 }
 
 func (s *basicSession) SelectFrom(table model.Table) statement.SelectFromBranchStep {
-	return statement.NewSelectFromBranchStep(s.NewRootStep(), table)
+	return statement.NewSelectFromBranchStep(s.rootStep(), table)
 }
 
 func (s *basicSession) InsertInto(table model.Table) statement.InsertIntoBranchStep {
-	return statement.NewInsertIntoBranchStep(s.NewRootStep(), table)
+	return statement.NewInsertIntoBranchStep(s.rootStep(), table)
 }
 
 func (s *basicSession) Update(table model.Table) statement.UpdateBranchStep {
-	return statement.NewUpdateBranchStep(s.NewRootStep(), table)
+	return statement.NewUpdateBranchStep(s.rootStep(), table)
 }
 
 func (s *basicSession) DeleteFrom(table model.Table) statement.DeleteFromBranchStep {
-	return statement.NewDeleteFromBranchStep(s.NewRootStep(), table)
+	return statement.NewDeleteFromBranchStep(s.rootStep(), table)
 }
 
 func (s *basicSession) Truncate(table model.Table) statement.TruncateBranchStep {
-	return statement.NewTruncateBranchStep(s.NewRootStep(), table)
+	return statement.NewTruncateBranchStep(s.rootStep(), table)
 }

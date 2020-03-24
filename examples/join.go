@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/tmarcus87/sqlike"
-	"github.com/tmarcus87/sqlike/model"
 )
 
 func init() {
@@ -12,25 +11,6 @@ func init() {
 }
 
 func join(e sqlike.Engine) error {
-
-	type Author struct {
-		Id   int64  `sqlike:"id"`
-		Name string `sqlike:"name"`
-	}
-
-	type Book struct {
-		Id       int64  `sqlike:"id"`
-		Title    string `sqlike:"title"`
-		AuthorId int64  `sqlike:"author_id"`
-	}
-
-	authorTable := model.NewTable("author")
-	authorIdColumn := model.NewInt64Column(authorTable, "id")
-	authorNameColumn := model.NewTextColumn(authorTable, "name")
-	bookTable := model.NewTable("book")
-	bookIdColumn := model.NewInt64Column(bookTable, "id")
-	bookTitleColumn := model.NewTextColumn(bookTable, "title")
-	bookAuthorIdColumn := model.NewTextColumn(bookTable, "author_id")
 
 	if err := e.Master(context.Background()).Truncate(authorTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %w", err)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/tmarcus87/sqlike"
-	"github.com/tmarcus87/sqlike/model"
 	"time"
 )
 
@@ -14,16 +13,6 @@ func init() {
 }
 
 func basic(e sqlike.Engine) error {
-	type Book struct {
-		Id       int64  `sqlike:"id"`
-		Title    string `sqlike:"title"`
-		AuthorId int64  `sqlike:"author_id"`
-	}
-
-	bookTable := &model.BasicTable{Name: "book"}
-	nameColumn := model.NewTextColumn(bookTable, "title")
-	authorIdColumn := model.NewInt64Column(bookTable, "author_id")
-
 	// truncate
 	if err := e.Master(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %+v", err)
@@ -52,7 +41,7 @@ func basic(e sqlike.Engine) error {
 		result :=
 			e.Master(ctx).
 				InsertInto(bookTable).
-				Columns(nameColumn, authorIdColumn).
+				Columns(bookTitleColumn, authorIdColumn).
 				ValueStructs(
 					&Book{
 						Title:    "The Old Man and the Sea",

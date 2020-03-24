@@ -4,11 +4,33 @@ import (
 	"fmt"
 	"github.com/tmarcus87/sqlike"
 	"github.com/tmarcus87/sqlike/logger"
+	"github.com/tmarcus87/sqlike/model"
 	"log"
 	"os"
 )
 
-var examples = make(map[string]func(e sqlike.Engine) error)
+type Author struct {
+	Id   int64  `sqlike:"id"`
+	Name string `sqlike:"name"`
+}
+
+type Book struct {
+	Id       int64  `sqlike:"id"`
+	Title    string `sqlike:"title"`
+	AuthorId int64  `sqlike:"author_id"`
+}
+
+var (
+	examples = make(map[string]func(e sqlike.Engine) error)
+
+	authorTable        = model.NewTable("author")
+	authorIdColumn     = model.NewInt64Column(authorTable, "id")
+	authorNameColumn   = model.NewTextColumn(authorTable, "name")
+	bookTable          = model.NewTable("book")
+	bookIdColumn       = model.NewInt64Column(bookTable, "id")
+	bookTitleColumn    = model.NewTextColumn(bookTable, "title")
+	bookAuthorIdColumn = model.NewTextColumn(bookTable, "author_id")
+)
 
 func main() {
 	logger.SetLevel(logger.DebugLevel)

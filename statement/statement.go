@@ -87,6 +87,8 @@ func (s *StatementImpl) FetchMap() ([]map[string]string, error) {
 			vmap[k] = *v
 		}
 
+		logger.Debug("Fetch record to map : %+v", vmap)
+
 		res = append(res, vmap)
 	}
 	return res, nil
@@ -143,6 +145,8 @@ func (s *StatementImpl) FetchInto(p interface{}) error {
 		if err := rows.Scan(vptrs...); err != nil {
 			return err
 		}
+
+		logger.Debug("Fetch record to struct : %+v", element)
 
 		// 元のSliceの値が値の場合はpointerから値に戻す
 		elementValue := reflect.ValueOf(element)
