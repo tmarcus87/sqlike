@@ -130,7 +130,7 @@ func TestFetchOneInto(t *testing.T) {
 
 	t.Run("Found", func(t *testing.T) {
 		author := Author{}
-		stmt := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Where(authorIdColumn.CondEq(1)).Build()
+		stmt := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Where(authorIdColumn.Eq(1)).Build()
 		ok, err := stmt.FetchOneInto(&author)
 		asserts.Nil(err)
 		asserts.True(ok)
@@ -140,7 +140,7 @@ func TestFetchOneInto(t *testing.T) {
 
 	t.Run("NotFound", func(t *testing.T) {
 		author := Author{}
-		stmt := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Where(authorIdColumn.CondEq(-1)).Build()
+		stmt := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Where(authorIdColumn.Eq(-1)).Build()
 		ok, err := stmt.FetchOneInto(&author)
 		asserts.Nil(err)
 		asserts.False(ok)
@@ -148,7 +148,7 @@ func TestFetchOneInto(t *testing.T) {
 
 	t.Run("InvalidType", func(t *testing.T) {
 		v := make(map[string]interface{})
-		stmt := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Where(authorIdColumn.CondEq(1)).Build()
+		stmt := s.Select(authorIdColumn, authorNameColumn).From(authorTable).Where(authorIdColumn.Eq(1)).Build()
 		ok, err := stmt.FetchOneInto(&v)
 		asserts.NotNil(err)
 		asserts.False(ok)

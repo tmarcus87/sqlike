@@ -49,47 +49,47 @@ func (c *TextColumn) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *TextColumn) CondEq(v string) Condition {
+func (c *TextColumn) Eq(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *TextColumn) CondNotEq(v string) Condition {
+func (c *TextColumn) NotEq(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *TextColumn) CondGt(v string) Condition {
+func (c *TextColumn) Gt(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *TextColumn) CondGtOrEq(v string) Condition {
+func (c *TextColumn) GtOrEq(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *TextColumn) CondLt(v string) Condition {
+func (c *TextColumn) Lt(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *TextColumn) CondLtOrEq(v string) Condition {
+func (c *TextColumn) LtOrEq(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *TextColumn) CondLike(v string) Condition {
+func (c *TextColumn) Like(v string) Condition {
 	return &SingleValueCondition{Column: c, Operator: "LIKE", Value: v}
 }
 
-func (c *TextColumn) CondIsNull() Condition {
+func (c *TextColumn) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *TextColumn) CondIsNotNull() Condition {
+func (c *TextColumn) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *TextColumn) CondEqCol(field ColumnField) Condition {
+func (c *TextColumn) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *TextColumn) CondIn(vs ...string) Condition {
+func (c *TextColumn) In(vs ...string) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -97,7 +97,7 @@ func (c *TextColumn) CondIn(vs ...string) Condition {
 	}
 }
 
-func (c *TextColumn) CondNotIn(vs ...string) Condition {
+func (c *TextColumn) NotIn(vs ...string) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",

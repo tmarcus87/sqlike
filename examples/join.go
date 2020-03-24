@@ -62,7 +62,7 @@ func join(e sqlike.Engine) error {
 			ok, err :=
 				e.Master(context.Background()).
 					SelectFrom(authorTable).
-					Where(authorIdColumn.CondEq(td.Id)).
+					Where(authorIdColumn.Eq(td.Id)).
 					Build().
 					FetchOneInto(&author)
 			if err != nil {
@@ -116,7 +116,7 @@ func join(e sqlike.Engine) error {
 			ok, err :=
 				e.Master(context.Background()).
 					SelectFrom(bookTable).
-					Where(bookIdColumn.CondEq(td.Id)).
+					Where(bookIdColumn.Eq(td.Id)).
 					Build().
 					FetchOneInto(&book)
 			if err != nil {
@@ -148,8 +148,8 @@ func join(e sqlike.Engine) error {
 					bookTitleColumn.As("book_title"),
 					authorNameColumn.As("author_name")).
 				From(bookTable).
-				InnerJoin(authorTable, bookAuthorIdColumn.CondEqCol(authorIdColumn)).
-				Where(authorIdColumn.CondEq(2)).
+				InnerJoin(authorTable, bookAuthorIdColumn.EqCol(authorIdColumn)).
+				Where(authorIdColumn.Eq(2)).
 				OrderBy(bookTitleColumn.Asc()).
 				Build().
 				FetchInto(&books); err != nil {

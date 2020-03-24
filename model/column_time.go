@@ -51,43 +51,43 @@ func (c *TimeColumn) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *TimeColumn) CondEq(v time.Time) Condition {
+func (c *TimeColumn) Eq(v time.Time) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *TimeColumn) CondNotEq(v time.Time) Condition {
+func (c *TimeColumn) NotEq(v time.Time) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *TimeColumn) CondGt(v time.Time) Condition {
+func (c *TimeColumn) Gt(v time.Time) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *TimeColumn) CondGtOrEq(v time.Time) Condition {
+func (c *TimeColumn) GtOrEq(v time.Time) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *TimeColumn) CondLt(v time.Time) Condition {
+func (c *TimeColumn) Lt(v time.Time) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *TimeColumn) CondLtOrEq(v time.Time) Condition {
+func (c *TimeColumn) LtOrEq(v time.Time) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *TimeColumn) CondIsNull() Condition {
+func (c *TimeColumn) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *TimeColumn) CondIsNotNull() Condition {
+func (c *TimeColumn) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *TimeColumn) CondEqCol(field ColumnField) Condition {
+func (c *TimeColumn) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *TimeColumn) CondIn(vs ...time.Time) Condition {
+func (c *TimeColumn) In(vs ...time.Time) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -95,7 +95,7 @@ func (c *TimeColumn) CondIn(vs ...time.Time) Condition {
 	}
 }
 
-func (c *TimeColumn) CondNotIn(vs ...time.Time) Condition {
+func (c *TimeColumn) NotIn(vs ...time.Time) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",

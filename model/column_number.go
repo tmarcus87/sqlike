@@ -118,43 +118,43 @@ func (c *Int8Column) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *Int8Column) CondEq(v int8) Condition {
+func (c *Int8Column) Eq(v int8) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *Int8Column) CondNotEq(v int8) Condition {
+func (c *Int8Column) NotEq(v int8) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *Int8Column) CondGt(v int8) Condition {
+func (c *Int8Column) Gt(v int8) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *Int8Column) CondGtOrEq(v int8) Condition {
+func (c *Int8Column) GtOrEq(v int8) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *Int8Column) CondLt(v int8) Condition {
+func (c *Int8Column) Lt(v int8) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *Int8Column) CondLtOrEq(v int8) Condition {
+func (c *Int8Column) LtOrEq(v int8) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *Int8Column) CondIsNull() Condition {
+func (c *Int8Column) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *Int8Column) CondIsNotNull() Condition {
+func (c *Int8Column) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *Int8Column) CondEqCol(field ColumnField) Condition {
+func (c *Int8Column) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *Int8Column) CondIn(vs ...int8) Condition {
+func (c *Int8Column) In(vs ...int8) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -162,7 +162,7 @@ func (c *Int8Column) CondIn(vs ...int8) Condition {
 	}
 }
 
-func (c *Int8Column) CondNotIn(vs ...int8) Condition {
+func (c *Int8Column) NotIn(vs ...int8) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",
@@ -196,43 +196,43 @@ func (c *Int16Column) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *Int16Column) CondEq(v int16) Condition {
+func (c *Int16Column) Eq(v int16) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *Int16Column) CondNotEq(v int16) Condition {
+func (c *Int16Column) NotEq(v int16) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *Int16Column) CondGt(v int16) Condition {
+func (c *Int16Column) Gt(v int16) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *Int16Column) CondGtOrEq(v int16) Condition {
+func (c *Int16Column) GtOrEq(v int16) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *Int16Column) CondLt(v int16) Condition {
+func (c *Int16Column) Lt(v int16) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *Int16Column) CondLtOrEq(v int16) Condition {
+func (c *Int16Column) LtOrEq(v int16) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *Int16Column) CondIsNull() Condition {
+func (c *Int16Column) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *Int16Column) CondIsNotNull() Condition {
+func (c *Int16Column) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *Int16Column) CondEqCol(field ColumnField) Condition {
+func (c *Int16Column) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *Int16Column) CondIn(vs ...int16) Condition {
+func (c *Int16Column) In(vs ...int16) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -240,7 +240,7 @@ func (c *Int16Column) CondIn(vs ...int16) Condition {
 	}
 }
 
-func (c *Int16Column) CondNotIn(vs ...int16) Condition {
+func (c *Int16Column) NotIn(vs ...int16) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",
@@ -274,43 +274,43 @@ func (c *Int32Column) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *Int32Column) CondEq(v int32) Condition {
+func (c *Int32Column) Eq(v int32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *Int32Column) CondNotEq(v int32) Condition {
+func (c *Int32Column) NotEq(v int32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *Int32Column) CondGt(v int32) Condition {
+func (c *Int32Column) Gt(v int32) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *Int32Column) CondGtOrEq(v int32) Condition {
+func (c *Int32Column) GtOrEq(v int32) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *Int32Column) CondLt(v int32) Condition {
+func (c *Int32Column) Lt(v int32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *Int32Column) CondLtOrEq(v int32) Condition {
+func (c *Int32Column) LtOrEq(v int32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *Int32Column) CondIsNull() Condition {
+func (c *Int32Column) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *Int32Column) CondIsNotNull() Condition {
+func (c *Int32Column) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *Int32Column) CondEqCol(field ColumnField) Condition {
+func (c *Int32Column) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *Int32Column) CondIn(vs ...int32) Condition {
+func (c *Int32Column) In(vs ...int32) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -318,7 +318,7 @@ func (c *Int32Column) CondIn(vs ...int32) Condition {
 	}
 }
 
-func (c *Int32Column) CondNotIn(vs ...int32) Condition {
+func (c *Int32Column) NotIn(vs ...int32) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",
@@ -352,43 +352,43 @@ func (c *Int64Column) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *Int64Column) CondEq(v int64) Condition {
+func (c *Int64Column) Eq(v int64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *Int64Column) CondNotEq(v int64) Condition {
+func (c *Int64Column) NotEq(v int64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *Int64Column) CondGt(v int64) Condition {
+func (c *Int64Column) Gt(v int64) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *Int64Column) CondGtOrEq(v int64) Condition {
+func (c *Int64Column) GtOrEq(v int64) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *Int64Column) CondLt(v int64) Condition {
+func (c *Int64Column) Lt(v int64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *Int64Column) CondLtOrEq(v int64) Condition {
+func (c *Int64Column) LtOrEq(v int64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *Int64Column) CondIsNull() Condition {
+func (c *Int64Column) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *Int64Column) CondIsNotNull() Condition {
+func (c *Int64Column) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *Int64Column) CondEqCol(field ColumnField) Condition {
+func (c *Int64Column) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *Int64Column) CondIn(vs ...int64) Condition {
+func (c *Int64Column) In(vs ...int64) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -396,7 +396,7 @@ func (c *Int64Column) CondIn(vs ...int64) Condition {
 	}
 }
 
-func (c *Int64Column) CondNotIn(vs ...int64) Condition {
+func (c *Int64Column) NotIn(vs ...int64) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",
@@ -430,43 +430,43 @@ func (c *Float32Column) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *Float32Column) CondEq(v float32) Condition {
+func (c *Float32Column) Eq(v float32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *Float32Column) CondNotEq(v float32) Condition {
+func (c *Float32Column) NotEq(v float32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *Float32Column) CondGt(v float32) Condition {
+func (c *Float32Column) Gt(v float32) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *Float32Column) CondGtOrEq(v float32) Condition {
+func (c *Float32Column) GtOrEq(v float32) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *Float32Column) CondLt(v float32) Condition {
+func (c *Float32Column) Lt(v float32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *Float32Column) CondLtOrEq(v float32) Condition {
+func (c *Float32Column) LtOrEq(v float32) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *Float32Column) CondIsNull() Condition {
+func (c *Float32Column) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *Float32Column) CondIsNotNull() Condition {
+func (c *Float32Column) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *Float32Column) CondEqCol(field ColumnField) Condition {
+func (c *Float32Column) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *Float32Column) CondIn(vs ...float32) Condition {
+func (c *Float32Column) In(vs ...float32) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -474,7 +474,7 @@ func (c *Float32Column) CondIn(vs ...float32) Condition {
 	}
 }
 
-func (c *Float32Column) CondNotIn(vs ...float32) Condition {
+func (c *Float32Column) NotIn(vs ...float32) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",
@@ -508,43 +508,43 @@ func (c *Float64Column) SQLikeColumnValue() interface{} {
 	return c.value
 }
 
-func (c *Float64Column) CondEq(v float64) Condition {
+func (c *Float64Column) Eq(v float64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "=", Value: v}
 }
 
-func (c *Float64Column) CondNotEq(v float64) Condition {
+func (c *Float64Column) NotEq(v float64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "!=", Value: v}
 }
 
-func (c *Float64Column) CondGt(v float64) Condition {
+func (c *Float64Column) Gt(v float64) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">", Value: v}
 }
 
-func (c *Float64Column) CondGtOrEq(v float64) Condition {
+func (c *Float64Column) GtOrEq(v float64) Condition {
 	return &SingleValueCondition{Column: c, Operator: ">=", Value: v}
 }
 
-func (c *Float64Column) CondLt(v float64) Condition {
+func (c *Float64Column) Lt(v float64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<", Value: v}
 }
 
-func (c *Float64Column) CondLtOrEq(v float64) Condition {
+func (c *Float64Column) LtOrEq(v float64) Condition {
 	return &SingleValueCondition{Column: c, Operator: "<=", Value: v}
 }
 
-func (c *Float64Column) CondIsNull() Condition {
+func (c *Float64Column) IsNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NULL"}
 }
 
-func (c *Float64Column) CondIsNotNull() Condition {
+func (c *Float64Column) IsNotNull() Condition {
 	return &NoValueCondition{Column: c, Operator: "IS NOT NULL"}
 }
 
-func (c *Float64Column) CondEqCol(field ColumnField) Condition {
+func (c *Float64Column) EqCol(field ColumnField) Condition {
 	return &SingleColumnCondition{Column: c, Operator: "=", Value: field}
 }
 
-func (c *Float64Column) CondIn(vs ...float64) Condition {
+func (c *Float64Column) In(vs ...float64) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "IN",
@@ -552,7 +552,7 @@ func (c *Float64Column) CondIn(vs ...float64) Condition {
 	}
 }
 
-func (c *Float64Column) CondNotIn(vs ...float64) Condition {
+func (c *Float64Column) NotIn(vs ...float64) Condition {
 	return &MultiValueCondition{
 		Column:   c,
 		Operator: "NOT IN",
