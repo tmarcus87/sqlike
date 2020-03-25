@@ -213,6 +213,9 @@ func (s *selectFromBranchStepImpl) LimitAndOffset(limit int32, offset int64) Sel
 
 type SelectFromJoinBranchStep interface {
 	Build() Statement
+	LeftOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
+	RightOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
+	InnerJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep
 	Where(conditions ...model.Condition) SelectFromWhereBranchStep
 	GroupBy(columns ...model.ColumnField) SelectFromGroupByBranchStep
 	OrderBy(orders ...*model.SortOrder) SelectFromOrderByBranchStep
@@ -231,6 +234,40 @@ func (s *selectFromJoinBranchStepImpl) Accept(*StatementImpl) error { return nil
 
 func (s *selectFromJoinBranchStepImpl) Build() Statement {
 	return NewStatementBuilder(s)
+}
+
+func (s *selectFromJoinBranchStepImpl) LeftOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
+	return &selectFromJoinBranchStepImpl{
+		parent: &SelectFromJoinStep{
+			parent:     s,
+			table:      table,
+			conditions: conditions,
+			joinType:   "LEFT OUTER JOIN",
+		},
+	}
+
+}
+
+func (s *selectFromJoinBranchStepImpl) RightOuterJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
+	return &selectFromJoinBranchStepImpl{
+		parent: &SelectFromJoinStep{
+			parent:     s,
+			table:      table,
+			conditions: conditions,
+			joinType:   "RIGHT OUTER JOIN",
+		},
+	}
+}
+
+func (s *selectFromJoinBranchStepImpl) InnerJoin(table model.Table, conditions ...model.Condition) SelectFromJoinBranchStep {
+	return &selectFromJoinBranchStepImpl{
+		parent: &SelectFromJoinStep{
+			parent:     s,
+			table:      table,
+			conditions: conditions,
+			joinType:   "INNER JOIN",
+		},
+	}
 }
 
 func (s *selectFromJoinBranchStepImpl) Where(conditions ...model.Condition) SelectFromWhereBranchStep {
