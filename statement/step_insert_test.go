@@ -8,7 +8,7 @@ import (
 )
 
 func TestInsertIntoColumns_Accept(t *testing.T) {
-	t1 := &model.BasicTable{Name: "t1"}
+	t1 := &model.BasicTable{name: "t1"}
 
 	tests := []struct {
 		name string
@@ -96,7 +96,7 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 	t.Run("WithoutColumns", func(t *testing.T) {
 		asserts := assert.New(t)
 
-		t1 := &model.BasicTable{Name: "t1"}
+		t1 := &model.BasicTable{name: "t1"}
 
 		stmt, bindings, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).

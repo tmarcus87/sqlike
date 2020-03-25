@@ -20,6 +20,7 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 
 	// Import
 	imports := make(map[string]struct{})
+	imports["fmt"] = struct{}{}
 	imports["github.com/tmarcus87/sqlike/model"] = struct{}{}
 	for _, columns := range schema.Schema {
 		for _, column := range columns {
@@ -44,13 +45,38 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 		// Table
 		g.w.Writeln("func %s() *%s {", tableName, tableStructName)
 		g.w.Writeln("    return &%s{", tableStructName)
-		g.w.Writeln("        Table: model.NewTable(\"%s\"),", tableName)
+		g.w.Writeln("        name: \"%s\",", tableName)
 		g.w.Writeln("    }")
 		g.w.Writeln("}").Ln()
 
 		// Struct of table
 		g.w.Writeln("type %s struct {", tableStructName)
-		g.w.Writeln("    model.Table")
+		g.w.Writeln("    name  string")
+		g.w.Writeln("    alias string")
+		g.w.Writeln("}").Ln()
+
+		g.w.Writeln("func (t *%s) SQLikeTableName() string {", tableStructName)
+		g.w.Writeln("    return t.name")
+		g.w.Writeln("}").Ln()
+
+		g.w.Writeln("func (t *%s) SQLikeAliasOrName() string {", tableStructName)
+		g.w.Writeln("    if t.alias != \"\" {")
+		g.w.Writeln("        return t.alias")
+		g.w.Writeln("    }")
+		g.w.Writeln("    return t.name")
+		g.w.Writeln("}").Ln()
+
+		g.w.Writeln("func (t *%s) SQLikeTableExpr() string {", tableStructName)
+		g.w.Writeln("    expr := fmt.Sprintf(\"`%%s`\", t.name)")
+		g.w.Writeln("    if t.alias != \"\" {")
+		g.w.Writeln("        expr = fmt.Sprintf(\"%%s AS `%%s`\", expr, t.alias)")
+		g.w.Writeln("    }")
+		g.w.Writeln("    return expr")
+		g.w.Writeln("}").Ln()
+
+		g.w.Writeln("func (t *%s) As(alias string) *%s {", tableStructName, tableStructName)
+		g.w.Writeln("    t.alias = alias")
+		g.w.Writeln("    return t")
 		g.w.Writeln("}").Ln()
 
 		for _, column := range columns {
@@ -72,7 +98,7 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 			// Column struct
 			g.w.Writeln("type %s struct {", columnStructName)
 			g.w.Writeln("    *model.%s", baseStructType)
-			g.w.Writeln("}")
+			g.w.Writeln("}").Ln()
 		}
 	}
 
