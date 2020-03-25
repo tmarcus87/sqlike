@@ -35,6 +35,9 @@ func main() {
 	if *pkg == "" {
 		*pkg = *database
 	}
+	if *outdir == "" {
+		*outdir = *database
+	}
 
 	generators := make([]Generator, 0)
 	generators = append(generators, NewConstGenerator(NewWriter(*outdir, "name.go")))

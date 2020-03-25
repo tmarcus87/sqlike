@@ -95,3 +95,11 @@ func (c *Column) NullableImport() (string, error) {
 	}
 	return dataType.NullableImport, nil
 }
+
+func (c *Column) StructType() (string, error) {
+	dataType, err := c.dataType()
+	if err != nil {
+		return "", err
+	}
+	return dataType.BaseStructType, nil
+}
