@@ -14,17 +14,15 @@ func init() {
 
 func basic(e sqlike.Engine) error {
 	// truncate
-	if err := e.newMasterSession(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
+	if err := e.NewSession(sqlike.MarkAsExecuted(context.Background())).Truncate(bookTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %+v", err)
 	}
-
-	ctx := context.Background()
 
 	// Check no records
 	{
 		books := make([]*Book, 0)
 		err :=
-			e.NewSession(ctx).
+			e.NewSession(sqlike.MarkAsExecuted(context.Background())).
 				SelectFrom(bookTable).
 				Build().
 				FetchInto(&books)
@@ -39,7 +37,7 @@ func basic(e sqlike.Engine) error {
 	// Insert records w/ auto increment
 	{
 		result :=
-			e.newMasterSession(ctx).
+			e.NewSession(sqlike.MarkAsExecuted(context.Background())).
 				InsertInto(bookTable).
 				Columns(bookTitleColumn, authorIdColumn).
 				ValueStructs(
@@ -67,7 +65,7 @@ func basic(e sqlike.Engine) error {
 	{
 		books := make([]*Book, 0)
 		err :=
-			e.NewSession(ctx).
+			e.NewSession(sqlike.MarkAsExecuted(context.Background())).
 				SelectFrom(bookTable).
 				Build().
 				FetchInto(&books)

@@ -12,23 +12,23 @@ type Table interface {
 }
 
 type BasicTable struct {
-	name  string
+	Name  string
 	alias string
 }
 
 func (t *BasicTable) SQLikeTableName() string {
-	return t.name
+	return t.Name
 }
 
 func (t *BasicTable) SQLikeAliasOrName() string {
 	if t.alias != "" {
 		return t.alias
 	}
-	return t.name
+	return t.Name
 }
 
 func (t *BasicTable) SQLikeTableExpr() string {
-	expr := fmt.Sprintf("`%s`", t.name)
+	expr := fmt.Sprintf("`%s`", t.Name)
 	if t.alias != "" {
 		expr = fmt.Sprintf("%s AS `%s`", expr, t.alias)
 	}
@@ -40,6 +40,6 @@ func (t *BasicTable) As(alias string) *BasicTable {
 	return t
 }
 
-func NewTable(name string) Table {
-	return &BasicTable{name: name}
+func NewTable(name string) *BasicTable {
+	return &BasicTable{Name: name}
 }

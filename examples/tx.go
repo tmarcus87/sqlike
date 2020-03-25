@@ -12,13 +12,13 @@ func init() {
 
 func tx(e sqlike.Engine) error {
 	// Truncate table
-	if err := e.newMasterSession(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
+	if err := e.NewSession(sqlike.MarkAsExecuted(context.Background())).Truncate(bookTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %w", err)
 	}
 
 	// Check empty
 	{
-		records, err := e.newMasterSession(context.Background()).SelectFrom(bookTable).Build().FetchMap()
+		records, err := e.NewSession(sqlike.MarkAsExecuted(context.Background())).SelectFrom(bookTable).Build().FetchMap()
 		if err != nil {
 			return fmt.Errorf("failed to query : %w", err)
 		}
@@ -28,7 +28,7 @@ func tx(e sqlike.Engine) error {
 	}
 
 	// Insert w/ tx
-	tx, err := e.newMasterSession(context.Background()).Begin()
+	tx, err := e.NewSession(sqlike.MarkAsExecuted(context.Background())).Begin()
 	if err != nil {
 		return fmt.Errorf("failed to begin tx : %w", err)
 	}
@@ -44,7 +44,7 @@ func tx(e sqlike.Engine) error {
 
 	// Check from another session w/ uncommited
 	{
-		records, err := e.newMasterSession(context.Background()).SelectFrom(bookTable).Build().FetchMap()
+		records, err := e.NewSession(sqlike.MarkAsExecuted(context.Background())).SelectFrom(bookTable).Build().FetchMap()
 		if err != nil {
 			return fmt.Errorf("failed to query : %w", err)
 		}
@@ -60,7 +60,7 @@ func tx(e sqlike.Engine) error {
 
 	// Check from another session
 	{
-		records, err := e.newMasterSession(context.Background()).SelectFrom(bookTable).Build().FetchMap()
+		records, err := e.NewSession(sqlike.MarkAsExecuted(context.Background())).SelectFrom(bookTable).Build().FetchMap()
 		if err != nil {
 			return fmt.Errorf("failed to query : %w", err)
 		}
