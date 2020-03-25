@@ -229,7 +229,7 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 	for i, name := range names {
 		fi, ok := name2index[name]
 		if !ok {
-			return nil, fmt.Errorf("failed to find field for '%s'", name)
+			return nil, fmt.Errorf("failed to find field for '%s' from %T(%+v)", name, p, names)
 		}
 
 		valueField := val.Field(fi)
