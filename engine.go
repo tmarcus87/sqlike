@@ -7,9 +7,7 @@ import (
 )
 
 type Engine interface {
-	Auto(ctx context.Context) session.Session
-	newMasterSession(ctx context.Context) session.Session
-	newSlaveSession(ctx context.Context) session.Session
+	NewSession(ctx context.Context) session.Session
 	Close() error
 }
 
@@ -20,7 +18,7 @@ type basicEngine struct {
 	slaveHandler SlaveSelectionHandler
 }
 
-func (e *basicEngine) Auto(ctx context.Context) session.Session {
+func (e *basicEngine) NewSession(ctx context.Context) session.Session {
 	if isExecuted(ctx) {
 		return e.newMasterSession(ctx)
 	}

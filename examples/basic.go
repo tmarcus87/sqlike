@@ -24,7 +24,7 @@ func basic(e sqlike.Engine) error {
 	{
 		books := make([]*Book, 0)
 		err :=
-			e.Auto(ctx).
+			e.NewSession(ctx).
 				SelectFrom(bookTable).
 				Build().
 				FetchInto(&books)
@@ -67,7 +67,7 @@ func basic(e sqlike.Engine) error {
 	{
 		books := make([]*Book, 0)
 		err :=
-			e.Auto(ctx).
+			e.NewSession(ctx).
 				SelectFrom(bookTable).
 				Build().
 				FetchInto(&books)
