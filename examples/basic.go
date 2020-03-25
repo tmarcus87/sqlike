@@ -14,7 +14,7 @@ func init() {
 
 func basic(e sqlike.Engine) error {
 	// truncate
-	if err := e.Master(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
+	if err := e.newMasterSession(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %+v", err)
 	}
 
@@ -39,7 +39,7 @@ func basic(e sqlike.Engine) error {
 	// Insert records w/ auto increment
 	{
 		result :=
-			e.Master(ctx).
+			e.newMasterSession(ctx).
 				InsertInto(bookTable).
 				Columns(bookTitleColumn, authorIdColumn).
 				ValueStructs(

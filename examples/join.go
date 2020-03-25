@@ -12,10 +12,10 @@ func init() {
 
 func join(e sqlike.Engine) error {
 
-	if err := e.Master(context.Background()).Truncate(authorTable).Build().Execute().Error(); err != nil {
+	if err := e.newMasterSession(context.Background()).Truncate(authorTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %w", err)
 	}
-	if err := e.Master(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
+	if err := e.newMasterSession(context.Background()).Truncate(bookTable).Build().Execute().Error(); err != nil {
 		return fmt.Errorf("failed to truncate : %w", err)
 	}
 
@@ -28,7 +28,7 @@ func join(e sqlike.Engine) error {
 		} {
 
 			if err :=
-				e.Master(context.Background()).
+				e.newMasterSession(context.Background()).
 					InsertInto(authorTable).
 					Columns(authorNameColumn).
 					ValueStructs(&td).
@@ -40,7 +40,7 @@ func join(e sqlike.Engine) error {
 
 			author := Author{}
 			ok, err :=
-				e.Master(context.Background()).
+				e.newMasterSession(context.Background()).
 					SelectFrom(authorTable).
 					Where(authorIdColumn.Eq(td.Id)).
 					Build().
@@ -82,7 +82,7 @@ func join(e sqlike.Engine) error {
 			{Id: 19, Title: "Harry Potter and the Deathly Hallows", AuthorId: 3},
 		} {
 			if err :=
-				e.Master(context.Background()).
+				e.newMasterSession(context.Background()).
 					InsertInto(bookTable).
 					Columns(bookTitleColumn, bookAuthorIdColumn).
 					ValueStructs(&td).
@@ -94,7 +94,7 @@ func join(e sqlike.Engine) error {
 
 			book := Book{}
 			ok, err :=
-				e.Master(context.Background()).
+				e.newMasterSession(context.Background()).
 					SelectFrom(bookTable).
 					Where(bookIdColumn.Eq(td.Id)).
 					Build().
@@ -122,7 +122,7 @@ func join(e sqlike.Engine) error {
 		books := make([]BookAndAuthor, 0)
 
 		if err :=
-			e.Master(context.Background()).
+			e.newMasterSession(context.Background()).
 				Select(
 					bookIdColumn.As("book_id"),
 					bookTitleColumn.As("book_title"),
