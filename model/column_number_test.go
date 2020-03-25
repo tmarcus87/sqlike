@@ -15,59 +15,59 @@ func TestNumericColumn_SQLikeFieldExpr(t *testing.T) {
 	}{
 		{
 			Expect: "`tbl`.`col`",
-			Column: &NumberColumn{Table: tbl, Name: "col"},
+			Column: &NumberColumn{table: tbl, name: "col"},
 		},
 		{
 			Expect: "`tbl`.`col` AS `col_alias`",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).As("col_alias"),
+			Column: (&NumberColumn{table: tbl, name: "col"}).As("col_alias"),
 		},
 		{
 			Expect: "`tbl_alias`.`col`",
-			Column: &NumberColumn{Table: tblAlias, Name: "col"},
+			Column: &NumberColumn{table: tblAlias, name: "col"},
 		},
 		{
 			Expect: "`tbl_alias`.`col` AS `col_alias`",
-			Column: (&NumberColumn{Table: tblAlias, Name: "col"}).As("col_alias"),
+			Column: (&NumberColumn{table: tblAlias, name: "col"}).As("col_alias"),
 		},
 		{
 			Expect: "`tbl`.`col` + 123",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).PlusInt(123),
+			Column: (&NumberColumn{table: tbl, name: "col"}).PlusInt(123),
 		},
 		{
 			Expect: "`tbl`.`col` + 123.4",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).PlusFloat(123.4),
+			Column: (&NumberColumn{table: tbl, name: "col"}).PlusFloat(123.4),
 		},
 		{
 			Expect: "`tbl`.`col` - 123",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).MinusInt(123),
+			Column: (&NumberColumn{table: tbl, name: "col"}).MinusInt(123),
 		},
 		{
 			Expect: "`tbl`.`col` - 123.4",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).MinusFloat(123.4),
+			Column: (&NumberColumn{table: tbl, name: "col"}).MinusFloat(123.4),
 		},
 		{
 			Expect: "`tbl`.`col` * 123",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).MultipleInt(123),
+			Column: (&NumberColumn{table: tbl, name: "col"}).MultipleInt(123),
 		},
 		{
 			Expect: "`tbl`.`col` * 123.4",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).MultipleFloat(123.4),
+			Column: (&NumberColumn{table: tbl, name: "col"}).MultipleFloat(123.4),
 		},
 		{
 			Expect: "`tbl`.`col` / 123",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).DivideInt(123),
+			Column: (&NumberColumn{table: tbl, name: "col"}).DivideInt(123),
 		},
 		{
 			Expect: "`tbl`.`col` / 123.4",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).DivideFloat(123.4),
+			Column: (&NumberColumn{table: tbl, name: "col"}).DivideFloat(123.4),
 		},
 		{
 			Expect: "(`tbl`.`col` + 123) * 456",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).PlusInt(123).MultipleInt(456),
+			Column: (&NumberColumn{table: tbl, name: "col"}).PlusInt(123).MultipleInt(456),
 		},
 		{
 			Expect: "`tbl`.`col` + 123 AS `col_plus`",
-			Column: (&NumberColumn{Table: tbl, Name: "col"}).PlusInt(123).As("col_plus"),
+			Column: (&NumberColumn{table: tbl, name: "col"}).PlusInt(123).As("col_plus"),
 		},
 	}
 
@@ -75,7 +75,7 @@ func TestNumericColumn_SQLikeFieldExpr(t *testing.T) {
 		t.Run(test.Expect, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			asserts.Equal(test.Expect, test.Column.SQLikeFieldExpr())
+			asserts.Equal(test.Expect, test.Column.FieldExpr())
 		})
 	}
 }
@@ -100,11 +100,11 @@ func TestInt8Column_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(1)
-			asserts.Equal(int8(1), colV.SQLikeColumnValue())
+			colV := test.Column.Value(1)
+			asserts.Equal(int8(1), colV.ColumnValue())
 
-			test.Column.SQLikeSet(2)
-			asserts.Equal(int8(2), colV.SQLikeColumnValue())
+			test.Column.Value(2)
+			asserts.Equal(int8(2), colV.ColumnValue())
 		})
 	}
 
@@ -130,11 +130,11 @@ func TestInt16Column_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(1)
-			asserts.Equal(int16(1), colV.SQLikeColumnValue())
+			colV := test.Column.Value(1)
+			asserts.Equal(int16(1), colV.ColumnValue())
 
-			test.Column.SQLikeSet(2)
-			asserts.Equal(int16(2), colV.SQLikeColumnValue())
+			test.Column.Value(2)
+			asserts.Equal(int16(2), colV.ColumnValue())
 		})
 	}
 
@@ -160,11 +160,11 @@ func TestInt32Column_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(1)
-			asserts.Equal(int32(1), colV.SQLikeColumnValue())
+			colV := test.Column.Value(1)
+			asserts.Equal(int32(1), colV.ColumnValue())
 
-			test.Column.SQLikeSet(2)
-			asserts.Equal(int32(2), colV.SQLikeColumnValue())
+			test.Column.Value(2)
+			asserts.Equal(int32(2), colV.ColumnValue())
 		})
 	}
 
@@ -190,11 +190,11 @@ func TestInt64Column_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(1)
-			asserts.Equal(int64(1), colV.SQLikeColumnValue())
+			colV := test.Column.Value(1)
+			asserts.Equal(int64(1), colV.ColumnValue())
 
-			test.Column.SQLikeSet(2)
-			asserts.Equal(int64(2), colV.SQLikeColumnValue())
+			test.Column.Value(2)
+			asserts.Equal(int64(2), colV.ColumnValue())
 		})
 	}
 
@@ -220,11 +220,11 @@ func TestFloat32Column_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(1.1)
-			asserts.Equal(float32(1.1), colV.SQLikeColumnValue())
+			colV := test.Column.Value(1.1)
+			asserts.Equal(float32(1.1), colV.ColumnValue())
 
-			test.Column.SQLikeSet(2.2)
-			asserts.Equal(float32(2.2), colV.SQLikeColumnValue())
+			test.Column.Value(2.2)
+			asserts.Equal(float32(2.2), colV.ColumnValue())
 		})
 	}
 
@@ -250,11 +250,11 @@ func TestFloat64Column_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(1.1)
-			asserts.Equal(1.1, colV.SQLikeColumnValue())
+			colV := test.Column.Value(1.1)
+			asserts.Equal(1.1, colV.ColumnValue())
 
-			test.Column.SQLikeSet(2.2)
-			asserts.Equal(2.2, colV.SQLikeColumnValue())
+			test.Column.Value(2.2)
+			asserts.Equal(2.2, colV.ColumnValue())
 		})
 	}
 

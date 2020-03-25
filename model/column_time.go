@@ -1,9 +1,12 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 func NewTimeColumn(table Table, name string) *TimeColumn {
-	return &TimeColumn{Table: table, Name: name}
+	return &TimeColumn{table: table, name: name}
 }
 
 type TimeField interface {
@@ -11,26 +14,26 @@ type TimeField interface {
 }
 
 type TimeColumn struct {
-	Table Table
-	Name  string
+	table Table
+	name  string
 	alias string
 	expr  string
-	value time.Time
+	value sql.NullTime
 }
 
-func (c *TimeColumn) SQLikeTable() Table {
-	return c.Table
+func (c *TimeColumn) Table() Table {
+	return c.table
 }
 
-func (c *TimeColumn) SQLikeColumnName() string {
-	return c.Name
+func (c *TimeColumn) ColumnName() string {
+	return c.name
 }
 
-func (c *TimeColumn) SQLikeAliasOrName() string {
+func (c *TimeColumn) AliasOrName() string {
 	if c.alias != "" {
 		return c.alias
 	}
-	return c.Name
+	return c.name
 }
 
 func (c *TimeColumn) As(alias string) ColumnField {
@@ -38,16 +41,23 @@ func (c *TimeColumn) As(alias string) ColumnField {
 	return c
 }
 
-func (c *TimeColumn) SQLikeFieldExpr() string {
+func (c *TimeColumn) FieldExpr() string {
 	return fieldExpr(c, c.alias, c.expr)
 }
 
-func (c *TimeColumn) SQLikeSet(v time.Time) ColumnValue {
-	c.value = v
+func (c *TimeColumn) NullValue() ColumnValue {
 	return c
 }
 
-func (c *TimeColumn) SQLikeColumnValue() interface{} {
+func (c *TimeColumn) Value(v time.Time) ColumnValue {
+	c.value = sql.NullTime{Time: v, Valid: true}
+	return c
+}
+
+func (c *TimeColumn) ColumnValue() interface{} {
+	if c.value.Valid {
+		return c.value.Time
+	}
 	return c.value
 }
 

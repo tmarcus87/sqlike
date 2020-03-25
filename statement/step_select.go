@@ -55,7 +55,7 @@ func (s *SelectColumnStep) Accept(stmt *StatementImpl) error {
 	cols := make([]string, 0)
 	for _, column := range s.columns {
 		s := column
-		cols = append(cols, fmt.Sprintf("%s", s.SQLikeFieldExpr()))
+		cols = append(cols, fmt.Sprintf("%s", s.FieldExpr()))
 	}
 	stmt.Statement += fmt.Sprintf("SELECT %s ", strings.Join(cols, ", "))
 	return nil
@@ -113,8 +113,8 @@ func (s *SelectGroupByStep) Accept(stmt *StatementImpl) error {
 		cols =
 			append(cols,
 				fmt.Sprintf("`%s`.`%s`",
-					column.SQLikeTable().SQLikeAliasOrName(),
-					column.SQLikeColumnName()))
+					column.Table().SQLikeAliasOrName(),
+					column.ColumnName()))
 	}
 
 	stmt.Statement += fmt.Sprintf("GROUP BY %s ", strings.Join(cols, ", "))
@@ -140,8 +140,8 @@ func (s *SelectOrderByStep) Accept(stmt *StatementImpl) error {
 		orders =
 			append(orders,
 				fmt.Sprintf("`%s`.`%s` %s",
-					order.Column.SQLikeTable().SQLikeAliasOrName(),
-					order.Column.SQLikeColumnName(),
+					order.Column.Table().SQLikeAliasOrName(),
+					order.Column.ColumnName(),
 					order.Order))
 	}
 

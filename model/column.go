@@ -7,35 +7,38 @@ import (
 
 type Column interface {
 	// カラムを保持しているテーブル情報を返します
-	SQLikeTable() Table
+	Table() Table
 
-	// SQLikeColumnName カラム名を返します
-	SQLikeColumnName() string
+	// カラム名を返します
+	ColumnName() string
 
-	SQLikeAliasOrName() string
+	// エイリアス名が設定されている場合はエイリアス名、設定されていない場合はカラム名を返します
+	AliasOrName() string
 }
 
 type ColumnField interface {
 	Column
 
-	// SQLikeAs フィールド句にエイリアス名を指定します
+	// フィールド句にエイリアス名を指定します
 	As(alias string) ColumnField
 
-	// SQLikeFieldExpr フィールド句を返します
-	SQLikeFieldExpr() string
+	// フィールド句を返します
+	FieldExpr() string
 }
 
 // ColumnValue column & its value
 type ColumnValue interface {
 	Column
 
-	SQLikeFieldExpr() string
+	// フィールド句を返します
+	FieldExpr() string
 
-	SQLikeColumnValue() interface{}
+	// カラム値を返します
+	ColumnValue() interface{}
 }
 
 func calcExpr(c Column, cExpr, nExpr string) string {
-	fn := fmt.Sprintf("`%s`.`%s`", c.SQLikeTable().SQLikeAliasOrName(), c.SQLikeColumnName())
+	fn := fmt.Sprintf("`%s`.`%s`", c.Table().SQLikeAliasOrName(), c.ColumnName())
 	if cExpr == "" {
 		return strings.ReplaceAll(nExpr, "$$", fn)
 	}
@@ -43,7 +46,7 @@ func calcExpr(c Column, cExpr, nExpr string) string {
 }
 
 func fieldExpr(c Column, alias, expr string) string {
-	fn := fmt.Sprintf("`%s`.`%s`", c.SQLikeTable().SQLikeAliasOrName(), c.SQLikeColumnName())
+	fn := fmt.Sprintf("`%s`.`%s`", c.Table().SQLikeAliasOrName(), c.ColumnName())
 	if expr == "" {
 		expr = "$$"
 	}
@@ -68,15 +71,15 @@ type AllColumn struct {
 	table Table
 }
 
-func (a *AllColumn) SQLikeTable() Table {
+func (a *AllColumn) Table() Table {
 	return a.table
 }
 
-func (a *AllColumn) SQLikeColumnName() string {
+func (a *AllColumn) ColumnName() string {
 	return ""
 }
 
-func (a *AllColumn) SQLikeAliasOrName() string {
+func (a *AllColumn) AliasOrName() string {
 	return ""
 }
 
@@ -84,7 +87,7 @@ func (a *AllColumn) As(string) ColumnField {
 	return a
 }
 
-func (a *AllColumn) SQLikeFieldExpr() string {
+func (a *AllColumn) FieldExpr() string {
 	if a.table == nil {
 		return "*"
 	}

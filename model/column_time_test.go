@@ -34,7 +34,7 @@ func TestTimeColumn_SQLikeFieldExpr(t *testing.T) {
 		t.Run(test.Expect, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			asserts.Equal(test.Expect, test.Column.SQLikeFieldExpr())
+			asserts.Equal(test.Expect, test.Column.FieldExpr())
 		})
 	}
 
@@ -63,11 +63,11 @@ func TestTimeColumn_SetAndColumnValue(t *testing.T) {
 		t.Run(test.ExpectExpr, func(t *testing.T) {
 			asserts := assert.New(t)
 
-			colV := test.Column.SQLikeSet(t1)
-			asserts.Equal(t1, colV.SQLikeColumnValue())
+			colV := test.Column.Value(t1)
+			asserts.Equal(t1, colV.ColumnValue())
 
-			test.Column.SQLikeSet(t2)
-			asserts.Equal(t2, colV.SQLikeColumnValue())
+			test.Column.Value(t2)
+			asserts.Equal(t2, colV.ColumnValue())
 		})
 	}
 

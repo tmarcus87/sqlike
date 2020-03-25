@@ -18,7 +18,7 @@ func TestInsertIntoBranchStep(t *testing.T) {
 				Columns(c1, c2).
 				Values(1, 2).
 				OnDuplicateKeyUpdate().
-				Set(c2, 3).
+				SetValue(c2.Value(3)).
 				Build().
 				StatementAndBindings()
 
@@ -28,7 +28,7 @@ func TestInsertIntoBranchStep(t *testing.T) {
 		asserts.Len(bindings, 3)
 		asserts.Equal(1, bindings[0])
 		asserts.Equal(2, bindings[1])
-		asserts.Equal(3, bindings[2])
+		asserts.Equal(int32(3), bindings[2])
 	})
 
 	t.Run("InsertOnDuplicateKeyUpdateSetRecord", func(t *testing.T) {

@@ -198,7 +198,7 @@ func (s *insertOnDuplicateKeyIgnoreBranchStepImpl) Build() Statement {
 }
 
 type InsertOnDuplicateKeyUpdateBranchStep interface {
-	Set(column model.Column, value interface{}) InsertOnDuplicateKeyUpdateSetBranchStep
+	SetValue(columnValue model.ColumnValue) InsertOnDuplicateKeyUpdateSetBranchStep
 	SetRecord(record *model.Record) InsertOnDuplicateKeyUpdateSetRecordBranchStep
 }
 
@@ -212,12 +212,11 @@ func (s *insertOnDuplicateKeyUpdateBranchStepImpl) Parent() StatementAcceptor {
 
 func (s *insertOnDuplicateKeyUpdateBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
-func (s *insertOnDuplicateKeyUpdateBranchStepImpl) Set(column model.Column, value interface{}) InsertOnDuplicateKeyUpdateSetBranchStep {
+func (s *insertOnDuplicateKeyUpdateBranchStepImpl) SetValue(columnValue model.ColumnValue) InsertOnDuplicateKeyUpdateSetBranchStep {
 	return &insertOnDuplicateKeyUpdateSetBranchStepImpl{
 		parent: &InsertOnDuplicateKeyUpdateSetStep{
-			parent: s,
-			column: column,
-			value:  value,
+			parent:      s,
+			columnValue: columnValue,
 		},
 	}
 }
@@ -233,7 +232,7 @@ func (s *insertOnDuplicateKeyUpdateBranchStepImpl) SetRecord(record *model.Recor
 
 type InsertOnDuplicateKeyUpdateSetBranchStep interface {
 	Build() Statement
-	Set(column model.Column, value interface{}) InsertOnDuplicateKeyUpdateSetBranchStep
+	SetValue(columnValue model.ColumnValue) InsertOnDuplicateKeyUpdateSetBranchStep
 }
 
 type insertOnDuplicateKeyUpdateSetBranchStepImpl struct {
@@ -250,12 +249,11 @@ func (s *insertOnDuplicateKeyUpdateSetBranchStepImpl) Build() Statement {
 	return NewStatementBuilder(s)
 }
 
-func (s *insertOnDuplicateKeyUpdateSetBranchStepImpl) Set(column model.Column, value interface{}) InsertOnDuplicateKeyUpdateSetBranchStep {
+func (s *insertOnDuplicateKeyUpdateSetBranchStepImpl) SetValue(columnValue model.ColumnValue) InsertOnDuplicateKeyUpdateSetBranchStep {
 	return &insertOnDuplicateKeyUpdateSetBranchStepImpl{
 		parent: &InsertOnDuplicateKeyUpdateSetStep{
-			parent: s,
-			column: column,
-			value:  value,
+			parent:      s,
+			columnValue: columnValue,
 		},
 	}
 }

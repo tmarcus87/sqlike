@@ -15,7 +15,7 @@ type NoValueCondition struct {
 }
 
 func (c *NoValueCondition) Apply(stmt *string, bindings *[]interface{}) {
-	*stmt += fmt.Sprintf("`%s`.`%s` %s", c.Column.SQLikeTable().SQLikeAliasOrName(), c.Column.SQLikeColumnName(), c.Operator)
+	*stmt += fmt.Sprintf("`%s`.`%s` %s", c.Column.Table().SQLikeAliasOrName(), c.Column.ColumnName(), c.Operator)
 }
 
 type SingleValueCondition struct {
@@ -25,7 +25,7 @@ type SingleValueCondition struct {
 }
 
 func (c *SingleValueCondition) Apply(stmt *string, bindings *[]interface{}) {
-	*stmt += fmt.Sprintf("`%s`.`%s` %s ?", c.Column.SQLikeTable().SQLikeAliasOrName(), c.Column.SQLikeColumnName(), c.Operator)
+	*stmt += fmt.Sprintf("`%s`.`%s` %s ?", c.Column.Table().SQLikeAliasOrName(), c.Column.ColumnName(), c.Operator)
 	*bindings = append(*bindings, c.Value)
 }
 
@@ -43,7 +43,7 @@ func (c *MultiValueCondition) Apply(stmt *string, bindings *[]interface{}) {
 
 	*stmt +=
 		fmt.Sprintf("`%s`.`%s` %s (%s)",
-			c.Column.SQLikeTable().SQLikeAliasOrName(), c.Column.SQLikeColumnName(),
+			c.Column.Table().SQLikeAliasOrName(), c.Column.ColumnName(),
 			c.Operator,
 			strings.Join(conds, ", "))
 	*bindings = append(*bindings, c.Values...)
@@ -57,7 +57,7 @@ type SingleColumnCondition struct {
 
 func (c *SingleColumnCondition) Apply(stmt *string, bindings *[]interface{}) {
 	*stmt += fmt.Sprintf("`%s`.`%s` %s `%s`.`%s`",
-		c.Column.SQLikeTable().SQLikeAliasOrName(), c.Column.SQLikeColumnName(),
+		c.Column.Table().SQLikeAliasOrName(), c.Column.ColumnName(),
 		c.Operator,
-		c.Value.SQLikeTable().SQLikeAliasOrName(), c.Value.SQLikeColumnName())
+		c.Value.Table().SQLikeAliasOrName(), c.Value.ColumnName())
 }

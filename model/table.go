@@ -3,9 +3,9 @@ package model
 import "fmt"
 
 type Table interface {
-	// SQLikeTableName テーブル名を返します
+	// テーブル名を返します
 	SQLikeTableName() string
-	// SQLikeAliasOrName テーブルのエイリアス名もしくはテーブル名を返します
+	// テーブルのエイリアス名もしくはテーブル名を返します
 	SQLikeAliasOrName() string
 	// SQLikeTableExpr
 	SQLikeTableExpr() string

@@ -25,9 +25,8 @@ func (s *UpdateStep) Accept(stmt *StatementImpl) error {
 }
 
 type UpdateSetStep struct {
-	parent StatementAcceptor
-	column model.Column
-	value  interface{}
+	parent      StatementAcceptor
+	columnValue model.ColumnValue
 }
 
 func (s *UpdateSetStep) Parent() StatementAcceptor {
@@ -41,8 +40,8 @@ func (s *UpdateSetStep) Accept(stmt *StatementImpl) error {
 	} else {
 		stmt.Statement += "SET "
 	}
-	stmt.Statement += fmt.Sprintf("`%s` = ? ", s.column.SQLikeColumnName())
-	stmt.Bindings = append(stmt.Bindings, s.value)
+	stmt.Statement += fmt.Sprintf("`%s` = ? ", s.columnValue.ColumnName())
+	stmt.Bindings = append(stmt.Bindings, s.columnValue.ColumnValue())
 	stmt.State[StateUpdateStmtSet] = true
 	return nil
 }
@@ -74,11 +73,11 @@ func ApplySetStatement(stmt *StatementImpl, record *model.Record) error {
 	if len(record.Only) > 0 {
 		// 指定されたカラムのみ変更する
 		for _, onlyColumn := range record.Only {
-			fv, ok := fvm[onlyColumn.SQLikeColumnName()]
+			fv, ok := fvm[onlyColumn.ColumnName()]
 			if !ok {
-				return fmt.Errorf("struct field for '%s' is not found", onlyColumn.SQLikeColumnName())
+				return fmt.Errorf("struct field for '%s' is not found", onlyColumn.ColumnName())
 			}
-			setColumns = append(setColumns, onlyColumn.SQLikeColumnName())
+			setColumns = append(setColumns, onlyColumn.ColumnName())
 			setBindings = append(setBindings, fv.Interface())
 		}
 	} else if len(record.Skip) > 0 {
@@ -86,7 +85,7 @@ func ApplySetStatement(stmt *StatementImpl, record *model.Record) error {
 
 		skipColumnNames := make(map[string]struct{}, 0)
 		for _, skipColumn := range record.Skip {
-			skipColumnNames[skipColumn.SQLikeColumnName()] = struct{}{}
+			skipColumnNames[skipColumn.ColumnName()] = struct{}{}
 		}
 
 		for colName, fv := range fvm {

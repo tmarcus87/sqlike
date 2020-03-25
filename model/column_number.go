@@ -1,6 +1,9 @@
 package model
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type NumericField interface {
 	ColumnField
@@ -15,25 +18,25 @@ type NumericField interface {
 }
 
 type NumberColumn struct {
-	Table Table
-	Name  string
+	table Table
+	name  string
 	alias string
 	expr  string
 }
 
-func (c *NumberColumn) SQLikeTable() Table {
-	return c.Table
+func (c *NumberColumn) Table() Table {
+	return c.table
 }
 
-func (c *NumberColumn) SQLikeColumnName() string {
-	return c.Name
+func (c *NumberColumn) ColumnName() string {
+	return c.name
 }
 
-func (c *NumberColumn) SQLikeAliasOrName() string {
+func (c *NumberColumn) AliasOrName() string {
 	if c.alias != "" {
 		return c.alias
 	}
-	return c.Name
+	return c.name
 
 }
 
@@ -42,7 +45,7 @@ func (c *NumberColumn) As(alias string) ColumnField {
 	return c
 }
 
-func (c *NumberColumn) SQLikeFieldExpr() string {
+func (c *NumberColumn) FieldExpr() string {
 	return fieldExpr(c, c.alias, c.expr)
 }
 
@@ -101,20 +104,27 @@ func (c *NumberColumn) Desc() *SortOrder {
 }
 
 func NewInt8Column(table Table, name string) *Int8Column {
-	return &Int8Column{NumberColumn: NumberColumn{Table: table, Name: name}}
+	return &Int8Column{NumberColumn: NumberColumn{table: table, name: name}}
 }
 
 type Int8Column struct {
 	NumberColumn
-	value int8
+	value sql.NullInt32
 }
 
-func (c *Int8Column) SQLikeSet(v int8) ColumnValue {
-	c.value = v
+func (c *Int8Column) NullValue() ColumnValue {
 	return c
 }
 
-func (c *Int8Column) SQLikeColumnValue() interface{} {
+func (c *Int8Column) Value(v int8) ColumnValue {
+	c.value = sql.NullInt32{Int32: int32(v), Valid: true}
+	return c
+}
+
+func (c *Int8Column) ColumnValue() interface{} {
+	if c.value.Valid {
+		return int8(c.value.Int32)
+	}
 	return c.value
 }
 
@@ -179,20 +189,27 @@ func Int8SliceToInterfaceSlice(in []int8) []interface{} {
 }
 
 func NewInt16Column(table Table, name string) *Int16Column {
-	return &Int16Column{NumberColumn: NumberColumn{Table: table, Name: name}}
+	return &Int16Column{NumberColumn: NumberColumn{table: table, name: name}}
 }
 
 type Int16Column struct {
 	NumberColumn
-	value int16
+	value sql.NullInt32
 }
 
-func (c *Int16Column) SQLikeSet(v int16) ColumnValue {
-	c.value = v
+func (c *Int16Column) NullValue() ColumnValue {
 	return c
 }
 
-func (c *Int16Column) SQLikeColumnValue() interface{} {
+func (c *Int16Column) Value(v int16) ColumnValue {
+	c.value = sql.NullInt32{Int32: int32(v), Valid: true}
+	return c
+}
+
+func (c *Int16Column) ColumnValue() interface{} {
+	if c.value.Valid {
+		return int16(c.value.Int32)
+	}
 	return c.value
 }
 
@@ -257,20 +274,27 @@ func Int16SliceToInterfaceSlice(in []int16) []interface{} {
 }
 
 func NewInt32Column(table Table, name string) *Int32Column {
-	return &Int32Column{NumberColumn: NumberColumn{Table: table, Name: name}}
+	return &Int32Column{NumberColumn: NumberColumn{table: table, name: name}}
 }
 
 type Int32Column struct {
 	NumberColumn
-	value int32
+	value sql.NullInt32
 }
 
-func (c *Int32Column) SQLikeSet(v int32) ColumnValue {
-	c.value = v
+func (c *Int32Column) NullValue() ColumnValue {
 	return c
 }
 
-func (c *Int32Column) SQLikeColumnValue() interface{} {
+func (c *Int32Column) Value(v int32) ColumnValue {
+	c.value = sql.NullInt32{Int32: v, Valid: true}
+	return c
+}
+
+func (c *Int32Column) ColumnValue() interface{} {
+	if c.value.Valid {
+		return c.value.Int32
+	}
 	return c.value
 }
 
@@ -335,20 +359,27 @@ func Int32SliceToInterfaceSlice(in []int32) []interface{} {
 }
 
 func NewInt64Column(table Table, name string) *Int64Column {
-	return &Int64Column{NumberColumn: NumberColumn{Table: table, Name: name}}
+	return &Int64Column{NumberColumn: NumberColumn{table: table, name: name}}
 }
 
 type Int64Column struct {
 	NumberColumn
-	value int64
+	value sql.NullInt64
 }
 
-func (c *Int64Column) SQLikeSet(v int64) ColumnValue {
-	c.value = v
+func (c *Int64Column) NullValue() ColumnValue {
 	return c
 }
 
-func (c *Int64Column) SQLikeColumnValue() interface{} {
+func (c *Int64Column) Value(v int64) ColumnValue {
+	c.value = sql.NullInt64{Int64: v, Valid: true}
+	return c
+}
+
+func (c *Int64Column) ColumnValue() interface{} {
+	if c.value.Valid {
+		return c.value.Int64
+	}
 	return c.value
 }
 
@@ -413,20 +444,27 @@ func Int64SliceToInterfaceSlice(in []int64) []interface{} {
 }
 
 func NewFloat32Column(table Table, name string) *Float32Column {
-	return &Float32Column{NumberColumn: NumberColumn{Table: table, Name: name}}
+	return &Float32Column{NumberColumn: NumberColumn{table: table, name: name}}
 }
 
 type Float32Column struct {
 	NumberColumn
-	value float32
+	value sql.NullFloat64
 }
 
-func (c *Float32Column) SQLikeSet(v float32) ColumnValue {
-	c.value = v
+func (c *Float32Column) NullValue() ColumnValue {
 	return c
 }
 
-func (c *Float32Column) SQLikeColumnValue() interface{} {
+func (c *Float32Column) Value(v float32) ColumnValue {
+	c.value = sql.NullFloat64{Float64: float64(v), Valid: true}
+	return c
+}
+
+func (c *Float32Column) ColumnValue() interface{} {
+	if c.value.Valid {
+		return float32(c.value.Float64)
+	}
 	return c.value
 }
 
@@ -491,20 +529,27 @@ func Float32SliceToInterfaceSlice(in []float32) []interface{} {
 }
 
 func NewFloat64Column(table Table, name string) *Float64Column {
-	return &Float64Column{NumberColumn: NumberColumn{Table: table, Name: name}}
+	return &Float64Column{NumberColumn: NumberColumn{table: table, name: name}}
 }
 
 type Float64Column struct {
 	NumberColumn
-	value float64
+	value sql.NullFloat64
 }
 
-func (c *Float64Column) SQLikeSet(v float64) ColumnValue {
-	c.value = v
+func (c *Float64Column) NullValue() ColumnValue {
 	return c
 }
 
-func (c *Float64Column) SQLikeColumnValue() interface{} {
+func (c *Float64Column) Value(v float64) ColumnValue {
+	c.value = sql.NullFloat64{Float64: v, Valid: true}
+	return c
+}
+
+func (c *Float64Column) ColumnValue() interface{} {
+	if c.value.Valid {
+		return c.value.Float64
+	}
 	return c.value
 }
 

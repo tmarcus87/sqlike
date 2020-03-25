@@ -1,7 +1,9 @@
 package model
 
+import "database/sql"
+
 func NewTextColumn(table Table, name string) *TextColumn {
-	return &TextColumn{Table: table, Name: name}
+	return &TextColumn{table: table, name: name}
 }
 
 type TextField interface {
@@ -9,26 +11,26 @@ type TextField interface {
 }
 
 type TextColumn struct {
-	Table Table
-	Name  string
+	table Table
+	name  string
 	alias string
 	expr  string
-	value string
+	value sql.NullString
 }
 
-func (c *TextColumn) SQLikeTable() Table {
-	return c.Table
+func (c *TextColumn) Table() Table {
+	return c.table
 }
 
-func (c *TextColumn) SQLikeColumnName() string {
-	return c.Name
+func (c *TextColumn) ColumnName() string {
+	return c.name
 }
 
-func (c *TextColumn) SQLikeAliasOrName() string {
+func (c *TextColumn) AliasOrName() string {
 	if c.alias != "" {
 		return c.alias
 	}
-	return c.Name
+	return c.name
 }
 
 func (c *TextColumn) As(alias string) ColumnField {
@@ -36,16 +38,23 @@ func (c *TextColumn) As(alias string) ColumnField {
 	return c
 }
 
-func (c *TextColumn) SQLikeFieldExpr() string {
+func (c *TextColumn) FieldExpr() string {
 	return fieldExpr(c, c.alias, c.expr)
 }
 
-func (c *TextColumn) SQLikeSet(v string) ColumnValue {
-	c.value = v
+func (c *TextColumn) NullValue() ColumnValue {
 	return c
 }
 
-func (c *TextColumn) SQLikeColumnValue() interface{} {
+func (c *TextColumn) Value(v string) ColumnValue {
+	c.value = sql.NullString{String: v, Valid: true}
+	return c
+}
+
+func (c *TextColumn) ColumnValue() interface{} {
+	if c.value.Valid {
+		return c.value.String
+	}
 	return c.value
 }
 

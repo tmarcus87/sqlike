@@ -3,7 +3,7 @@ package statement
 import "github.com/tmarcus87/sqlike/model"
 
 type UpdateBranchStep interface {
-	Set(column model.Column, value interface{}) UpdateSetBranchStep
+	SetValue(columnValue model.ColumnValue) UpdateSetBranchStep
 	SetRecord(record *model.Record) UpdateSetRecordBranchStep
 }
 
@@ -26,12 +26,11 @@ func (s *updateBranchStepImpl) Parent() StatementAcceptor {
 
 func (s *updateBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
-func (s *updateBranchStepImpl) Set(column model.Column, value interface{}) UpdateSetBranchStep {
+func (s *updateBranchStepImpl) SetValue(columnValue model.ColumnValue) UpdateSetBranchStep {
 	return &updateSetBranchStepImpl{
 		parent: &UpdateSetStep{
-			parent: s,
-			column: column,
-			value:  value,
+			parent:      s,
+			columnValue: columnValue,
 		},
 	}
 }
@@ -46,7 +45,7 @@ func (s *updateBranchStepImpl) SetRecord(record *model.Record) UpdateSetRecordBr
 }
 
 type UpdateSetBranchStep interface {
-	Set(column model.Column, value interface{}) UpdateSetBranchStep
+	SetValue(columnValue model.ColumnValue) UpdateSetBranchStep
 	Where(conditions ...model.Condition) UpdateWhereBranchStep
 	Build() Statement
 }
@@ -59,14 +58,13 @@ func (s *updateSetBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *updateSetBranchStepImpl) Accept(stmt *StatementImpl) error { return nil }
+func (s *updateSetBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
-func (s *updateSetBranchStepImpl) Set(column model.Column, value interface{}) UpdateSetBranchStep {
+func (s *updateSetBranchStepImpl) SetValue(columnValue model.ColumnValue) UpdateSetBranchStep {
 	return &updateSetBranchStepImpl{
 		parent: &UpdateSetStep{
-			parent: s,
-			column: column,
-			value:  value,
+			parent:      s,
+			columnValue: columnValue,
 		},
 	}
 }
@@ -96,7 +94,7 @@ func (s *updateSetRecordBranchStepImpl) Parent() StatementAcceptor {
 	return s.parent
 }
 
-func (s *updateSetRecordBranchStepImpl) Accept(stmt *StatementImpl) error { return nil }
+func (s *updateSetRecordBranchStepImpl) Accept(*StatementImpl) error { return nil }
 
 func (s *updateSetRecordBranchStepImpl) Where(conditions ...model.Condition) UpdateWhereBranchStep {
 	return &updateWhereBranchStepImpl{

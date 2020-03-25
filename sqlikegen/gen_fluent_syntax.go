@@ -91,13 +91,13 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 			g.w.Writeln("    sqlikeSelectModFmt string")
 			g.w.Writeln("}")
 
-			g.w.Writeln("func (c *%s) SQLikeTable() model.Table {", columnStructName)
-			g.w.Writeln("    return c.sqlikeTable")
-			g.w.Writeln("}")
+			//g.w.Writeln("func (c *%s) Table() model.Table {", columnStructName)
+			//g.w.Writeln("    return c.sqlikeTable")
+			//g.w.Writeln("}")
 
 			g.w.Writeln("")
 
-			g.w.Writeln("func (c *%s) SQLikeColumnName() string {", columnStructName)
+			g.w.Writeln("func (c *%s) ColumnName() string {", columnStructName)
 			g.w.Writeln("    return c.sqlikeName")
 			g.w.Writeln("}")
 

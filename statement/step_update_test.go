@@ -15,13 +15,13 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 
 	t1 := model.NewTable("t1")
 
-	c1 := model.NewBoolColumn(t1, "c1")
-	c2 := model.NewBoolColumn(t1, "c2")
+	c1 := model.NewInt32Column(t1, "c1")
+	c2 := model.NewInt32Column(t1, "c2")
 
 	t.Run("OneSet", func(t *testing.T) {
 		stmt, bindings, err :=
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
-				Set(c1, 1).
+				SetValue(c1.Value(1)).
 				Build().
 				StatementAndBindings()
 
@@ -29,14 +29,14 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 		asserts.Nil(err)
 		asserts.Equal("UPDATE `t1` SET `c1` = ?", stmt)
 		asserts.Len(bindings, 1)
-		asserts.Equal(1, bindings[0])
+		asserts.Equal(int32(1), bindings[0])
 	})
 
 	t.Run("TwoSet", func(t *testing.T) {
 		stmt, bindings, err :=
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
-				Set(c1, 1).
-				Set(c2, 2).
+				SetValue(c1.Value(1)).
+				SetValue(c2.Value(2)).
 				Build().
 				StatementAndBindings()
 
@@ -44,16 +44,16 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 		asserts.Nil(err)
 		asserts.Equal("UPDATE `t1` SET `c1` = ?, `c2` = ?", stmt)
 		asserts.Len(bindings, 2)
-		asserts.Equal(1, bindings[0])
-		asserts.Equal(2, bindings[1])
+		asserts.Equal(int32(1), bindings[0])
+		asserts.Equal(int32(2), bindings[1])
 	})
 
 	t.Run("WithWhere", func(t *testing.T) {
 		stmt, bindings, err :=
 			NewUpdateBranchStep(root(dialect.MySQL), t1).
-				Set(c1, 1).
-				Set(c2, 2).
-				Where(c1.Eq(true)).
+				SetValue(c1.Value(1)).
+				SetValue(c2.Value(2)).
+				Where(c1.Eq(3)).
 				Build().
 				StatementAndBindings()
 
@@ -61,9 +61,9 @@ func TestUpdateSetStep_Accept(t *testing.T) {
 		asserts.Nil(err)
 		asserts.Equal("UPDATE `t1` SET `c1` = ?, `c2` = ? WHERE `t1`.`c1` = ?", stmt)
 		asserts.Len(bindings, 3)
-		asserts.Equal(1, bindings[0])
-		asserts.Equal(2, bindings[1])
-		asserts.Equal(true, bindings[2])
+		asserts.Equal(int32(1), bindings[0])
+		asserts.Equal(int32(2), bindings[1])
+		asserts.Equal(int32(3), bindings[2])
 	})
 }
 

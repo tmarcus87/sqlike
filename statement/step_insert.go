@@ -44,7 +44,7 @@ func (s *InsertIntoColumnStep) Parent() StatementAcceptor {
 func (s *InsertIntoColumnStep) Accept(stmt *StatementImpl) error {
 	cols := make([]string, 0)
 	for _, column := range s.columns {
-		cols = append(cols, fmt.Sprintf("`%s`", column.SQLikeColumnName()))
+		cols = append(cols, fmt.Sprintf("`%s`", column.ColumnName()))
 	}
 	stmt.Statement += fmt.Sprintf("(%s) ", strings.Join(cols, ", "))
 	stmt.State[StateInsertStmtColumns] = s.columns
@@ -118,7 +118,7 @@ func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) error {
 		stmt.State[StateInsertStmtHasValue] = true
 
 		for _, column := range columns {
-			fv, ok := fvm[column.SQLikeColumnName()]
+			fv, ok := fvm[column.ColumnName()]
 			if !ok {
 				return fmt.Errorf("struct field for '%s' is not found", column)
 			}
@@ -182,9 +182,8 @@ func (s *InsertOnDuplicateKeyUpdateStep) Accept(stmt *StatementImpl) error {
 }
 
 type InsertOnDuplicateKeyUpdateSetStep struct {
-	parent StatementAcceptor
-	column model.Column
-	value  interface{}
+	parent      StatementAcceptor
+	columnValue model.ColumnValue
 }
 
 func (s *InsertOnDuplicateKeyUpdateSetStep) Parent() StatementAcceptor {
@@ -198,8 +197,8 @@ func (s *InsertOnDuplicateKeyUpdateSetStep) Accept(stmt *StatementImpl) error {
 	} else {
 		stmt.Statement += "SET "
 	}
-	stmt.Statement += fmt.Sprintf("`%s` = ?", s.column.SQLikeColumnName())
-	stmt.Bindings = append(stmt.Bindings, s.value)
+	stmt.Statement += fmt.Sprintf("`%s` = ?", s.columnValue.ColumnName())
+	stmt.Bindings = append(stmt.Bindings, s.columnValue.ColumnValue())
 	stmt.State[StateUpdateStmtSet] = true
 	return nil
 }

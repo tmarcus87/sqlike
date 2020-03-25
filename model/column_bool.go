@@ -1,30 +1,31 @@
 package model
 
+import "database/sql"
+
 func NewBoolColumn(table Table, name string) *BoolColumn {
-	return &BoolColumn{Table: table, Name: name}
+	return &BoolColumn{table: table, name: name}
 }
 
 type BoolColumn struct {
-	Table Table
-	Name  string
+	table Table
+	name  string
 	alias string
-	value bool
+	value sql.NullBool
 }
 
-func (c *BoolColumn) SQLikeTable() Table {
-	return c.Table
+func (c *BoolColumn) Table() Table {
+	return c.table
 }
 
-func (c *BoolColumn) SQLikeColumnName() string {
-	return c.Name
+func (c *BoolColumn) ColumnName() string {
+	return c.name
 }
 
-func (c *BoolColumn) SQLikeAliasOrName() string {
+func (c *BoolColumn) AliasOrName() string {
 	if c.alias != "" {
 		return c.alias
 	}
-	return c.Name
-
+	return c.name
 }
 
 func (c *BoolColumn) As(alias string) ColumnField {
@@ -32,16 +33,23 @@ func (c *BoolColumn) As(alias string) ColumnField {
 	return c
 }
 
-func (c *BoolColumn) SQLikeFieldExpr() string {
+func (c *BoolColumn) FieldExpr() string {
 	return fieldExpr(c, c.alias, "")
 }
 
-func (c *BoolColumn) SQLikeColumnValue() interface{} {
+func (c *BoolColumn) ColumnValue() interface{} {
+	if c.value.Valid {
+		return c.value.Bool
+	}
 	return c.value
 }
 
-func (c *BoolColumn) SetValue(v bool) ColumnValue {
-	c.value = v
+func (c *BoolColumn) NullValue() ColumnValue {
+	return c
+}
+
+func (c *BoolColumn) Value(v bool) ColumnValue {
+	c.value = sql.NullBool{Bool: v, Valid: true}
 	return c
 }
 
