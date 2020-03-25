@@ -81,16 +81,12 @@ func NewEngineFromOption(o *EngineOption) (Engine, error) {
 	}
 
 	dbs := make([]*sql.DB, 0)
-	if len(o.Slaves) == 0 {
-		dbs = []*sql.DB{db}
-	} else {
-		for _, slave := range o.Slaves {
-			db, err := sql.Open(o.Driver, slave.dataSourceName(o.Database))
-			if err != nil {
-				return nil, fmt.Errorf("failed to open slave connection : %w", err)
-			}
-			dbs = append(dbs, db)
+	for _, slave := range o.Slaves {
+		db, err := sql.Open(o.Driver, slave.dataSourceName(o.Database))
+		if err != nil {
+			return nil, fmt.Errorf("failed to open slave connection : %w", err)
 		}
+		dbs = append(dbs, db)
 	}
 	return &basicEngine{
 		dialect:      strings.ToLower(o.Driver),

@@ -45,7 +45,7 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 		// Table
 		g.w.Writeln("func %s() *%s {", tableName, tableStructName)
 		g.w.Writeln("    return &%s{", tableStructName)
-		g.w.Writeln("        name: \"%s\",", tableName)
+		g.w.Writeln("        name: TableName%s,", tableName)
 		g.w.Writeln("    }")
 		g.w.Writeln("}").Ln()
 
