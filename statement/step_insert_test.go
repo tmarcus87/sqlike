@@ -5,6 +5,7 @@ import (
 	"github.com/tmarcus87/sqlike/dialect"
 	"github.com/tmarcus87/sqlike/model"
 	"testing"
+	"time"
 )
 
 func TestInsertIntoColumns_Accept(t *testing.T) {
@@ -274,6 +275,84 @@ func TestInsertIntoStructValues_Accept(t *testing.T) {
 			asserts.Equal(2, bindings[2])
 			asserts.Equal("fuga", bindings[3])
 		})
+	})
+}
+
+func TestInsertIntoValueRecordStep_Accept(t *testing.T) {
+	t1 := model.NewTable("t1")
+	c1 := model.NewBoolColumn(t1, "c1")
+	c2 := model.NewBoolColumn(t1, "c2")
+	//c3 := model.NewBoolColumn(t1, "c3")
+
+	type T1Struct struct {
+		C1 string    `sqlike:"c1"`
+		C2 int32     `sqlike:"c2"`
+		C3 time.Time `sqlike:"c3"`
+	}
+
+	tm := time.Now()
+
+	t.Run("Value", func(t *testing.T) {
+		stmt, bindings, err :=
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
+				Record(&model.Record{
+					Value: &T1Struct{
+						C1: "hoge",
+						C2: 123,
+						C3: tm,
+					},
+				}).
+				Build().
+				StatementAndBindings()
+		asserts := assert.New(t)
+		asserts.Nil(err)
+		asserts.Equal("INSERT INTO `t1` (`c1`, `c2`, `c3`) VALUES (?, ?, ?)", stmt)
+		asserts.Len(bindings, 3)
+		asserts.Equal("hoge", bindings[0])
+		asserts.Equal(int32(123), bindings[1])
+		asserts.Equal(tm, bindings[2])
+	})
+
+	t.Run("Skip", func(t *testing.T) {
+		stmt, bindings, err :=
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
+				Record(&model.Record{
+					Skip: []model.Column{c1},
+					Value: &T1Struct{
+						C1: "hoge",
+						C2: 123,
+						C3: tm,
+					},
+				}).
+				Build().
+				StatementAndBindings()
+		asserts := assert.New(t)
+		asserts.Nil(err)
+		asserts.Equal("INSERT INTO `t1` (`c2`, `c3`) VALUES (?, ?)", stmt)
+		asserts.Len(bindings, 2)
+		asserts.Equal(int32(123), bindings[0])
+		asserts.Equal(tm, bindings[1])
+	})
+
+	t.Run("Only", func(t *testing.T) {
+		stmt, bindings, err :=
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
+				Record(&model.Record{
+					Only: []model.Column{c1, c2},
+					Value: &T1Struct{
+						C1: "hoge",
+						C2: 123,
+						C3: tm,
+					},
+				}).
+				Build().
+				StatementAndBindings()
+		asserts := assert.New(t)
+		asserts.Nil(err)
+		asserts.Equal("INSERT INTO `t1` (`c1`, `c2`) VALUES (?, ?)", stmt)
+		asserts.Len(bindings, 2)
+		asserts.Equal("hoge", bindings[0])
+		asserts.Equal(int32(123), bindings[1])
 	})
 }
 

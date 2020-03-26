@@ -6,6 +6,7 @@ type InsertIntoBranchStep interface {
 	Columns(cols ...model.ColumnField) InsertIntoColumnBranchStep
 	Values(values ...interface{}) InsertIntoValuesBranchStep
 	ValueStructs(values ...interface{}) InsertIntoValueStructsBranchStep
+	Record(record *model.Record) InsertIntoValueRecordBranchStep
 	Select(columns ...model.ColumnField) SelectColumnBranchStep
 }
 
@@ -51,6 +52,15 @@ func (s *insertIntoBranchStepImpl) ValueStructs(values ...interface{}) InsertInt
 		parent: &InsertIntoValueStructStep{
 			parent: s,
 			values: values,
+		},
+	}
+}
+
+func (s *insertIntoBranchStepImpl) Record(record *model.Record) InsertIntoValueRecordBranchStep {
+	return &insertIntoValueRecordBranchStepImpl{
+		parent: &InsertIntoValueRecordStep{
+			parent: s,
+			record: record,
 		},
 	}
 }
@@ -172,6 +182,42 @@ func (s *insertIntoValueStructsBranchStepImpl) OnDuplicateKeyIgnore() InsertOnDu
 }
 
 func (s *insertIntoValueStructsBranchStepImpl) OnDuplicateKeyUpdate() InsertOnDuplicateKeyUpdateBranchStep {
+	return &insertOnDuplicateKeyUpdateBranchStepImpl{
+		parent: &InsertOnDuplicateKeyUpdateStep{
+			parent: s,
+		},
+	}
+}
+
+type InsertIntoValueRecordBranchStep interface {
+	Build() Statement
+	OnDuplicateKeyIgnore() InsertOnDuplicateKeyIgnoreBranchStep
+	OnDuplicateKeyUpdate() InsertOnDuplicateKeyUpdateBranchStep
+}
+
+type insertIntoValueRecordBranchStepImpl struct {
+	parent StatementAcceptor
+}
+
+func (s *insertIntoValueRecordBranchStepImpl) Parent() StatementAcceptor {
+	return s.parent
+}
+
+func (s *insertIntoValueRecordBranchStepImpl) Accept(*StatementImpl) error { return nil }
+
+func (s *insertIntoValueRecordBranchStepImpl) Build() Statement {
+	return NewStatementBuilder(s)
+}
+
+func (s *insertIntoValueRecordBranchStepImpl) OnDuplicateKeyIgnore() InsertOnDuplicateKeyIgnoreBranchStep {
+	return &insertOnDuplicateKeyIgnoreBranchStepImpl{
+		parent: &InsertOnDuplicateKeyIgnoreStep{
+			parent: s,
+		},
+	}
+}
+
+func (s *insertIntoValueRecordBranchStepImpl) OnDuplicateKeyUpdate() InsertOnDuplicateKeyUpdateBranchStep {
 	return &insertOnDuplicateKeyUpdateBranchStepImpl{
 		parent: &InsertOnDuplicateKeyUpdateStep{
 			parent: s,

@@ -83,7 +83,7 @@ func ApplySetStatement(stmt *StatementImpl, record *model.Record) error {
 	} else if len(record.Skip) > 0 {
 		// 指定されたカラム以外を変更する
 
-		skipColumnNames := make(map[string]struct{}, 0)
+		skipColumnNames := make(map[string]struct{})
 		for _, skipColumn := range record.Skip {
 			skipColumnNames[skipColumn.ColumnName()] = struct{}{}
 		}

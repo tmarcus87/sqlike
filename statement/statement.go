@@ -217,19 +217,22 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 	name2index := make(map[string]int)
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		name2index[strings.ToLower(f.Name)] = i
 		if tag, ok := f.Tag.Lookup("sqlike"); ok {
 			name2index[strings.ToLower(tag)] = i
+		} else {
+			name2index[strings.ToLower(f.Name)] = i
 		}
 	}
 
 	val := reflect.ValueOf(p).Elem()
 
+	logger.Debug("Get FieldPtr for %T(%+v) <= %+v", val.Interface(), names, name2index)
+
 	vptrs := make([]interface{}, t.NumField())
 	for i, name := range names {
 		fi, ok := name2index[name]
 		if !ok {
-			return nil, fmt.Errorf("failed to find field for '%s' from %T(%+v)", name, p, names)
+			return nil, fmt.Errorf("failed to find field for '%s' from %T(%+v)", name, val.Interface(), names)
 		}
 
 		valueField := val.Field(fi)
