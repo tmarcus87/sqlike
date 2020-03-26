@@ -228,15 +228,16 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 
 	logger.Debug("Get FieldPtr for %T(%+v) <= %+v", val.Interface(), names, name2index)
 
-	vptrs := make([]interface{}, t.NumField())
-	for i, name := range names {
+	vptrs := make([]interface{}, 0)
+	for _, name := range names {
 		fi, ok := name2index[name]
 		if !ok {
-			return nil, fmt.Errorf("failed to find field for '%s' from %T(%+v)", name, val.Interface(), names)
+			logger.Debug("skip '%s' field for %T", name, val.Interface())
+			continue
 		}
 
 		valueField := val.Field(fi)
-		vptrs[i] = valueField.Addr().Interface()
+		vptrs = append(vptrs, valueField.Addr().Interface())
 	}
 
 	return vptrs, nil
