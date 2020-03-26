@@ -16,6 +16,11 @@ var (
 	ErrorMustBeAStructPtr = errors.New("must be a pointer to struct")
 )
 
+type DummyScanner struct {
+}
+
+func (d DummyScanner) Scan(interface{}) error { return nil }
+
 type StatementAcceptor interface {
 	// Parent 親のStatementAcceptorを返します。親がない場合はnilです
 	Parent() StatementAcceptor
@@ -233,7 +238,7 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 		fi, ok := name2index[name]
 		if !ok {
 			logger.Debug("skip '%s' field for %T", name, val.Interface())
-			vptrs = append(vptrs, nil)
+			vptrs = append(vptrs, DummyScanner{})
 		} else {
 			valueField := val.Field(fi)
 			vptrs = append(vptrs, valueField.Addr().Interface())
