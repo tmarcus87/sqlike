@@ -233,11 +233,11 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 		fi, ok := name2index[name]
 		if !ok {
 			logger.Debug("skip '%s' field for %T", name, val.Interface())
-			continue
+			vptrs = append(vptrs, nil)
+		} else {
+			valueField := val.Field(fi)
+			vptrs = append(vptrs, valueField.Addr().Interface())
 		}
-
-		valueField := val.Field(fi)
-		vptrs = append(vptrs, valueField.Addr().Interface())
 	}
 
 	return vptrs, nil
