@@ -48,7 +48,7 @@ $ sqlikegen -t mysql -d library -u user -p password -h localhost:3306 -o library
 
 ## Example
 
-```
+```go
 package main
 
 import (
