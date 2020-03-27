@@ -58,8 +58,9 @@ import (
 )
 
 type Book struct {
-    Id   int64  `sqlike:"id"`
-    Name string `sqlike:"title"`
+    Id       int64  `sqlike:"id"`
+    Name     string `sqlike:"title"`
+    AuthorId int64  `sqlike:"author_id"`
 }
 
 func main() {
@@ -73,9 +74,48 @@ func main() {
 
     books := make([]*Book, 0)
 
+    // Insert & fetch last insert id
+    authorId, err :=
+        engine.
+            NewSession(context.Background()).
+            InsertInto(sampledb.Author()).
+            Columns(sampledb.Author().Name()).
+            Values("William Shakespeare").
+            Build().Execute().LastInsertId();
+    if err != nil {
+        panic(err)
+    }
+
+    // Insert w/ columns & values
     if err :=
         engine.
-            Auto(context.Background()).
+            NewSession(context.Background()).
+            InsertInto(sampledb.Book()).
+            Columns(sampledb.Book().Name(), sampledb.Book().AuthorId()).
+            Values("Hamlet", authorId).
+            Build().Execute().Error(); err != nil {
+        panic(err)
+    }
+
+    // Insert w/ struct record
+    if err :=
+        engine.
+            NewSession(context.Background()).
+            InsertInto(sampledb.Book()).
+            Record(sqlike.RecordWithSkip(
+                &Book{
+                    Name:     "King Lear",
+                    AuthorId: authorId,
+                },
+                sampledb.Book().Id()).
+            Build().Execute().Error(); err != nil {
+        panic(err)
+    }
+
+    // Query
+    if err :=
+        engine.
+            NewSession(context.Background()).
             Select(
                 sampledb.Book().Id(),
                 sampledb.Book().Name().As("title")).
