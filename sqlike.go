@@ -14,9 +14,17 @@ type ConnectionInfo struct {
 	Options  map[string]string `json:"options"  yaml:"options"`
 }
 
-func (c *ConnectionInfo) dataSourceName(database string) string {
-	opts := make([]string, 0)
+func (c *ConnectionInfo) dataSourceName(database string, commonOptions map[string]string) string {
+	merged := make(map[string]string)
+	for k, v := range commonOptions {
+		merged[k] = v
+	}
 	for k, v := range c.Options {
+		merged[k] = v
+	}
+
+	opts := make([]string, 0)
+	for k, v := range merged {
 		opts = append(opts, fmt.Sprintf("%s=%s", k, v))
 	}
 	opt := strings.Join(opts, "&")
@@ -37,6 +45,7 @@ type EngineOption struct {
 	Master                ConnectionInfo        `json:"master"          yaml:"address"`
 	Slaves                []ConnectionInfo      `json:"slaves"          yaml:"slaves"`
 	SlaveSelectionHandler SlaveSelectionHandler `json:"slave_selection" yaml:"slave_selection"`
+	Options               map[string]string     `json:"options"         yaml:"options"`
 }
 
 type Option func(o *EngineOption)
@@ -61,6 +70,26 @@ func WithSlaveSelectionHandler(handler SlaveSelectionHandler) Option {
 	}
 }
 
+func WithOption(name, value string) Option {
+	return func(o *EngineOption) {
+		if o.Options == nil {
+			o.Options = make(map[string]string)
+		}
+		o.Options[name] = value
+	}
+}
+
+func WithOptions(options map[string]string) Option {
+	return func(o *EngineOption) {
+		if o.Options == nil {
+			o.Options = make(map[string]string)
+		}
+		for k, v := range options {
+			o.Options[k] = v
+		}
+	}
+}
+
 func NewEngine(opts ...Option) (Engine, error) {
 	o := EngineOption{
 		Slaves:                make([]ConnectionInfo, 0),
@@ -75,14 +104,14 @@ func NewEngine(opts ...Option) (Engine, error) {
 
 func NewEngineFromOption(o *EngineOption) (Engine, error) {
 	db, err :=
-		sql.Open(o.Driver, o.Master.dataSourceName(o.Database))
+		sql.Open(o.Driver, o.Master.dataSourceName(o.Database, o.Options))
 	if err != nil {
 		return nil, fmt.Errorf("failed to open connection : %w", err)
 	}
 
 	dbs := make([]*sql.DB, 0)
 	for _, slave := range o.Slaves {
-		db, err := sql.Open(o.Driver, slave.dataSourceName(o.Database))
+		db, err := sql.Open(o.Driver, slave.dataSourceName(o.Database, o.Options))
 		if err != nil {
 			return nil, fmt.Errorf("failed to open slave connection : %w", err)
 		}
