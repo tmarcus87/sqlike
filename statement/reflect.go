@@ -2,8 +2,8 @@ package statement
 
 import (
 	"errors"
-	"github.com/iancoleman/strcase"
 	"reflect"
+	"strings"
 )
 
 var (
@@ -44,5 +44,16 @@ func getColumnName(f reflect.StructField) string {
 	if tag, ok := f.Tag.Lookup("sqlike"); ok {
 		return tag
 	}
-	return strcase.ToSnake(f.Name)
+	return toSnakeCase(f.Name)
+}
+
+func toSnakeCase(s string) string {
+	res := ""
+	for i, c := range s {
+		if i > 0 && c >= 'A' && c <= 'Z' {
+			res += "_"
+		}
+		res += strings.ToLower(string(c))
+	}
+	return res
 }

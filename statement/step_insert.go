@@ -144,45 +144,40 @@ func (s *InsertIntoValueRecordStep) Accept(stmt *StatementImpl) error {
 		return ErrorNoRecors
 	}
 
-	// todo recordsの型を確認する
-
-	fvm4c, err := getColumnName2FieldValueMap(s.records[0].Value)
+	columns := make([]string, 0)
+	allColumnNames, err := getOrderedColumnName(s.records[0].Value)
 	if err != nil {
 		return err
 	}
+	columnNameMap := make(map[string]struct{})
+	for _, columnName := range allColumnNames {
+		columnNameMap[columnName] = struct{}{}
+	}
 
-	// Build Columns.
-	columns := make([]string, 0)
 	if len(s.records[0].Only) > 0 {
-		// 指定されたカラムのみ変更する
 		for _, onlyColumn := range s.records[0].Only {
+			if _, ok := columnNameMap[onlyColumn.ColumnName()]; !ok {
+				return ErrorNoColumnInfo
+			}
 			columns = append(columns, onlyColumn.ColumnName())
 		}
 	} else if len(s.records[0].Skip) > 0 {
-		// 指定されたカラム以外を変更する
-		skipColumnNames := make(map[string]struct{})
+		skipColumnNameMap := make(map[string]struct{})
 		for _, skipColumn := range s.records[0].Skip {
-			skipColumnNames[skipColumn.ColumnName()] = struct{}{}
+			skipColumnNameMap[skipColumn.ColumnName()] = struct{}{}
 		}
 
-		for colName := range fvm4c {
-			if _, ok := skipColumnNames[colName]; !ok {
-				columns = append(columns, colName)
+		for _, columnName := range allColumnNames {
+			if _, ok := skipColumnNameMap[columnName]; !ok {
+				columns = append(columns, columnName)
 			}
 		}
 	} else {
-		fields, err := getOrderedColumnName(s.records[0].Value)
-		if err != nil {
-			return err
-		}
-
-		for _, field := range fields {
-			columns = append(columns, field)
-		}
-
+		columns = allColumnNames
 	}
 
-	// Build Values.
+	// todo recordsの型を確認する
+
 	bindings := make([]interface{}, 0)
 	for _, record := range s.records {
 		fvm, err := getColumnName2FieldValueMap(record.Value)
@@ -190,39 +185,13 @@ func (s *InsertIntoValueRecordStep) Accept(stmt *StatementImpl) error {
 			return err
 		}
 
-		if len(record.Only) > 0 {
-			// 指定されたカラムのみ変更する
-			for _, onlyColumn := range record.Only {
-				fv, ok := fvm[onlyColumn.ColumnName()]
-				if !ok {
-					return fmt.Errorf("struct field for '%s' is not found", onlyColumn.ColumnName())
-				}
-				bindings = append(bindings, fv.Interface())
+		for _, column := range columns {
+			fv, ok := fvm[column]
+			if !ok {
+				return fmt.Errorf("struct field value for '%s' is not found", column)
 			}
-		} else if len(record.Skip) > 0 {
-			// 指定されたカラム以外を変更する
-			skipColumnNames := make(map[string]struct{})
-			for _, skipColumn := range record.Skip {
-				skipColumnNames[skipColumn.ColumnName()] = struct{}{}
-			}
-
-			for colName, fv := range fvm {
-				if _, ok := skipColumnNames[colName]; !ok {
-					bindings = append(bindings, fv.Interface())
-				}
-			}
-		} else {
-			fields, err := getOrderedColumnName(record.Value)
-			if err != nil {
-				return err
-			}
-
-			for _, field := range fields {
-				fv := fvm[field]
-				bindings = append(bindings, fv.Interface())
-			}
+			bindings = append(bindings, fv.Interface())
 		}
-
 	}
 
 	cols := make([]string, 0)
