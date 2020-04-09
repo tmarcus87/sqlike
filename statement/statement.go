@@ -222,11 +222,7 @@ func (s *StatementImpl) toFieldPtr(p interface{}, names []string) ([]interface{}
 	name2index := make(map[string]int)
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
-		if tag, ok := f.Tag.Lookup("sqlike"); ok {
-			name2index[strings.ToLower(tag)] = i
-		} else {
-			name2index[strings.ToLower(f.Name)] = i
-		}
+		name2index[getColumnName(f)] = i
 	}
 
 	val := reflect.ValueOf(p).Elem()

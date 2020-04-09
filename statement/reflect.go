@@ -2,8 +2,8 @@ package statement
 
 import (
 	"errors"
+	"github.com/iancoleman/strcase"
 	"reflect"
-	"strings"
 )
 
 var (
@@ -20,11 +20,7 @@ func getOrderedColumnName(value interface{}) ([]string, error) {
 	res := make([]string, 0)
 	for i := 0; i < v.Type().NumField(); i++ {
 		f := v.Type().Field(i)
-		if tag, ok := f.Tag.Lookup("sqlike"); ok {
-			res = append(res, strings.ToLower(tag))
-		} else {
-			res = append(res, strings.ToLower(f.Name))
-		}
+		res = append(res, getColumnName(f))
 	}
 	return res, nil
 }
@@ -38,12 +34,15 @@ func getColumnName2FieldValueMap(value interface{}) (map[string]reflect.Value, e
 	name2value := make(map[string]reflect.Value)
 	for i := 0; i < v.Type().NumField(); i++ {
 		f := v.Type().Field(i)
-		if tag, ok := f.Tag.Lookup("sqlike"); ok {
-			name2value[strings.ToLower(tag)] = v.Field(i)
-		} else {
-			name2value[strings.ToLower(f.Name)] = v.Field(i)
-		}
+		name2value[getColumnName(f)] = v.Field(i)
 	}
 
 	return name2value, nil
+}
+
+func getColumnName(f reflect.StructField) string {
+	if tag, ok := f.Tag.Lookup("sqlike"); ok {
+		return tag
+	}
+	return strcase.ToSnake(f.Name)
 }
