@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrorNoColumnInfo = errors.New("no column info")
+	ErrorNoRecors     = errors.New("no record")
 )
 
 const (
@@ -130,8 +131,8 @@ func (s *InsertIntoValueStructStep) Accept(stmt *StatementImpl) error {
 }
 
 type InsertIntoValueRecordStep struct {
-	parent StatementAcceptor
-	record *model.Record
+	parent  StatementAcceptor
+	records []*model.Record
 }
 
 func (s *InsertIntoValueRecordStep) Parent() StatementAcceptor {
@@ -139,48 +140,89 @@ func (s *InsertIntoValueRecordStep) Parent() StatementAcceptor {
 }
 
 func (s *InsertIntoValueRecordStep) Accept(stmt *StatementImpl) error {
-	columns := make([]string, 0)
-	bindings := make([]interface{}, 0)
+	if len(s.records) == 0 {
+		return ErrorNoRecors
+	}
 
-	fvm, err := getColumnName2FieldValueMap(s.record.Value)
+	// todo recordsの型を確認する
+
+	fvm4c, err := getColumnName2FieldValueMap(s.records[0].Value)
 	if err != nil {
 		return err
 	}
 
-	if len(s.record.Only) > 0 {
+	// Build Columns.
+	columns := make([]string, 0)
+	if len(s.records[0].Only) > 0 {
 		// 指定されたカラムのみ変更する
-		for _, onlyColumn := range s.record.Only {
-			fv, ok := fvm[onlyColumn.ColumnName()]
-			if !ok {
-				return fmt.Errorf("struct field for '%s' is not found", onlyColumn.ColumnName())
-			}
+		for _, onlyColumn := range s.records[0].Only {
 			columns = append(columns, onlyColumn.ColumnName())
-			bindings = append(bindings, fv.Interface())
 		}
-	} else if len(s.record.Skip) > 0 {
+	} else if len(s.records[0].Skip) > 0 {
 		// 指定されたカラム以外を変更する
 		skipColumnNames := make(map[string]struct{})
-		for _, skipColumn := range s.record.Skip {
+		for _, skipColumn := range s.records[0].Skip {
 			skipColumnNames[skipColumn.ColumnName()] = struct{}{}
 		}
 
-		for colName, fv := range fvm {
+		for colName := range fvm4c {
 			if _, ok := skipColumnNames[colName]; !ok {
 				columns = append(columns, colName)
-				bindings = append(bindings, fv.Interface())
 			}
 		}
 	} else {
-		fields, err := getOrderedColumnName(s.record.Value)
+		fields, err := getOrderedColumnName(s.records[0].Value)
 		if err != nil {
 			return err
 		}
 
 		for _, field := range fields {
-			fv := fvm[field]
 			columns = append(columns, field)
-			bindings = append(bindings, fv.Interface())
 		}
+
+	}
+
+	// Build Values.
+	bindings := make([]interface{}, 0)
+	for _, record := range s.records {
+		fvm, err := getColumnName2FieldValueMap(record.Value)
+		if err != nil {
+			return err
+		}
+
+		if len(record.Only) > 0 {
+			// 指定されたカラムのみ変更する
+			for _, onlyColumn := range record.Only {
+				fv, ok := fvm[onlyColumn.ColumnName()]
+				if !ok {
+					return fmt.Errorf("struct field for '%s' is not found", onlyColumn.ColumnName())
+				}
+				bindings = append(bindings, fv.Interface())
+			}
+		} else if len(record.Skip) > 0 {
+			// 指定されたカラム以外を変更する
+			skipColumnNames := make(map[string]struct{})
+			for _, skipColumn := range record.Skip {
+				skipColumnNames[skipColumn.ColumnName()] = struct{}{}
+			}
+
+			for colName, fv := range fvm {
+				if _, ok := skipColumnNames[colName]; !ok {
+					bindings = append(bindings, fv.Interface())
+				}
+			}
+		} else {
+			fields, err := getOrderedColumnName(record.Value)
+			if err != nil {
+				return err
+			}
+
+			for _, field := range fields {
+				fv := fvm[field]
+				bindings = append(bindings, fv.Interface())
+			}
+		}
+
 	}
 
 	cols := make([]string, 0)
@@ -192,10 +234,18 @@ func (s *InsertIntoValueRecordStep) Accept(stmt *StatementImpl) error {
 		fmt.Sprintf(
 			"(%s) VALUES %s",
 			strings.Join(cols, ", "),
-			insertValueStatement(len(bindings)))
+			strings.Join(repeat(insertValueStatement(len(cols)), len(s.records)), ", "))
 	stmt.Bindings = append(stmt.Bindings, bindings...)
 
 	return nil
+}
+
+func repeat(s string, n int) []string {
+	res := make([]string, 0)
+	for i := 0; i < n; i++ {
+		res = append(res, s)
+	}
+	return res
 }
 
 func insertValueStatement(numOfValue int) string {

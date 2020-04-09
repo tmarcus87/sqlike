@@ -4,9 +4,7 @@ import "github.com/tmarcus87/sqlike/model"
 
 type InsertIntoBranchStep interface {
 	Columns(cols ...model.ColumnField) InsertIntoColumnBranchStep
-	Values(values ...interface{}) InsertIntoValuesBranchStep
-	ValueStructs(values ...interface{}) InsertIntoValueStructsBranchStep
-	Record(record *model.Record) InsertIntoValueRecordBranchStep
+	Record(records ...*model.Record) InsertIntoValueRecordBranchStep
 	Select(columns ...model.ColumnField) SelectColumnBranchStep
 }
 
@@ -38,29 +36,11 @@ func (s *insertIntoBranchStepImpl) Columns(columns ...model.ColumnField) InsertI
 	}
 }
 
-func (s *insertIntoBranchStepImpl) Values(values ...interface{}) InsertIntoValuesBranchStep {
-	return &insertIntoValuesBranchStepImpl{
-		parent: &InsertIntoValuesStep{
-			parent: s,
-			values: values,
-		},
-	}
-}
-
-func (s *insertIntoBranchStepImpl) ValueStructs(values ...interface{}) InsertIntoValueStructsBranchStep {
-	return &insertIntoValueStructsBranchStepImpl{
-		parent: &InsertIntoValueStructStep{
-			parent: s,
-			values: values,
-		},
-	}
-}
-
-func (s *insertIntoBranchStepImpl) Record(record *model.Record) InsertIntoValueRecordBranchStep {
+func (s *insertIntoBranchStepImpl) Record(records ...*model.Record) InsertIntoValueRecordBranchStep {
 	return &insertIntoValueRecordBranchStepImpl{
 		parent: &InsertIntoValueRecordStep{
-			parent: s,
-			record: record,
+			parent:  s,
+			records: records,
 		},
 	}
 }

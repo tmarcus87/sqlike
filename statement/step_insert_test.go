@@ -93,27 +93,6 @@ func TestInsertIntoValues_Accept(t *testing.T) {
 		asserts.Equal(3, bindings[2])
 		asserts.Equal(4, bindings[3])
 	})
-
-	t.Run("WithoutColumns", func(t *testing.T) {
-		asserts := assert.New(t)
-
-		t1 := &model.BasicTable{Name: "t1"}
-
-		stmt, bindings, err :=
-			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
-				Values(1, 2).
-				Values(3, 4).
-				Build().
-				StatementAndBindings()
-
-		asserts.Nil(err)
-		asserts.Equal("INSERT INTO `t1` VALUES (?, ?), (?, ?)", stmt)
-		asserts.Len(bindings, 4)
-		asserts.Equal(1, bindings[0])
-		asserts.Equal(2, bindings[1])
-		asserts.Equal(3, bindings[2])
-		asserts.Equal(4, bindings[3])
-	})
 }
 
 func TestInsertIntoStructValues_Accept(t *testing.T) {
@@ -292,7 +271,7 @@ func TestInsertIntoValueRecordStep_Accept(t *testing.T) {
 
 	tm := time.Now()
 
-	t.Run("Value", func(t *testing.T) {
+	t.Run("OneValue", func(t *testing.T) {
 		stmt, bindings, err :=
 			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
 				Record(&model.Record{
@@ -311,6 +290,38 @@ func TestInsertIntoValueRecordStep_Accept(t *testing.T) {
 		asserts.Equal("hoge", bindings[0])
 		asserts.Equal(int32(123), bindings[1])
 		asserts.Equal(tm, bindings[2])
+	})
+
+	t.Run("TwoValue", func(t *testing.T) {
+		stmt, bindings, err :=
+			NewInsertIntoBranchStep(root(dialect.MySQL), t1).
+				Record(&model.Record{
+					Value: &T1Struct{
+						C1: "hoge",
+						C2: 123,
+						C3: tm,
+					},
+				},
+					&model.Record{
+						Value: &T1Struct{
+							C1: "fuga",
+							C2: 456,
+							C3: tm,
+						},
+					}).
+				Build().
+				StatementAndBindings()
+		asserts := assert.New(t)
+		asserts.Nil(err)
+		asserts.Equal("INSERT INTO `t1` (`c1`, `c2`, `c3`) VALUES (?, ?, ?), (?, ?, ?)", stmt)
+		asserts.Len(bindings, 6)
+		asserts.Equal("hoge", bindings[0])
+		asserts.Equal(int32(123), bindings[1])
+		asserts.Equal(tm, bindings[2])
+		asserts.Equal("fuga", bindings[3])
+		asserts.Equal(int32(456), bindings[4])
+		asserts.Equal(tm, bindings[5])
+
 	})
 
 	t.Run("Skip", func(t *testing.T) {

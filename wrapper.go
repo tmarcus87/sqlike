@@ -2,6 +2,12 @@ package sqlike
 
 import "github.com/tmarcus87/sqlike/model"
 
+func Record(value interface{}) *model.Record {
+	return &model.Record{
+		Value: value,
+	}
+}
+
 func RecordWithSkip(value interface{}, cols ...model.Column) *model.Record {
 	return &model.Record{
 		Value: value,
