@@ -22,15 +22,7 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 	imports := make(map[string]struct{})
 	imports["fmt"] = struct{}{}
 	imports["github.com/tmarcus87/sqlike/model"] = struct{}{}
-	for _, columns := range schema.Schema {
-		for _, column := range columns {
-			if impt, err := column.Import(); err != nil {
-				return err
-			} else if impt != "" {
-				imports[impt] = struct{}{}
-			}
-		}
-	}
+
 	g.w.Writeln("import (")
 	for impt := range imports {
 		g.w.Writeln(`"%s"`, impt)
