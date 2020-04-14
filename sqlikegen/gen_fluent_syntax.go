@@ -71,6 +71,14 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 		g.w.Writeln("    return t")
 		g.w.Writeln("}").Ln()
 
+		g.w.Writeln("func (t *%s) SQLikeAllColumns() []model.ColumnField {", tableStructName)
+		g.w.Writeln("    return []model.ColumnField {")
+		for _, column := range columns {
+			g.w.Writeln("        t.%s(),", strcase.ToCamel(column.Name))
+		}
+		g.w.Writeln("    }")
+		g.w.Writeln("}").Ln()
+
 		for _, column := range columns {
 			columnName := strcase.ToCamel(column.Name)
 			columnStructName := fmt.Sprintf("%s%sColumn", tableName, columnName)
