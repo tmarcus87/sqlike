@@ -30,7 +30,7 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 	g.w.Writeln(")").Ln()
 
 	// Generate accessor
-	for table, columns := range schema.Schema {
+	for _, table := range schema.Schema {
 		tableName := strcase.ToCamel(table.Name)
 		tableStructName := fmt.Sprintf("%sTable", tableName)
 
@@ -73,13 +73,13 @@ func (g *FluentSyntaxSourceGenerator) Generate(pkg string, schema *Schema) error
 
 		g.w.Writeln("func (t *%s) SQLikeAllColumns() []model.ColumnField {", tableStructName)
 		g.w.Writeln("    return []model.ColumnField {")
-		for _, column := range columns {
+		for _, column := range table.Columns {
 			g.w.Writeln("        t.%s(),", strcase.ToCamel(column.Name))
 		}
 		g.w.Writeln("    }")
 		g.w.Writeln("}").Ln()
 
-		for _, column := range columns {
+		for _, column := range table.Columns {
 			columnName := strcase.ToCamel(column.Name)
 			columnStructName := fmt.Sprintf("%s%sColumn", tableName, columnName)
 

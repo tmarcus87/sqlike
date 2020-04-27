@@ -58,13 +58,14 @@ func Fetch(driver, username, password, address, database string) (*Schema, error
 		return nil, fmt.Errorf("failed to fetch table infomation : %v", err)
 	}
 
-	defs := make(map[Table][]Column)
+	defs := make([]Table, 0)
 	for _, table := range tables {
 		columns, err := fetchColumns(db, database, table)
 		if err != nil {
 			return nil, fmt.Errorf("failed to fetch column infomation : %v", err)
 		}
-		defs[table] = columns
+		table.Columns = columns
+		defs = append(defs, table)
 	}
 	return &Schema{
 		DBEngine: driver,

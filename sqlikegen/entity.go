@@ -9,13 +9,14 @@ import (
 type Schema struct {
 	DBEngine string
 	Database string
-	Schema   map[Table][]Column
+	Schema   []Table
 }
 
 type Table struct {
 	DBEngine string
 	Name     string
 	Type     string
+	Columns  []Column
 }
 
 type Column struct {

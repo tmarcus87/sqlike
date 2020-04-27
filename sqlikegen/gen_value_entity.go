@@ -20,8 +20,8 @@ func (g *ValueEntityGenerator) Generate(pkg string, schema *Schema) error {
 
 	// Import
 	imports := make(map[string]struct{})
-	for _, columns := range schema.Schema {
-		for _, column := range columns {
+	for _, table := range schema.Schema {
+		for _, column := range table.Columns {
 			it, err := column.ValueImport()
 			if err != nil {
 				return err
@@ -41,10 +41,10 @@ func (g *ValueEntityGenerator) Generate(pkg string, schema *Schema) error {
 	}
 
 	// Struct
-	for table, columns := range schema.Schema {
+	for _, table := range schema.Schema {
 		g.w.Writeln("type %s struct {", strcase.ToCamel(table.Name))
 
-		for _, column := range columns {
+		for _, column := range table.Columns {
 			ft, err := column.ValueFieldType()
 			if err != nil {
 				return err
