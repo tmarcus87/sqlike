@@ -70,6 +70,10 @@ func (s *basicSession) Explain() statement.ExplainSelectBranchStep {
 	return statement.NewExplainSelectBranchStep(s.rootStep())
 }
 
+func (s *basicSession) Query(stmt string, bindings []interface{}) statement.Statement {
+	return statement.NewInstantStep(s.rootStep(), stmt, bindings)
+}
+
 func (s *basicSession) SelectOne() statement.SelectOneBranchStep {
 	return statement.NewSelectOneBranchStep(s.rootStep())
 }

@@ -75,3 +75,12 @@ func (s *InstantStep) Accept(stmt *StatementImpl) error {
 	stmt.Bindings = append(stmt.Bindings, s.bindings)
 	return nil
 }
+
+func NewInstantStep(parent StatementAcceptor, statement string, bindings []interface{}) Statement {
+	return NewStatementBuilder(
+		&InstantStep{
+			parent:    parent,
+			statement: statement,
+			bindings:  bindings,
+		})
+}
