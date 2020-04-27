@@ -19,9 +19,9 @@ func (g *ConstGenerator) Generate(pkg string, schema *Schema) error {
 
 	g.w.Writeln("const (")
 
-	for table, columns := range schema.Schema {
+	for _, table := range schema.Schema {
 		g.w.Writeln(`TableName%s = "%s"`, strcase.ToCamel(table.Name), table.Name)
-		for _, column := range columns {
+		for _, column := range table.Columns {
 			g.w.Writeln(`ColumnName%sTable%s = "%s"`, strcase.ToCamel(table.Name), strcase.ToCamel(column.Name), column.Name)
 		}
 	}
