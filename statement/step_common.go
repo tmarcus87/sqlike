@@ -72,7 +72,7 @@ func (s *InstantStep) Parent() StatementAcceptor {
 
 func (s *InstantStep) Accept(stmt *StatementImpl) error {
 	stmt.Statement += s.statement
-	stmt.Bindings = append(stmt.Bindings, s.bindings)
+	stmt.Bindings = append(stmt.Bindings, s.bindings...)
 	return nil
 }
 
