@@ -10,6 +10,7 @@ import (
 
 type SQLSession interface {
 	Explain() statement.ExplainSelectBranchStep
+	Query(stmt string, bindings []interface{}) statement.Statement
 	SelectOne() statement.SelectOneBranchStep
 	Select(columns ...model.ColumnField) statement.SelectColumnBranchStep
 	SelectFrom(table model.Table) statement.SelectFromBranchStep
