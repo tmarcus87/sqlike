@@ -13,7 +13,7 @@ $ go get -u github.com/tmarcus87/sqlike
 
 * Golang 1.13+
 
-## SchemaGenerator
+## SchemeGenerator
  
 You can generate model & schema definition from database by using `sqlikegen`.
 
