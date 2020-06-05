@@ -121,7 +121,9 @@ func main() {
                 sampledb.Book().Name().As("title")).
             From(sampledb.Author()).
             InnerJoin(sampledb.Book(), sampledb.Book().AuthorId().EqCol(sampledb.Author().Id())).
-            Where(sampledb.Author().Name().Eq("William Shakespeare")).
+            Where(
+                sampledb.Author().Name().Eq("William Shakespeare").
+                    And(sampledb.Book().Name().Like("King%"))).
             OrderBy(sampledb.Book().Name().Asc())
             LimitAndOffset(5, 0).
             Build().
