@@ -2,7 +2,6 @@ package statement
 
 import (
 	"github.com/tmarcus87/sqlike/model"
-	"strings"
 )
 
 type AndCondition struct {
@@ -11,6 +10,14 @@ type AndCondition struct {
 
 func (c *AndCondition) Apply(stmt *string, bindings *[]interface{}) {
 	joinCondition(c.conditions, stmt, bindings, "AND")
+}
+
+func (c *AndCondition) And(condition model.Condition) model.Condition {
+	return model.And(c, condition)
+}
+
+func (c *AndCondition) Or(condition model.Condition) model.Condition {
+	return model.Or(c, condition)
 }
 
 func And(conditions ...model.Condition) model.Condition {
@@ -27,6 +34,14 @@ func (c *OrCondition) Apply(stmt *string, bindings *[]interface{}) {
 	joinCondition(c.conditions, stmt, bindings, "OR")
 }
 
+func (c *OrCondition) And(condition model.Condition) model.Condition {
+	return model.And(c, condition)
+}
+
+func (c *OrCondition) Or(condition model.Condition) model.Condition {
+	return model.Or(c, condition)
+}
+
 func Or(conditions ...model.Condition) model.Condition {
 	return &OrCondition{
 		conditions: conditions,
@@ -34,24 +49,5 @@ func Or(conditions ...model.Condition) model.Condition {
 }
 
 func joinCondition(conditions []model.Condition, stmt *string, bindings *[]interface{}, operator string) {
-	statements := make([]string, 0)
-	b := make([]interface{}, 0)
-
-	for _, condition := range conditions {
-		statement := ""
-		condition.Apply(&statement, &b)
-		statements = append(statements, statement)
-	}
-
-	if len(conditions) > 1 {
-		*stmt += "("
-	}
-
-	*stmt += strings.Join(statements, " "+operator+" ")
-
-	if len(conditions) > 1 {
-		*stmt += ")"
-	}
-
-	*bindings = append(*bindings, b...)
+	model.JoinCondition(conditions, stmt, bindings, operator)
 }
