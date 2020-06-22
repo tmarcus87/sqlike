@@ -16,6 +16,7 @@ var (
 type TxSession interface {
 	SQLSession
 
+	IsFlushed() bool
 	Commit() error
 	Rollback() error
 	Close() error
@@ -94,4 +95,8 @@ func (s *basicTxSession) Close() error {
 		return s.tx.Rollback()
 	}
 	return nil
+}
+
+func (s *basicTxSession) IsFlushed() bool {
+	return s.flushed
 }
