@@ -37,3 +37,39 @@ func (c *CountColumnModifier) FieldExpr() string {
 	}
 	return expr
 }
+
+func Distinct(field ColumnField) ColumnField {
+	return &DistinctColumnModifier{
+		column: field,
+	}
+}
+
+type DistinctColumnModifier struct {
+	column ColumnField
+	alias  string
+}
+
+func (c *DistinctColumnModifier) Table() Table {
+	return c.column.Table()
+}
+
+func (c *DistinctColumnModifier) ColumnName() string {
+	return c.column.ColumnName()
+}
+
+func (c *DistinctColumnModifier) AliasOrName() string {
+	return c.column.AliasOrName()
+}
+
+func (c *DistinctColumnModifier) As(alias string) ColumnField {
+	c.alias = alias
+	return c
+}
+
+func (c *DistinctColumnModifier) FieldExpr() string {
+	expr := fmt.Sprintf("DISTINCT %s", c.column.FieldExpr())
+	if c.alias != "" {
+		expr += fmt.Sprintf(" AS `%s`", c.alias)
+	}
+	return expr
+}

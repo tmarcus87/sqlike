@@ -25,3 +25,7 @@ func RecordWithOnly(value interface{}, cols ...model.Column) *model.Record {
 func Count(field model.ColumnField) model.ColumnField {
 	return model.Count(field)
 }
+
+func Distinct(field model.ColumnField) model.ColumnField {
+	return model.Distinct(field)
+}
