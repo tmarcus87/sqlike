@@ -131,7 +131,7 @@ func main() {
         panic(err)
     }
 
-    for i, book := range books {
+    for _, book := range books {
         fmt.Printf("%4d %s", book.Id, book.Name)
     }
 }
